@@ -22,5 +22,34 @@ services:
       retries: 10
       start_period: 10s
 
+  redis:
+    image: redis:7-alpine
+    container_name: ad-generator-redis
+    restart: unless-stopped
+    environment:
+      REDIS_USERNAME: ${REDIS_USERNAME}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command:
+      [
+        "sh",
+        "-c",
+        "cat <<EOF > /usr/local/etc/redis/users.acl\nuser default off\nuser ${REDIS_USERNAME} on >${REDIS_PASSWORD} ~* +@all\nEOF\nredis-server --appendonly yes --aclfile /usr/local/etc/redis/users.acl",
+      ]
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "redis-cli --user $${REDIS_USERNAME} -a $${REDIS_PASSWORD} ping | grep PONG",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
 volumes:
   postgres_data:
+  redis_data:
