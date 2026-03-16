@@ -421,6 +421,9 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 # Feature: Refatoração com Clean Code, SOLID e DDD
 
 Spec de referência: `openspec/specs/clean-code-ddd-refactoring.md`
+Tasks detalhadas: `openspec/clean-code-ddd-tasks.md`
+
+Status: **Concluído em 16/03/2026**
 
 ---
 
@@ -490,7 +493,7 @@ Spec de referência: `openspec/specs/clean-code-ddd-refactoring.md`
 - [x] Criar testes em `__tests__/domain/`
 - [x] Criar testes em `__tests__/application/`
 - [x] Validar rota API existente sem quebra
-- [x] Executar `pnpm test` com sucesso (49/49)
+- [x] Executar `pnpm test` com sucesso (20 suites / 87 testes)
 - [x] Executar `npx tsc --noEmit` com sucesso (0 erros)
 - [x] Verificar equivalência funcional do serviço (mesma lógica de negócio)
 - **Critério**: Refatoração concluída sem regressão comportamental ✅
