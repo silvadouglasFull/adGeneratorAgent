@@ -576,3 +576,24 @@ Tasks detalhadas: `openspec/token-consumption-tracking-tasks.md`
 ```text
 Seguir T1 → T11 em openspec/token-consumption-tracking-tasks.md
 ```
+
+---
+
+# Feature: Rota de Modelos Disponíveis + Dropdown de Seleção
+
+Spec de referência: `openspec/specs/model-selection-dropdown-and-models-route.md`
+Tasks detalhadas: `openspec/model-selection-dropdown-and-models-route-tasks.md`
+
+## Escopo Resumido
+
+- [ ] Criar rota `GET /api/agent/models` para listagem de modelos disponíveis
+- [ ] Criar componente dropdown para seleção de modelo de IA
+- [ ] Substituir grid de modelos em `src/app/page.tsx` pelo dropdown
+- [ ] Manter envio do modelo selecionado para `POST /api/agent/generate`
+- [ ] Cobrir rota/UI com testes e validar `pnpm test` + `npx tsc --noEmit`
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1 → T7 em openspec/model-selection-dropdown-and-models-route-tasks.md
+```
