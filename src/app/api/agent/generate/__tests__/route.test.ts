@@ -100,6 +100,41 @@ describe("POST /api/agent/generate", () => {
         expect(mockUseCaseExecute).toHaveBeenCalledTimes(1);
     });
 
+    it("usa token usage real quando provider retorna usage no fim do stream", async () => {
+        mockStreamGeneratedAd.mockImplementation(async function* () {
+            yield "# Produto Real";
+            return {
+                ad: "# Produto Real",
+                usage: {
+                    inputTokens: 33,
+                    outputTokens: 44,
+                    totalTokens: 77,
+                },
+            };
+        });
+
+        const request = new Request("http://localhost/api/agent/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ input: "Produto X" }),
+        });
+
+        const response = await POST(request);
+        const body = await response.text();
+
+        expect(response.status).toBe(200);
+        expect(body).toContain('"usage":{"inputTokens":33,"outputTokens":44,"totalTokens":77}');
+        expect(mockUseCaseExecute).toHaveBeenCalledTimes(1);
+
+        const savedEvent = mockUseCaseExecute.mock.calls[0][0] as {
+            inputTokens: number;
+            outputTokens: number;
+        };
+
+        expect(savedEvent.inputTokens).toBe(33);
+        expect(savedEvent.outputTokens).toBe(44);
+    });
+
     it("retorna 200 com modelo gemini-2.0-flash quando solicitado", async () => {
         mockStreamGeneratedAd.mockImplementation(async function* () {
             yield "# Produto Gemini";

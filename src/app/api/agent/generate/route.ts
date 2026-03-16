@@ -71,7 +71,10 @@ export async function POST(request: Request) {
 
                 let fullOutput = "";
 
-                for await (const token of adStream) {
+                let streamStep = await adStream.next();
+
+                while (!streamStep.done) {
+                    const token = streamStep.value;
                     fullOutput += token;
 
                     controller.enqueue(
@@ -79,19 +82,29 @@ export async function POST(request: Request) {
                             `data: ${JSON.stringify({ type: "token", content: token })}\n\n`
                         )
                     );
+
+                    streamStep = await adStream.next();
                 }
+
+                const generationResult = streamStep.value;
 
                 controller.enqueue(
                     encoder.encode(
                         `data: ${JSON.stringify({
                             type: "done",
-                            metadata: { model, generatedAt },
+                            metadata: {
+                                model,
+                                generatedAt,
+                                usage: generationResult?.usage ?? null,
+                            },
                         })}\n\n`
                     )
                 );
 
-                const inputTokens = estimateTokenCount(input.trim());
-                const outputTokens = estimateTokenCount(fullOutput);
+                const inputTokens =
+                    generationResult?.usage?.inputTokens ?? estimateTokenCount(input.trim());
+                const outputTokens =
+                    generationResult?.usage?.outputTokens ?? estimateTokenCount(fullOutput);
 
                 const tokenEvent = TokenConsumptionEvent.create({
                     requestId: crypto.randomUUID(),
