@@ -10,7 +10,7 @@ Criar um agente LangGraph que funcione como serviço stateless:
 
 1. Recebe um input do usuário (descrição do produto/serviço)
 2. Consulta o manual de instruções (regras de geração de anúncio)
-3. Gera e retorna o anúncio em Markdown
+3. Gera e retorna o anúncio em Markdown por streaming (token a token)
 
 ## Critérios de Aceitação
 
@@ -18,7 +18,7 @@ Criar um agente LangGraph que funcione como serviço stateless:
 - [ ] O agente carrega o manual de instruções antes de gerar o anúncio
 - [ ] O anúncio gerado segue as regras do manual (tom, estrutura, tamanho)
 - [ ] O retorno é sempre em formato Markdown válido
-- [ ] A API expõe um endpoint `POST /api/agent/generate` que recebe e retorna JSON
+- [ ] A API expõe um endpoint `POST /api/agent/generate` que recebe JSON e responde via stream SSE
 - [ ] O endpoint responde em menos de 30 segundos
 - [ ] Erros retornam mensagens claras com status HTTP adequado
 
@@ -35,19 +35,17 @@ Content-Type: application/json
 }
 ```
 
-### Response (sucesso)
+### Response (sucesso - streaming)
 
 ```http
 HTTP 200 OK
-Content-Type: application/json
+Content-Type: text/event-stream
 
-{
-  "ad": "# Tênis Casual Masculino Azul\n\n...",
-  "metadata": {
-    "model": "gpt-4o-mini",
-    "generatedAt": "2026-03-16T10:00:00Z"
-  }
-}
+data: {"type":"token","content":"# Tênis Casual Masculino Azul"}
+
+data: {"type":"token","content":"\n\n**Conforto e estilo para o dia a dia**"}
+
+data: {"type":"done","metadata":{"model":"gpt-4o-mini","generatedAt":"2026-03-16T10:00:00Z"}}
 ```
 
 ### Response (erro)
@@ -87,7 +85,7 @@ POST /api/agent/generate
     └──────────────────────────┘
        │
        ▼
-  Retorna { ad: string, metadata: object }
+  Retorna stream SSE (tokens + metadata final)
 ```
 
 ## Tech Stack
@@ -106,7 +104,6 @@ POST /api/agent/generate
 
 ## Não incluso nesta versão (v1)
 
-- Streaming de resposta
 - Histórico de anúncios gerados
 - Múltiplos modelos de anúncio
 - Interface gráfica

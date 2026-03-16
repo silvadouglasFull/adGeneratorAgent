@@ -31,6 +31,7 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 - [ ] Implementar nó `generateAd`: chama o LLM com o input + manual
 - [ ] Implementar nó `validateOutput`: verifica se output começa com `#` (Markdown)
 - [ ] Conectar os nós no grafo: `loadInstructions → generateAd → validateOutput`
+- [ ] Expor função de streaming token a token do output do nó `generateAd`
 - **Critério**: `agent.invoke({ input: "Produto X" })` retorna `{ ad: "# ..." }`
 
 ### T4 — Prompt do agente
@@ -48,10 +49,10 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 - [ ] Criar `/src/app/api/agent/generate/route.ts`
 - [ ] Método: `POST`
 - [ ] Validar campo `input` (obrigatório, string não vazia)
-- [ ] Chamar `adGeneratorAgent.invoke({ input })`
-- [ ] Retornar `{ ad, metadata: { model, generatedAt } }`
+- [ ] Chamar função de streaming do agente (`streamGeneratedAd`)
+- [ ] Retornar `text/event-stream` no formato SSE com eventos `token`, `done` e `error`
 - [ ] Tratar erros com status HTTP adequado (400, 500)
-- **Critério**: `POST /api/agent/generate` com body válido retorna 200 + Markdown
+- **Critério**: `POST /api/agent/generate` com body válido retorna 200 + stream SSE de Markdown
 
 ---
 
@@ -70,7 +71,8 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 - [ ] Criar `/src/app/api/agent/generate/__tests__/route.test.ts`
 - [ ] Testar: POST sem body → 400
 - [ ] Testar: POST com `input` vazio → 400
-- [ ] Testar: POST válido → 200 com `{ ad, metadata }`
+- [ ] Testar: POST válido → 200 com `text/event-stream` e eventos `token` + `done`
+- [ ] Testar: erro do agente → evento `error` no stream
 - **Critério**: todos os testes passam com `pnpm test`
 
 ---
