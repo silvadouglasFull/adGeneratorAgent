@@ -1,4 +1,5 @@
 import {
+    index,
     integer,
     pgEnum,
     pgTable,
@@ -43,6 +44,10 @@ export const tokenConsumptionsTable = pgTable(
         timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' })
             .notNull()
             .defaultNow(),
+
+        // Status of persistence
+        status: tokenConsumptionStatusEnum('status').notNull().default('success'),
+
         // Error details if status is 'failed'
         errorMessage: text('error_message'),
 
@@ -59,7 +64,7 @@ export const tokenConsumptionsTable = pgTable(
     (table) => ({
         // Unique index for idempotency
         requestIdIdx: uniqueIndex('idx_request_id').on(table.requestId),
-
+        statusIdx: index('idx_status').on(table.status),
     })
 );
 

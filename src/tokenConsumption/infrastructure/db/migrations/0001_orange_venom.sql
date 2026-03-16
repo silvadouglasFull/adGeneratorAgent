@@ -1,0 +1,2 @@
+ALTER TABLE "token_consumptions" ADD COLUMN "status" "token_consumption_status" DEFAULT 'success' NOT NULL;--> statement-breakpoint
+CREATE INDEX "idx_status" ON "token_consumptions" USING btree ("status");

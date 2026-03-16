@@ -8,6 +8,13 @@
       "when": 1773686312136,
       "tag": "0000_big_silvermane",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773686777009,
+      "tag": "0001_orange_venom",
+      "breakpoints": true
     }
   ]
 }
