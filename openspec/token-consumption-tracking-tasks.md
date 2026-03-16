@@ -12,9 +12,9 @@
 
 - [x] `drizzle-orm` e `drizzle-kit` instalados (`pnpm add`)
 - [x] `drizzle.config.ts` criado na raiz com conexão PostgreSQL
-- [ ] Variáveis de ambiente configuradas (`.env.local`)
+- [x] Variáveis de ambiente configuradas (`.env.local`)
 - [x] `pnpm drizzle-kit generate` roda sem erros
-- [ ] Conexão com banco testada (conexão simples)
+- [x] Conexão com banco testada (conexão simples)
 
 **Detalhes:**
 
@@ -62,8 +62,8 @@
 - [x] Comando `pnpm drizzle-kit generate` cria migration em `src/tokenConsumption/infrastructure/db/migrations/`
 - [x] Migration é válida (verifica syntax SQL)
 - [x] Arquivo `src/tokenConsumption/infrastructure/db/migrate.ts` criado (helper para rodar migrations)
-- [ ] `pnpm drizzle-kit push` executa com sucesso
-- [ ] Tabela `token_consumptions` existe no PostgreSQL
+- [x] `pnpm drizzle-kit push` executa com sucesso
+- [x] Tabela `token_consumptions` existe no PostgreSQL
 
 **Detalhes:**
 
@@ -77,10 +77,10 @@
 **Acceptance Criteria:**
 
 - [x] Arquivo `src/tokenConsumption/infrastructure/db/seeds/token_consumption.seed.ts` criado
-- [ ] Seed insere 10-20 registros fake (histórico exemplo)
+- [x] Seed insere 10-20 registros fake (histórico exemplo)
 - [x] Seed é idempotente (verifica se já rodou ou usa fixtures)
 - [x] Script `pnpm db:seed` adicionado em `package.json`
-- [ ] Seed executa sem erro
+- [x] Seed executa sem erro
 
 **Detalhes:**
 
