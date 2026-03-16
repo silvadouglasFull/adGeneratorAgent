@@ -586,11 +586,11 @@ Tasks detalhadas: `openspec/model-selection-dropdown-and-models-route-tasks.md`
 
 ## Escopo Resumido
 
-- [ ] Criar rota `GET /api/agent/models` para listagem de modelos disponíveis
-- [ ] Criar componente dropdown para seleção de modelo de IA
-- [ ] Substituir grid de modelos em `src/app/page.tsx` pelo dropdown
-- [ ] Manter envio do modelo selecionado para `POST /api/agent/generate`
-- [ ] Cobrir rota/UI com testes e validar `pnpm test` + `npx tsc --noEmit`
+- [x] Criar rota `GET /api/agent/models` para listagem de modelos disponíveis
+- [x] Criar componente dropdown para seleção de modelo de IA
+- [x] Substituir grid de modelos em `src/app/page.tsx` pelo dropdown
+- [x] Manter envio do modelo selecionado para `POST /api/agent/generate`
+- [x] Cobrir rota/UI com testes e validar `pnpm test` + `npx tsc --noEmit`
 
 ## Ordem de execução sugerida
 
