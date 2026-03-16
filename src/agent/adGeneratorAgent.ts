@@ -34,12 +34,14 @@ function getModelInstance(selectedModel: SupportedModel) {
             model: "gemini-2.0-flash",
             apiKey: geminiApiKey,
             temperature: 0.7,
+            maxRetries: 0,
         });
     }
 
     return new ChatOpenAI({
         model: "gpt-4o-mini",
         temperature: 0.7,
+        maxRetries: 0,
     });
 }
 

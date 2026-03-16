@@ -10,8 +10,16 @@ interface AdResponse {
   };
 }
 
+const MODELS = [
+  { value: "gpt-4o-mini", label: "GPT-4o Mini", provider: "OpenAI" },
+  { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash", provider: "Google" },
+] as const;
+
+type ModelValue = (typeof MODELS)[number]["value"];
+
 export default function Home() {
   const [input, setInput] = useState("");
+  const [selectedModel, setSelectedModel] = useState<ModelValue>("gpt-4o-mini");
   const [result, setResult] = useState<AdResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -26,7 +34,7 @@ export default function Home() {
       const res = await fetch("/api/agent/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input }),
+        body: JSON.stringify({ input, model: selectedModel }),
       });
 
       if (!res.ok) {
@@ -134,6 +142,28 @@ export default function Home() {
               <p className="mt-1.5 text-xs text-gray-400">
                 Inclua características, público-alvo e preço para melhores resultados.
               </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Modelo de IA
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {MODELS.map((m) => (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => setSelectedModel(m.value)}
+                    className={`flex flex-col items-start rounded-xl border px-4 py-3 text-left transition-colors ${selectedModel === m.value
+                        ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-500"
+                        : "border-gray-200 bg-white hover:border-gray-300"
+                      }`}
+                  >
+                    <span className="text-sm font-semibold text-gray-900">{m.label}</span>
+                    <span className="text-xs text-gray-400">{m.provider}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <button
