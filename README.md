@@ -20,6 +20,57 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Bancos locais com Docker Compose
+
+O projeto possui PostgreSQL e Redis locais via Docker Compose em `docker-compose.yml`.
+
+### Variáveis de ambiente
+
+As credenciais são lidas de um arquivo de ambiente informado no comando.
+Use `.env.local` por padrão; se preferir, pode usar `.env`.
+
+PostgreSQL:
+
+- `POSTGRES_DB`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+
+Redis:
+
+- `REDIS_USERNAME`
+- `REDIS_PASSWORD`
+- `REDIS_PORT`
+
+### Subir e parar os containers
+
+```bash
+docker compose --env-file .env.local up -d
+docker compose --env-file .env.local down
+```
+
+Alternativa usando `.env`:
+
+```bash
+docker compose --env-file .env up -d
+docker compose --env-file .env down
+```
+
+### Verificar saúde dos containers
+
+```bash
+docker ps
+docker compose logs -f postgres
+docker compose logs -f redis
+```
+
+### Testar autenticação no Redis
+
+```bash
+docker exec -it ad-generator-redis redis-cli --user "$REDIS_USERNAME" -a "$REDIS_PASSWORD" ping
+```
+
+Sem credenciais válidas, a conexão deve falhar.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
