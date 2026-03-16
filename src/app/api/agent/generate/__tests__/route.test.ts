@@ -1,9 +1,21 @@
 // Mock do agente para evitar chamadas reais à OpenAI
 const mockStreamGeneratedAd = jest.fn();
+const mockUseCaseExecute = jest.fn();
+const mockEnsureConsumerStarted = jest.fn();
 
 jest.mock("@/agent/adGeneratorAgent", () => ({
     SUPPORTED_MODELS: ["gpt-4o-mini", "gemini-2.0-flash"],
     streamGeneratedAd: (...args: unknown[]) => mockStreamGeneratedAd(...args),
+}));
+
+jest.mock("@/tokenConsumption/tokenConsumption", () => ({
+    ensureTokenConsumptionConsumerStarted: (...args: unknown[]) =>
+        mockEnsureConsumerStarted(...args),
+    tokenConsumptionContainer: {
+        useCase: {
+            execute: (...args: unknown[]) => mockUseCaseExecute(...args),
+        },
+    },
 }));
 
 // Simula o ambiente Next.js para o handler
@@ -12,6 +24,10 @@ import { POST } from "../route";
 describe("POST /api/agent/generate", () => {
     beforeEach(() => {
         mockStreamGeneratedAd.mockReset();
+        mockUseCaseExecute.mockReset();
+        mockEnsureConsumerStarted.mockReset();
+        mockEnsureConsumerStarted.mockResolvedValue(undefined);
+        mockUseCaseExecute.mockResolvedValue(undefined);
     });
 
     it("retorna 400 quando body está vazio", async () => {
@@ -80,6 +96,8 @@ describe("POST /api/agent/generate", () => {
             input: "Tênis casual masculino, cor azul, R$199",
             model: "gpt-4o-mini",
         });
+        expect(mockEnsureConsumerStarted).toHaveBeenCalledTimes(1);
+        expect(mockUseCaseExecute).toHaveBeenCalledTimes(1);
     });
 
     it("retorna 200 com modelo gemini-2.0-flash quando solicitado", async () => {

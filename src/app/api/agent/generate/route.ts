@@ -1,4 +1,20 @@
 import { SUPPORTED_MODELS, type SupportedModel, streamGeneratedAd } from "@/agent/adGeneratorAgent";
+import { TokenConsumptionEvent } from "@/tokenConsumption/domain/model/TokenConsumptionEvent";
+import {
+    ensureTokenConsumptionConsumerStarted,
+    tokenConsumptionContainer,
+} from "@/tokenConsumption/tokenConsumption";
+
+function estimateTokenCount(text: string): number {
+    const normalized = text.trim();
+
+    if (!normalized) {
+        return 1;
+    }
+
+    const words = normalized.split(/\s+/).length;
+    return Math.max(1, Math.ceil(words * 1.3));
+}
 
 export async function POST(request: Request) {
     let body: Record<string, unknown>;
@@ -46,12 +62,18 @@ export async function POST(request: Request) {
     const stream = new ReadableStream({
         async start(controller) {
             try {
+                await ensureTokenConsumptionConsumerStarted();
+
                 const adStream = streamGeneratedAd({
                     input: input.trim(),
                     model,
                 });
 
+                let fullOutput = "";
+
                 for await (const token of adStream) {
+                    fullOutput += token;
+
                     controller.enqueue(
                         encoder.encode(
                             `data: ${JSON.stringify({ type: "token", content: token })}\n\n`
@@ -67,6 +89,21 @@ export async function POST(request: Request) {
                         })}\n\n`
                     )
                 );
+
+                const inputTokens = estimateTokenCount(input.trim());
+                const outputTokens = estimateTokenCount(fullOutput);
+
+                const tokenEvent = TokenConsumptionEvent.create({
+                    requestId: crypto.randomUUID(),
+                    modelUsed: model,
+                    inputTokens,
+                    outputTokens,
+                    timestamp: new Date(),
+                });
+
+                tokenConsumptionContainer.useCase.execute(tokenEvent).catch((error) => {
+                    console.error("Falha ao registrar consumo de tokens", error);
+                });
             } catch (error) {
                 const message =
                     error instanceof Error ? error.message : "Erro interno ao gerar o anúncio.";
