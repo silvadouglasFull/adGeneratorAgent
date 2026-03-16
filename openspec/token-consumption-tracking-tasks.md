@@ -421,7 +421,7 @@
   - Equals method
   - ToString method
 - [x] Mínimo 5 testes por classe
-- [ ] `pnpm test --testPathPattern=domain` passa
+- [x] `pnpm test --testPathPattern=domain` passa
 
 ---
 
@@ -437,7 +437,7 @@
   - Redis mocado (jest.mock ou redis-mock)
   - Drizzle mocado (jest.mock)
 - [x] Cobertura nominal e error cases
-- [ ] `pnpm test --testPathPattern=infrastructure` passa
+- [x] `pnpm test --testPathPattern=infrastructure` passa
 
 ---
 
