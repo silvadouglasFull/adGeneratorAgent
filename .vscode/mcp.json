@@ -14,6 +14,24 @@
         "FIGMA_ACCESS_TOKEN": "${input:figmaToken}",
         "PATH": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       }
+    },
+    "docs-langchain": {
+      "url": "https://docs.langchain.com/mcp"
+    },
+    "next-devtools": {
+      "command": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin/npx",
+      "args": ["-y", "next-devtools-mcp@latest"],
+      "env": {
+        "PATH": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin:/usr/local/bin:/usr/bin:/bin"
+      }
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp/oauth"
+    },
+    "openaiDeveloperDocs": {
+      "type": "http",
+      "url": "https://developers.openai.com/mcp"
     }
   },
   "inputs": [
