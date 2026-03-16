@@ -136,9 +136,17 @@ describe("Token Consumption Integration (mocked infra)", () => {
     });
 
     it("pipeline completo: enqueue → consume → save (end-to-end mock)", async () => {
-        const events = Array.from({ length: 5 }, (_, i) =>
+        const uuids = [
+            "d0000000-0000-4000-a000-000000000001",
+            "d0000000-0000-4000-a000-000000000002",
+            "d0000000-0000-4000-a000-000000000003",
+            "d0000000-0000-4000-a000-000000000004",
+            "d0000000-0000-4000-a000-000000000005",
+        ];
+
+        const events = uuids.map((id, i) =>
             TokenConsumptionEvent.create({
-                requestId: `c3d4e5f6-a7b8-9012-cdef-${String(i).padStart(12, "0")}`,
+                requestId: id,
                 modelUsed: i % 2 === 0 ? "gpt-4o-mini" : "gemini-2.0-flash",
                 inputTokens: 100 + i * 50,
                 outputTokens: 200 + i * 100,

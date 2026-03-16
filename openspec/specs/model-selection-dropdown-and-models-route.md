@@ -131,15 +131,15 @@ Observação: o caminho exato do componente pode seguir padrão existente do pro
 
 ## Critérios de Aceitação
 
-- [ ] Existe rota `GET /api/agent/models` funcional
-- [ ] A rota retorna lista de modelos consumível pela UI
-- [ ] O grid de seleção foi removido de `src/app/page.tsx`
-- [ ] Um dropdown de modelos foi adicionado no lugar do grid
-- [ ] O modelo selecionado no dropdown é enviado para `POST /api/agent/generate`
-- [ ] Em falha na carga de modelos, a UI exibe erro amigável
-- [ ] Testes de rota e UI relacionados passam
-- [ ] `pnpm test` passa
-- [ ] `npx tsc --noEmit` passa sem erros
+- [x] Existe rota `GET /api/agent/models` funcional
+- [x] A rota retorna lista de modelos consumível pela UI
+- [x] O grid de seleção foi removido de `src/app/page.tsx`
+- [x] Um dropdown de modelos foi adicionado no lugar do grid
+- [x] O modelo selecionado no dropdown é enviado para `POST /api/agent/generate`
+- [x] Em falha na carga de modelos, a UI exibe erro amigável
+- [x] Testes de rota e UI relacionados passam
+- [x] `pnpm test` passa
+- [x] `npx tsc --noEmit` passa sem erros
 
 ## Restrições
 

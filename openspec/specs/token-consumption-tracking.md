@@ -35,17 +35,17 @@ Implementar um serviço de rastreamento de consumo de tokens do agente gerador d
 
 ## Critérios de Aceitação
 
-- [ ] Schema PostgreSQL definido (migrations Drizzle)
-- [ ] Seeds iniciais criadas
-- [ ] `TokenConsumptionRepository` implementado (DDD + SOLID)
-- [ ] Fila Redis configurada para eventos de consumo
-- [ ] Producer enfileira eventos após `AdGeneratorAgent.streamGeneratedAd()` sucesso
-- [ ] Consumer consome fila e persiste dados
-- [ ] Regra de negócio: registrar `{modelUsed, inputTokens, outputTokens, requestId, timestamp, status}`
-- [ ] Testes cobrem nominal e error cases (falha de fila, retry)
-- [ ] `pnpm test` passa
-- [ ] `npx tsc --noEmit` sem erros
-- [ ] Possibilidade clara de extração para microsserviço (sem refatoração quebrada de contrato público)
+- [x] Schema PostgreSQL definido (migrations Drizzle)
+- [x] Seeds iniciais criadas
+- [x] `TokenConsumptionRepository` implementado (DDD + SOLID)
+- [x] Fila Redis configurada para eventos de consumo
+- [x] Producer enfileira eventos após `AdGeneratorAgent.streamGeneratedAd()` sucesso
+- [x] Consumer consome fila e persiste dados
+- [x] Regra de negócio: registrar `{modelUsed, inputTokens, outputTokens, requestId, timestamp, status}`
+- [x] Testes cobrem nominal e error cases (falha de fila, retry)
+- [x] `pnpm test` passa
+- [x] `npx tsc --noEmit` sem erros
+- [x] Possibilidade clara de extração para microsserviço (sem refatoração quebrada de contrato público)
 
 ## Contrato de Domínio
 

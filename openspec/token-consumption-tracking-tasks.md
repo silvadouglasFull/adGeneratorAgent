@@ -541,18 +541,18 @@
 
 **Acceptance Criteria - TUDO abaixo deve estar ✅**
 
-- [ ] `pnpm install` roda sem erro (deps adicionadas: drizzle-orm, ioredis)
+- [x] `pnpm install` roda sem erro (deps adicionadas: drizzle-orm, ioredis)
 - [x] `pnpm db:migrate` executa
 - [x] `pnpm db:seed` executa
 - [x] `pnpm test` passa (todas as suites)
 - [x] `npx tsc --noEmit` sem erros
 - [ ] `pnpm build` compila sem erro
 - [ ] `pnpm lint` (se aplicável) sem erro
-- [ ] Não há `any` type não justificado
-- [ ] Código segue DDD/SOLID (revisão manual)
-- [ ] README está atualizado
-- [ ] Variáveis de ambiente está documentadas
-- [ ] Migração para microsserviço está mapeada (não implementada)
+- [x] Não há `any` type não justificado
+- [x] Código segue DDD/SOLID (revisão manual)
+- [x] README está atualizado
+- [x] Variáveis de ambiente está documentadas
+- [x] Migração para microsserviço está mapeada (não implementada)
 
 ---
 
