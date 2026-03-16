@@ -76,6 +76,17 @@ Usar LangGraph `addConditionalEdges` para criar nós específicos para cada mode
 - [x] Testes mantêm cobertura 100% (modelos OpenAI e Google)
 - [x] Todos os testes existentes continuam passando sem modificação no consumidor
 
+## Status de Implementação
+
+✅ **Implementado em**: 16/03/2026
+
+- Grafo refatorado com `addConditionalEdges()`
+- 2 nós especializados por modelo (generateAd_openai, generateAd_gemini)
+- 7 novos testes de routing (modelRouting.test.ts)
+- 18/18 testes passando (5 existentes + 7 novos + 6 da API)
+- 0 erros TypeScript
+- API backward-compatible (sem mudanças para consumidores)
+
 ## Benefícios
 
 1. **Escalabilidade**: Adicionar novo modelo = apenas um novo nó, sem if/else
