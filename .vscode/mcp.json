@@ -36,9 +36,6 @@
     "openaiDeveloperDocs": {
       "type": "http",
       "url": "https://developers.openai.com/mcp"
-    },
-    "gemini-docs": {
-      "url": "https://ai.google.dev/gemini-api/docs?hl=pt-br#javascript"
     }
   },
   "inputs": [
