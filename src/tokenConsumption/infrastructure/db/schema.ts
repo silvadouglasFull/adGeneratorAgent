@@ -65,6 +65,8 @@ export const tokenConsumptionsTable = pgTable(
         // Unique index for idempotency
         requestIdIdx: uniqueIndex('idx_request_id').on(table.requestId),
         statusIdx: index('idx_status').on(table.status),
+        timestampIdx: index('idx_timestamp').on(table.timestamp),
+        modelUsedIdx: index('idx_model_used').on(table.modelUsed),
     })
 );
 
