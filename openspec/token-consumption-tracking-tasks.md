@@ -2,6 +2,21 @@
 
 **Spec**: `openspec/specs/token-consumption-tracking.md`
 
+## Status Atual (16/03/2026)
+
+### Núcleo entregue (produção atual)
+
+- [x] Fases 1 a 6 implementadas com integração na route e processamento assíncrono
+- [x] Testes unitários de domínio/aplicação/infraestrutura implementados e passando
+- [x] Validações de projeto executadas (`pnpm test` e `npx tsc --noEmit`)
+
+### Pendências reais (não bloqueantes para o core atual)
+
+- [ ] Hardening de startup/shutdown do consumer fora de lazy init
+- [ ] Testes de integração E2E com Redis + PostgreSQL reais
+- [ ] Benchmark de throughput
+- [ ] Documentação operacional (`README` da feature + plano de extração)
+
 ---
 
 ## Fase 1: Setup Banco de Dados (Drizzle ORM)
@@ -408,6 +423,8 @@
 
 ## Fase 7: Testes e QA
 
+> Nota: os itens abaixo em T7.3/T7.4 são de maturidade avançada e não bloqueiam o core já entregue.
+
 ### T7.1 - Testes Unitários Domínio
 
 **Acceptance Criteria:**
@@ -483,6 +500,8 @@
 
 ## Fase 8: Documentação e Checklist Final
 
+> Nota: esta fase consolida hardening/documentação. O core funcional da feature já está entregue.
+
 ### T8.1 - README e Documentação
 
 **Acceptance Criteria:**
@@ -523,10 +542,10 @@
 **Acceptance Criteria - TUDO abaixo deve estar ✅**
 
 - [ ] `pnpm install` roda sem erro (deps adicionadas: drizzle-orm, ioredis)
-- [ ] `pnpm db:migrate` executa
-- [ ] `pnpm db:seed` executa
-- [ ] `pnpm test` passa (todas as suites)
-- [ ] `npx tsc --noEmit` sem erros
+- [x] `pnpm db:migrate` executa
+- [x] `pnpm db:seed` executa
+- [x] `pnpm test` passa (todas as suites)
+- [x] `npx tsc --noEmit` sem erros
 - [ ] `pnpm build` compila sem erro
 - [ ] `pnpm lint` (se aplicável) sem erro
 - [ ] Não há `any` type não justificado

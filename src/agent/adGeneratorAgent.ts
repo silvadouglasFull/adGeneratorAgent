@@ -32,9 +32,8 @@ export async function* streamGeneratedAd({
 }: {
     input: string;
     model?: SupportedModel;
-    // @ts-ignore - Generator return type delegation to inner generator
 }): AsyncGenerator<string, { ad: string; usage?: TokenUsage }, void> {
-    yield* streamGenerator.stream({ input, model });
+    return yield* streamGenerator.stream({ input, model });
 }
 
 export { ModelRegistry, SUPPORTED_MODELS };
