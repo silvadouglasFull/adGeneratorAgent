@@ -14,13 +14,13 @@ Criar um agente LangGraph que funcione como serviço stateless:
 
 ## Critérios de Aceitação
 
-- [ ] O agente aceita um input em texto livre descrevendo o produto/serviço
-- [ ] O agente carrega o manual de instruções antes de gerar o anúncio
-- [ ] O anúncio gerado segue as regras do manual (tom, estrutura, tamanho)
-- [ ] O retorno é sempre em formato Markdown válido
-- [ ] A API expõe um endpoint `POST /api/agent/generate` que recebe JSON (`input`, `model?`) e responde via stream SSE
-- [ ] O endpoint responde em menos de 30 segundos
-- [ ] Erros retornam mensagens claras com status HTTP adequado
+- [x] O agente aceita um input em texto livre descrevendo o produto/serviço
+- [x] O agente carrega o manual de instruções antes de gerar o anúncio
+- [x] O anúncio gerado segue as regras do manual (tom, estrutura, tamanho)
+- [x] O retorno é sempre em formato Markdown válido
+- [x] A API expõe um endpoint `POST /api/agent/generate` que recebe JSON (`input`, `model?`) e responde via stream SSE
+- [x] O endpoint responde em menos de 30 segundos
+- [x] Erros retornam mensagens claras com status HTTP adequado
 
 ## Contrato da API
 
