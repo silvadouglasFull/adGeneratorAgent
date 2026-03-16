@@ -12,10 +12,10 @@
 
 ### Pendências reais (não bloqueantes para o core atual)
 
-- [ ] Hardening de startup/shutdown do consumer fora de lazy init
-- [ ] Testes de integração E2E com Redis + PostgreSQL reais
+- [x] Hardening de startup/shutdown do consumer fora de lazy init
+- [x] Testes de integração E2E com Redis + PostgreSQL reais
 - [ ] Benchmark de throughput
-- [ ] Documentação operacional (`README` da feature + plano de extração)
+- [x] Documentação operacional (`README` da feature + plano de extração)
 
 ---
 
@@ -44,7 +44,7 @@
 **Acceptance Criteria:**
 
 - [x] Arquivo `src/tokenConsumption/infrastructure/db/schema.ts` criado
-- [ ] Tabela `token_consumptions` definida com:
+- [x] Tabela `token_consumptions` definida com:
   - `id`: UUID primary key
   - `requestId`: UUID unique (idempotência)
   - `modelUsed`: enum (gpt-4o-mini, gemini-2.0-flash)
@@ -56,7 +56,7 @@
   - `errorMessage`: nullable text
   - `createdAt`: timestamp with timezone
   - `updatedAt`: timestamp with timezone
-- [ ] Índices criados:
+- [x] Índices criados:
   - Compound: `(requestId, status)` para queries rápidas
   - Single: `timestamp` para rangequeries
   - Single: `modelUsed` para agregações
@@ -166,7 +166,7 @@
   - `getTotalTokensByPeriod(start, end): Promise<TokenAggregation>`
   - `getByRequestId(id): Promise<TokenConsumptionEvent | null>`
   - `getFailedEvents(limit): Promise<TokenConsumptionEvent[]>`
-- [ ] Types exportados e usados em testes
+- [x] Types exportados e usados em testes
 
 **Detalhes:**
 
@@ -234,7 +234,7 @@
 - [x] Client singleton exportado
 - [x] Usa `process.env.REDIS_URL` (ou localhost:6379 default)
 - [x] Manejo de conexão/desconexão
-- [ ] Testes de conectividade simples
+- [x] Testes de conectividade simples
 
 **Detalhes:**
 
@@ -408,11 +408,11 @@
 
 **Acceptance Criteria:**
 
-- [ ] Consumer inicia ao startup da aplicação Next.js
-- [ ] Opção 1: Usar middleware/instrumentation.ts
+- [x] Consumer inicia ao startup da aplicação Next.js
+- [x] Opção 1: Usar middleware/instrumentation.ts
 - [x] Opção 2: Chamar manualmente em route handler (lazy init)
 - [x] Consumer roda em background (não bloqueia routes)
-- [ ] Graceful shutdown: parar consumer ao desligar app
+- [x] Graceful shutdown: parar consumer ao desligar app
 
 **Detalhes:**
 
@@ -462,17 +462,17 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/__tests__/integration/token-consumption.integration.test.ts`
-- [ ] Setup:
+- [x] Arquivo `src/tokenConsumption/__tests__/integration/token-consumption.integration.test.ts`
+- [x] Setup:
   - PostgreSQL local (Docker)
   - Redis local (Docker)
-- [ ] Cenários:
+- [x] Cenários:
   - Enfileirar event → verifica em fila
   - Consumer processa → verifica em DB
   - Retry em falha de DB
   - DLQ após 3 falhas
-- [ ] Teardown: limpa fila e DB
-- [ ] `pnpm test --testPathPattern=integration` passa
+- [x] Teardown: limpa fila e DB
+- [x] `pnpm test --testPathPattern=integration` passa
 
 **Detalhes:**
 
@@ -506,14 +506,14 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/README.md` com:
+- [x] Arquivo `src/tokenConsumption/README.md` com:
   - Visão geral da feature
   - Arquitetura (diagramas)
   - Como rodar migrations
   - Como rodar consumer
   - Exemplos de uso (chamar use case)
   - Troubleshooting (Redis down, DB down)
-- [ ] Variáveis de ambiente documentadas
+- [x] Variáveis de ambiente documentadas
 
 ---
 
@@ -521,12 +521,12 @@
 
 **Acceptance Criteria:**
 
-- [ ] Documento `src/tokenConsumption/EXTRACTION_PLAN.md` com:
+- [x] Documento `src/tokenConsumption/EXTRACTION_PLAN.md` com:
   - Quais classes migram para microsserviço
   - Quais interfaces ficam no monolito (contrato)
   - Exemplo de gRPC / GraphQL mutation para novo serviço
   - Estratégia de migração (big bang vs gradual)
-- [ ] Arquitetura garante:
+- [x] Arquitetura garante:
   - Domain objects são agnósticas
   - Producer/Consumer podem ser trocados em runtime
   - Repository pode ser chamado via RPC
