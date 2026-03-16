@@ -566,6 +566,7 @@ Tasks detalhadas: `openspec/token-consumption-tracking-tasks.md`
 - [x] Use case + container + integração na route
 - [x] Extração de usage real quando disponível + fallback de estimativa
 - [x] Testes unitários principais e validações `pnpm test`/`npx tsc --noEmit`
+- [ ] Pendências abertas no checklist detalhado (startup/shutdown do consumer, testes de integração/benchmark e documentação operacional)
 
 ## Ordem de execução sugerida
 
