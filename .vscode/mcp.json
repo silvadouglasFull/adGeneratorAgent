@@ -24,6 +24,13 @@
     },
     "docs-langchain": {
       "url": "https://docs.langchain.com/mcp"
+    },
+    "next-devtools": {
+      "command": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin/npx",
+      "args": ["-y", "next-devtools-mcp@latest"],
+      "env": {
+        "PATH": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin:/usr/local/bin:/usr/bin:/bin"
+      }
     }
   },
   "inputs": [
