@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { ModelDropdown, type ModelOption } from "@/components/ModelDropdown";
+import { useEffect, useState } from "react";
 
 interface AdResponse {
   ad: string;
@@ -10,19 +11,37 @@ interface AdResponse {
   };
 }
 
-const MODELS = [
-  { value: "gpt-4o-mini", label: "GPT-4o Mini", provider: "OpenAI" },
-  { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash", provider: "Google" },
-] as const;
-
-type ModelValue = (typeof MODELS)[number]["value"];
-
 export default function Home() {
   const [input, setInput] = useState("");
-  const [selectedModel, setSelectedModel] = useState<ModelValue>("gpt-4o-mini");
+  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini");
   const [result, setResult] = useState<AdResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [models, setModels] = useState<ModelOption[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(true);
+  const [modelsError, setModelsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchModels() {
+      try {
+        const res = await fetch("/api/agent/models");
+        if (!res.ok) {
+          setModelsError("Falha ao carregar modelos disponíveis.");
+          return;
+        }
+        const data = await res.json() as { models: ModelOption[] };
+        setModels(data.models);
+        if (data.models.length > 0 && !data.models.some((m: ModelOption) => m.name === selectedModel)) {
+          setSelectedModel(data.models[0].name);
+        }
+      } catch {
+        setModelsError("Falha ao carregar modelos disponíveis.");
+      } finally {
+        setModelsLoading(false);
+      }
+    }
+    fetchModels();
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -148,22 +167,14 @@ export default function Home() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Modelo de IA
               </label>
-              <div className="grid grid-cols-2 gap-3">
-                {MODELS.map((m) => (
-                  <button
-                    key={m.value}
-                    type="button"
-                    onClick={() => setSelectedModel(m.value)}
-                    className={`flex flex-col items-start rounded-xl border px-4 py-3 text-left transition-colors ${selectedModel === m.value
-                        ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-500"
-                        : "border-gray-200 bg-white hover:border-gray-300"
-                      }`}
-                  >
-                    <span className="text-sm font-semibold text-gray-900">{m.label}</span>
-                    <span className="text-xs text-gray-400">{m.provider}</span>
-                  </button>
-                ))}
-              </div>
+              <ModelDropdown
+                models={models}
+                selected={selectedModel}
+                onChange={setSelectedModel}
+                disabled={loading}
+                loading={modelsLoading}
+                error={modelsError}
+              />
             </div>
 
             <button

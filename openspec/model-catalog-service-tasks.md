@@ -114,7 +114,7 @@ Spec obrigatória de padrões: `openspec/specs/ai-code-generation-standards.md`
 ### T11 — Documentação e status
 
 - [x] Atualizar status deste arquivo para concluído
-- [ ] (Opcional) Consolidar resumo em `openspec/tasks.md`
+- [x] (Opcional) Consolidar resumo em `openspec/tasks.md`
 - **Critério**: rastreabilidade completa da feature
 
 ---
