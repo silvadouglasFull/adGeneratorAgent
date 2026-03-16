@@ -524,3 +524,33 @@ T27 → T28 → T29 → T30 → T31 → T32 → T33
 | T33  | Média        | 1h      |
 
 **Total Estimado**: ~8.5 horas
+
+---
+
+# Feature: Serviço de Catálogo de Modelos
+
+Spec de referência: `openspec/specs/model-catalog-service.md`
+Tasks detalhadas: `openspec/model-catalog-service-tasks.md`
+
+---
+
+## Objetivo
+
+Criar um serviço separado do agente para reaproveitar e padronizar:
+
+- `getAvailableModels(userId)`
+- `getFreeModels(userId)`
+- `getModelInfo(modelName, userId)`
+
+## Escopo Resumido
+
+- [ ] Definir contratos de domínio (`ChatModel`, `IModelCatalogService`)
+- [ ] Implementar provider Google Models e adapter de API key
+- [ ] Implementar `ModelCatalogService` desacoplado do `adGeneratorAgent`
+- [ ] Cobrir com testes unitários e validar build/type-check
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1 → T10 em openspec/model-catalog-service-tasks.md
+```
