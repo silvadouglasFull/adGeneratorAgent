@@ -8,15 +8,15 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 
 ### T1 — Instalar dependências do agente
 
-- [ ] Instalar `@langchain/langgraph`, `@langchain/openai`, `@langchain/core`
-- [ ] Adicionar `OPENAI_API_KEY` ao `.env.local`
-- [ ] Validar que o `.env.local` está no `.gitignore`
+- [x] Instalar `@langchain/langgraph`, `@langchain/openai`, `@langchain/core`
+- [x] Adicionar `OPENAI_API_KEY` ao `.env.local`
+- [x] Validar que o `.env.local` está no `.gitignore`
 - **Critério**: `pnpm install` e `pnpm dev` rodam sem erros
 
 ### T2 — Criar o manual de instruções
 
-- [ ] Criar `/src/agent/instructions.md` com as regras de geração
-- [ ] Regras obrigatórias: estrutura Markdown, tom, tamanho, CTA
+- [x] Criar `/src/agent/instructions.md` com as regras de geração
+- [x] Regras obrigatórias: estrutura Markdown, tom, tamanho, CTA
 - **Critério**: arquivo existe e está legível pelo agente
 
 ---
@@ -25,18 +25,18 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 
 ### T3 — Criar o AgentState e grafo LangGraph
 
-- [ ] Criar `/src/agent/adGeneratorAgent.ts`
-- [ ] Definir `AgentState` com campos: `input`, `instructions`, `ad`
-- [ ] Implementar nó `loadInstructions`: lê `/src/agent/instructions.md`
-- [ ] Implementar nó `generateAd`: chama o LLM com o input + manual
-- [ ] Implementar nó `validateOutput`: verifica se output começa com `#` (Markdown)
-- [ ] Conectar os nós no grafo: `loadInstructions → generateAd → validateOutput`
+- [x] Criar `/src/agent/adGeneratorAgent.ts`
+- [x] Definir `AgentState` com campos: `input`, `instructions`, `ad`
+- [x] Implementar nó `loadInstructions`: lê `/src/agent/instructions.md`
+- [x] Implementar nó `generateAd`: chama o LLM com o input + manual
+- [x] Implementar nó `validateOutput`: verifica se output começa com `#` (Markdown)
+- [x] Conectar os nós no grafo: `loadInstructions → generateAd → validateOutput`
 - **Critério**: `agent.invoke({ input: "Produto X" })` retorna `{ ad: "# ..." }`
 
 ### T4 — Prompt do agente
 
-- [ ] Criar `/src/agent/prompt.ts` com o system prompt
-- [ ] O prompt deve instruir o LLM a usar o manual e retornar apenas Markdown
+- [x] Criar `/src/agent/prompt.ts` com o system prompt
+- [x] O prompt deve instruir o LLM a usar o manual e retornar apenas Markdown
 - **Critério**: output nunca contém texto fora do bloco Markdown
 
 ---
@@ -45,12 +45,12 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 
 ### T5 — Criar o Route Handler
 
-- [ ] Criar `/src/app/api/agent/generate/route.ts`
-- [ ] Método: `POST`
-- [ ] Validar campo `input` (obrigatório, string não vazia)
-- [ ] Chamar `adGeneratorAgent.invoke({ input })`
-- [ ] Retornar `{ ad, metadata: { model, generatedAt } }`
-- [ ] Tratar erros com status HTTP adequado (400, 500)
+- [x] Criar `/src/app/api/agent/generate/route.ts`
+- [x] Método: `POST`
+- [x] Validar campo `input` (obrigatório, string não vazia)
+- [x] Chamar `streamGeneratedAd({ input, model })`
+- [x] Retornar stream SSE com tokens e metadata final
+- [x] Tratar erros com status HTTP adequado (400, 500/evento de erro)
 - **Critério**: `POST /api/agent/generate` com body válido retorna 200 + Markdown
 
 ---
@@ -59,18 +59,18 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 
 ### T6 — Teste de integração do agente
 
-- [ ] Criar `/src/agent/__tests__/adGeneratorAgent.test.ts`
-- [ ] Mock do LLM (evitar custo em CI)
-- [ ] Testar: input válido → retorna Markdown com `#`
-- [ ] Testar: `loadInstructions` carrega o arquivo corretamente
+- [x] Cobrir o agente em `src/agent/__tests__/domain` e `src/agent/__tests__/application`
+- [x] Mock do LLM (evitar custo em CI)
+- [x] Testar: input válido → retorna Markdown com `#`
+- [x] Testar: `loadInstructions` carrega o arquivo corretamente
 - **Critério**: todos os testes passam com `pnpm test`
 
 ### T7 — Teste do endpoint
 
-- [ ] Criar `/src/app/api/agent/generate/__tests__/route.test.ts`
-- [ ] Testar: POST sem body → 400
-- [ ] Testar: POST com `input` vazio → 400
-- [ ] Testar: POST válido → 200 com `{ ad, metadata }`
+- [x] Criar `/src/app/api/agent/generate/__tests__/route.test.ts`
+- [x] Testar: POST sem body → 400
+- [x] Testar: POST com `input` vazio → 400
+- [x] Testar: POST válido → 200 com stream SSE + metadata
 - **Critério**: todos os testes passam com `pnpm test`
 
 ---
@@ -79,9 +79,9 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 
 ### T8 — Teste manual end-to-end
 
-- [ ] Rodar `pnpm dev`
-- [ ] Fazer POST via curl ou Insomnia para `localhost:3000/api/agent/generate`
-- [ ] Verificar que o anúncio gerado segue as regras do manual
+- [x] Rodar `pnpm dev`
+- [x] Fazer POST para `localhost:3000/api/agent/generate`
+- [x] Verificar que o anúncio gerado segue as regras do manual
 - **Critério**: anúncio gerado é válido e segue a estrutura esperada
 
 ---
@@ -538,14 +538,37 @@ com retorno unificado de modelos disponíveis de **OpenAI** e **Google Gemini**.
 
 ## Escopo Resumido
 
-- [ ] Definir contratos de domínio (`ChatModel`, `IModelCatalogService`)
-- [ ] Implementar providers OpenAI + Google Gemini e adapter de API key por provider
-- [ ] Mesclar lista de modelos dos dois providers com deduplicação por nome
-- [ ] Implementar `ModelCatalogService` desacoplado do `adGeneratorAgent`
-- [ ] Cobrir com testes unitários e validar build/type-check
+- [x] Definir contratos de domínio (`ChatModel`, `IModelCatalogService`)
+- [x] Implementar providers OpenAI + Google Gemini e adapter de API key por provider
+- [x] Mesclar lista de modelos dos dois providers com deduplicação por nome
+- [x] Implementar `ModelCatalogService` desacoplado do `adGeneratorAgent`
+- [x] Cobrir com testes unitários e validar build/type-check
 
 ## Ordem de execução sugerida
 
 ```text
 Seguir T1 → T11 em openspec/model-catalog-service-tasks.md
+```
+
+---
+
+# Feature: Token Consumption Tracking
+
+Spec de referência: `openspec/specs/token-consumption-tracking.md`
+Tasks detalhadas: `openspec/token-consumption-tracking-tasks.md`
+
+## Escopo Resumido
+
+- [x] Setup Drizzle ORM + schema + migrations + seed
+- [x] Domain (VOs, exceções, interfaces)
+- [x] Persistence (DrizzleTokenConsumptionRepository)
+- [x] Queue Redis (producer/consumer com retry e DLQ)
+- [x] Use case + container + integração na route
+- [x] Extração de usage real quando disponível + fallback de estimativa
+- [x] Testes unitários principais e validações `pnpm test`/`npx tsc --noEmit`
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1 → T11 em openspec/token-consumption-tracking-tasks.md
 ```
