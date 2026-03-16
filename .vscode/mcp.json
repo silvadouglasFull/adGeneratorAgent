@@ -1,0 +1,21 @@
+{
+  "servers": {
+    "next-devtools": {
+      "url": "http://localhost:3000/_next/mcp",
+      "type": "http"
+    },
+    "next-mcp-server": {
+      "url": "http://localhost:4001/mcp",
+      "type": "http"
+    },
+    "tailwindcss-mcp-server": {
+      "url": "http://localhost:4002/mcp",
+      "type": "http"
+    },
+    "openspec-mcp-server": {
+      "url": "http://localhost:4003/mcp",
+      "type": "http"
+    }
+  },
+  "inputs": []
+}
