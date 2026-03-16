@@ -1,4 +1,4 @@
-import { streamGeneratedAd } from "@/agent/adGeneratorAgent";
+import { SUPPORTED_MODELS, type SupportedModel, streamGeneratedAd } from "@/agent/adGeneratorAgent";
 
 export async function POST(request: Request) {
     let body: Record<string, unknown>;
@@ -21,14 +21,35 @@ export async function POST(request: Request) {
         );
     }
 
+    const requestedModel = body?.model;
+    const model: SupportedModel =
+        typeof requestedModel === "string" &&
+            (SUPPORTED_MODELS as readonly string[]).includes(requestedModel)
+            ? (requestedModel as SupportedModel)
+            : "gpt-4o-mini";
+
+    if (
+        typeof requestedModel === "string" &&
+        !(SUPPORTED_MODELS as readonly string[]).includes(requestedModel)
+    ) {
+        return Response.json(
+            {
+                error: `Modelo inválido. Modelos suportados: ${SUPPORTED_MODELS.join(", ")}.`,
+            },
+            { status: 400 }
+        );
+    }
+
     const encoder = new TextEncoder();
-    const model = "gpt-4o-mini";
     const generatedAt = new Date().toISOString();
 
     const stream = new ReadableStream({
         async start(controller) {
             try {
-                const adStream = streamGeneratedAd(input.trim());
+                const adStream = streamGeneratedAd({
+                    input: input.trim(),
+                    model,
+                });
 
                 for await (const token of adStream) {
                     controller.enqueue(

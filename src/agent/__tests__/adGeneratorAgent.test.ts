@@ -8,6 +8,12 @@ jest.mock("@langchain/openai", () => ({
     })),
 }));
 
+jest.mock("@langchain/google-genai", () => ({
+    ChatGoogleGenerativeAI: jest.fn().mockImplementation(() => ({
+        invoke: jest.fn().mockResolvedValue({ content: "# Produto Gemini\n\n**Texto de teste**" }),
+    })),
+}));
+
 jest.mock("@langchain/core/prompts", () => ({
     ChatPromptTemplate: {
         fromMessages: jest.fn().mockReturnValue({
@@ -21,6 +27,10 @@ jest.mock("@langchain/core/prompts", () => ({
 }));
 
 describe("AdGeneratorAgent", () => {
+    beforeEach(() => {
+        process.env.GENAI_API = "fake-gemini-key";
+    });
+
     it("deve retornar um Markdown que começa com #", async () => {
         const { adGeneratorAgent } = await import("../adGeneratorAgent");
         const result = await adGeneratorAgent.invoke({ input: "Produto X, R$99" });
@@ -41,5 +51,15 @@ describe("AdGeneratorAgent", () => {
         const result = await adGeneratorAgent.invoke({ input: "Tênis azul R$199" });
         expect(result.instructions).toBeDefined();
         expect(typeof result.instructions).toBe("string");
+    });
+
+    it("deve aceitar o modelo gemini-2.0-flash", async () => {
+        const { adGeneratorAgent } = await import("../adGeneratorAgent");
+        const result = await adGeneratorAgent.invoke({
+            input: "Produto premium",
+            model: "gemini-2.0-flash",
+        });
+        expect(result.ad).toBeDefined();
+        expect(result.ad.trimStart().startsWith("#")).toBe(true);
     });
 });

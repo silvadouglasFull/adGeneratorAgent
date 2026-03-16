@@ -18,7 +18,7 @@ Criar um agente LangGraph que funcione como serviço stateless:
 - [ ] O agente carrega o manual de instruções antes de gerar o anúncio
 - [ ] O anúncio gerado segue as regras do manual (tom, estrutura, tamanho)
 - [ ] O retorno é sempre em formato Markdown válido
-- [ ] A API expõe um endpoint `POST /api/agent/generate` que recebe JSON e responde via stream SSE
+- [ ] A API expõe um endpoint `POST /api/agent/generate` que recebe JSON (`input`, `model?`) e responde via stream SSE
 - [ ] O endpoint responde em menos de 30 segundos
 - [ ] Erros retornam mensagens claras com status HTTP adequado
 
@@ -31,7 +31,8 @@ POST /api/agent/generate
 Content-Type: application/json
 
 {
-  "input": "Tênis casual masculino, cor azul, solado de borracha, R$199"
+  "input": "Tênis casual masculino, cor azul, solado de borracha, R$199",
+  "model": "gpt-4o-mini"
 }
 ```
 
@@ -46,6 +47,9 @@ data: {"type":"token","content":"# Tênis Casual Masculino Azul"}
 data: {"type":"token","content":"\n\n**Conforto e estilo para o dia a dia**"}
 
 data: {"type":"done","metadata":{"model":"gpt-4o-mini","generatedAt":"2026-03-16T10:00:00Z"}}
+
+> `model` é opcional no request.
+> Valores suportados: `gpt-4o-mini` (default) e `gemini-2.0-flash`.
 ```
 
 ### Response (erro)
@@ -92,7 +96,9 @@ POST /api/agent/generate
 
 - **Framework**: Next.js (App Router)
 - **Agent**: LangGraph (`@langchain/langgraph`)
-- **LLM**: OpenAI `gpt-4o-mini` via `@langchain/openai`
+- **LLM**:
+  - OpenAI `gpt-4o-mini` via `@langchain/openai`
+  - Google `gemini-2.0-flash` via `@langchain/google-genai`
 - **Linguagem**: TypeScript
 - **Testes**: Jest + supertest
 

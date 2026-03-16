@@ -8,8 +8,8 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 
 ### T1 — Instalar dependências do agente
 
-- [ ] Instalar `@langchain/langgraph`, `@langchain/openai`, `@langchain/core`
-- [ ] Adicionar `OPENAI_API_KEY` ao `.env.local`
+- [ ] Instalar `@langchain/langgraph`, `@langchain/openai`, `@langchain/google-genai`, `@langchain/core`
+- [ ] Adicionar `OPENAI_API_KEY` e `GENAI_API` ao `.env.local`
 - [ ] Validar que o `.env.local` está no `.gitignore`
 - **Critério**: `pnpm install` e `pnpm dev` rodam sem erros
 
@@ -28,7 +28,7 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 - [ ] Criar `/src/agent/adGeneratorAgent.ts`
 - [ ] Definir `AgentState` com campos: `input`, `instructions`, `ad`
 - [ ] Implementar nó `loadInstructions`: lê `/src/agent/instructions.md`
-- [ ] Implementar nó `generateAd`: chama o LLM com o input + manual
+- [ ] Implementar nó `generateAd`: chama o LLM com o input + manual e modelo selecionado (`gpt-4o-mini` ou `gemini-2.0-flash`)
 - [ ] Implementar nó `validateOutput`: verifica se output começa com `#` (Markdown)
 - [ ] Conectar os nós no grafo: `loadInstructions → generateAd → validateOutput`
 - [ ] Expor função de streaming token a token do output do nó `generateAd`
@@ -49,7 +49,8 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 - [ ] Criar `/src/app/api/agent/generate/route.ts`
 - [ ] Método: `POST`
 - [ ] Validar campo `input` (obrigatório, string não vazia)
-- [ ] Chamar função de streaming do agente (`streamGeneratedAd`)
+- [ ] Validar campo `model` (opcional: `gpt-4o-mini` | `gemini-2.0-flash`)
+- [ ] Chamar função de streaming do agente (`streamGeneratedAd`) com `input` e `model?`
 - [ ] Retornar `text/event-stream` no formato SSE com eventos `token`, `done` e `error`
 - [ ] Tratar erros com status HTTP adequado (400, 500)
 - **Critério**: `POST /api/agent/generate` com body válido retorna 200 + stream SSE de Markdown
@@ -71,7 +72,10 @@ Spec de referência: `openspec/specs/ad-generator-agent.md`
 - [ ] Criar `/src/app/api/agent/generate/__tests__/route.test.ts`
 - [ ] Testar: POST sem body → 400
 - [ ] Testar: POST com `input` vazio → 400
+- [ ] Testar: POST válido sem `model` → 200 com default `gpt-4o-mini`
+- [ ] Testar: POST válido com `model: gemini-2.0-flash` → 200 com metadata do modelo
 - [ ] Testar: POST válido → 200 com `text/event-stream` e eventos `token` + `done`
+- [ ] Testar: POST com `model` inválido → 400
 - [ ] Testar: erro do agente → evento `error` no stream
 - **Critério**: todos os testes passam com `pnpm test`
 

@@ -2,6 +2,7 @@
 const mockStreamGeneratedAd = jest.fn();
 
 jest.mock("@/agent/adGeneratorAgent", () => ({
+    SUPPORTED_MODELS: ["gpt-4o-mini", "gemini-2.0-flash"],
     streamGeneratedAd: (...args: unknown[]) => mockStreamGeneratedAd(...args),
 }));
 
@@ -75,6 +76,46 @@ describe("POST /api/agent/generate", () => {
         expect(body).toContain('"type":"token"');
         expect(body).toContain("# Tênis Azul");
         expect(body).toContain('"type":"done"');
+        expect(mockStreamGeneratedAd).toHaveBeenCalledWith({
+            input: "Tênis casual masculino, cor azul, R$199",
+            model: "gpt-4o-mini",
+        });
+    });
+
+    it("retorna 200 com modelo gemini-2.0-flash quando solicitado", async () => {
+        mockStreamGeneratedAd.mockImplementation(async function* () {
+            yield "# Produto Gemini";
+        });
+
+        const request = new Request("http://localhost/api/agent/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ input: "Produto X", model: "gemini-2.0-flash" }),
+        });
+
+        const response = await POST(request);
+        const body = await response.text();
+
+        expect(response.status).toBe(200);
+        expect(body).toContain('"model":"gemini-2.0-flash"');
+        expect(mockStreamGeneratedAd).toHaveBeenCalledWith({
+            input: "Produto X",
+            model: "gemini-2.0-flash",
+        });
+    });
+
+    it("retorna 400 quando model é inválido", async () => {
+        const request = new Request("http://localhost/api/agent/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ input: "Produto X", model: "modelo-invalido" }),
+        });
+
+        const response = await POST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toContain("Modelo inválido");
     });
 
     it("retorna evento de erro no stream quando o agente falha", async () => {
