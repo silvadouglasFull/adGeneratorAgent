@@ -1,5 +1,13 @@
 {
   "servers": {
+    "langchain": {
+      "command": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin/npx",
+      "args": ["-y", "langchain-mcp"],
+      "env": {
+        "LANGCHAIN_API_KEY": "${input:langchainApiKey}",
+        "PATH": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin:/usr/local/bin:/usr/bin:/bin"
+      }
+    },
     "fetch": {
       "command": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin/npx",
       "args": ["-y", "mcp-server-fetch-typescript"],
@@ -39,6 +47,12 @@
       "id": "figmaToken",
       "type": "promptString",
       "description": "Figma Personal Access Token",
+      "password": true
+    },
+    {
+      "id": "langchainApiKey",
+      "type": "promptString",
+      "description": "LangChain API Key (LangSmith)",
       "password": true
     }
   ]
