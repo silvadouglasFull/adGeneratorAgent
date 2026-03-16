@@ -32,14 +32,6 @@
       "env": {
         "PATH": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin:/usr/local/bin:/usr/bin:/bin"
       }
-    },
-    "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp/oauth"
-    },
-    "openaiDeveloperDocs": {
-      "type": "http",
-      "url": "https://developers.openai.com/mcp"
     }
   },
   "inputs": [
