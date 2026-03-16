@@ -2,6 +2,8 @@
 
 Spec de referência: `openspec/specs/ad-generator-agent.md`
 
+Pré-requisito global (todas as features): aplicar `openspec/specs/ai-code-generation-standards.md` (DDD, SOLID, Clean Code e uso de classes quando viável).
+
 ---
 
 ## Fase 1 — Setup e Infraestrutura
