@@ -1,21 +1,27 @@
 {
   "servers": {
-    "next-devtools": {
-      "url": "http://localhost:3000/_next/mcp",
-      "type": "http"
+    "fetch": {
+      "command": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin/npx",
+      "args": ["-y", "mcp-server-fetch-typescript"],
+      "env": {
+        "PATH": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin:/usr/local/bin:/usr/bin:/bin"
+      }
     },
-    "next-mcp-server": {
-      "url": "http://localhost:4001/mcp",
-      "type": "http"
-    },
-    "tailwindcss-mcp-server": {
-      "url": "http://localhost:4002/mcp",
-      "type": "http"
-    },
-    "openspec-mcp-server": {
-      "url": "http://localhost:4003/mcp",
-      "type": "http"
+    "flowbite": {
+      "command": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin/npx",
+      "args": ["-y", "flowbite-mcp"],
+      "env": {
+        "FIGMA_ACCESS_TOKEN": "${input:figmaToken}",
+        "PATH": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      }
     }
   },
-  "inputs": []
+  "inputs": [
+    {
+      "id": "figmaToken",
+      "type": "promptString",
+      "description": "Figma Personal Access Token",
+      "password": true
+    }
+  ]
 }
