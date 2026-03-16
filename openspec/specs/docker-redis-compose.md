@@ -96,16 +96,16 @@ REDIS_PORT=6379
 
 ## Critérios de Aceitação
 
-- [ ] Existe serviço `redis` no `docker-compose.yml`
-- [ ] O serviço exige autenticação por usuário e senha
-- [ ] Credenciais são lidas de `.env` ou `.env.local`
-- [ ] O Redis não aceita conexão sem autenticação
-- [ ] Conexão com credenciais válidas funciona
-- [ ] `docker compose up -d` inicia sem erro
-- [ ] `docker ps` mostra container em estado saudável (`healthy`)
-- [ ] Dados persistem após reinício do container
-- [ ] Credenciais reais não são commitadas
-- [ ] README documenta setup e comandos de operação
+- [x] Existe serviço `redis` no `docker-compose.yml`
+- [x] O serviço exige autenticação por usuário e senha
+- [x] Credenciais são lidas de `.env` ou `.env.local`
+- [x] O Redis não aceita conexão sem autenticação
+- [x] Conexão com credenciais válidas funciona
+- [x] `docker compose up -d` inicia sem erro
+- [x] `docker ps` mostra container em estado saudável (`healthy`)
+- [x] Dados persistem após reinício do container
+- [x] Credenciais reais não são commitadas
+- [x] README documenta setup e comandos de operação
 
 ## Definição de Pronto (DoD)
 
