@@ -4,6 +4,68 @@ import { InvalidAdFormatException } from "../../domain/exception/InvalidAdFormat
 import { SupportedModel } from "../../domain/model/SupportedModel";
 import { MessageParser } from "./MessageParser";
 
+export type TokenUsage = {
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+};
+
+function toNumber(value: unknown): number | undefined {
+    if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
+        return value;
+    }
+
+    return undefined;
+}
+
+function extractTokenUsage(messageChunk: unknown): Partial<TokenUsage> | null {
+    if (!messageChunk || typeof messageChunk !== "object") {
+        return null;
+    }
+
+    const chunk = messageChunk as {
+        usage_metadata?: Record<string, unknown>;
+        usageMetadata?: Record<string, unknown>;
+        response_metadata?: {
+            tokenUsage?: Record<string, unknown>;
+            usage?: Record<string, unknown>;
+        };
+    };
+
+    const usageMetadata = chunk.usage_metadata ?? chunk.usageMetadata;
+    const tokenUsage = chunk.response_metadata?.tokenUsage;
+    const providerUsage = chunk.response_metadata?.usage;
+
+    const inputTokens =
+        toNumber(usageMetadata?.input_tokens) ??
+        toNumber(usageMetadata?.prompt_tokens) ??
+        toNumber(tokenUsage?.promptTokens) ??
+        toNumber(providerUsage?.input_tokens) ??
+        toNumber(providerUsage?.prompt_tokens);
+
+    const outputTokens =
+        toNumber(usageMetadata?.output_tokens) ??
+        toNumber(usageMetadata?.completion_tokens) ??
+        toNumber(tokenUsage?.completionTokens) ??
+        toNumber(providerUsage?.output_tokens) ??
+        toNumber(providerUsage?.completion_tokens);
+
+    const totalTokens =
+        toNumber(usageMetadata?.total_tokens) ??
+        toNumber(tokenUsage?.totalTokens) ??
+        toNumber(providerUsage?.total_tokens);
+
+    if (
+        inputTokens === undefined &&
+        outputTokens === undefined &&
+        totalTokens === undefined
+    ) {
+        return null;
+    }
+
+    return { inputTokens, outputTokens, totalTokens };
+}
+
 export class AdStreamGenerator {
     constructor(
         private graph: any,
@@ -16,17 +78,23 @@ export class AdStreamGenerator {
     }: {
         input: string;
         model?: SupportedModel;
-    }): AsyncGenerator<string, { ad: string }, void> {
+    }): AsyncGenerator<string, { ad: string; usage?: TokenUsage }, void> {
         const stream = (await this.graph.stream(
             { input, model },
             { streamMode: "messages" } as RunnableConfig
         )) as AsyncIterable<[unknown, { langgraph_node?: string }]>;
 
         let fullAd = "";
+        let usage: Partial<TokenUsage> = {};
 
         for await (const [messageChunk, metadata] of stream) {
             if (metadata?.langgraph_node !== "generateAd") {
                 continue;
+            }
+
+            const chunkUsage = extractTokenUsage(messageChunk);
+            if (chunkUsage) {
+                usage = { ...usage, ...chunkUsage };
             }
 
             const token = this.messageParser.parse(
@@ -48,6 +116,26 @@ export class AdStreamGenerator {
             throw new InvalidAdFormatException();
         }
 
-        return { ad: trimmedAd };
+        const hasUsage =
+            usage.inputTokens !== undefined ||
+            usage.outputTokens !== undefined ||
+            usage.totalTokens !== undefined;
+
+        if (!hasUsage) {
+            return { ad: trimmedAd };
+        }
+
+        const inputTokens = usage.inputTokens ?? 0;
+        const outputTokens = usage.outputTokens ?? 0;
+        const totalTokens = usage.totalTokens ?? inputTokens + outputTokens;
+
+        return {
+            ad: trimmedAd,
+            usage: {
+                inputTokens,
+                outputTokens,
+                totalTokens,
+            },
+        };
     }
 }

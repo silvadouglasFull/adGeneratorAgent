@@ -7,17 +7,25 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest"
+    "test": "jest",
+    "db:migrate": "tsx src/tokenConsumption/infrastructure/db/migrate.ts",
+    "db:seed": "tsx src/tokenConsumption/infrastructure/db/seeds/token_consumption.seed.ts",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "@langchain/core": "^1.1.32",
     "@langchain/google-genai": "^2.1.25",
     "@langchain/langgraph": "^1.2.2",
     "@langchain/openai": "^1.2.13",
+    "dotenv": "^17.3.1",
+    "drizzle-orm": "^0.45.1",
+    "ioredis": "^5.10.0",
     "langchain": "^1.2.32",
     "next": "16.1.6",
+    "postgres": "^3.4.8",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -25,12 +33,15 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^11.0.0",
+    "drizzle-kit": "^0.31.9",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "jest": "^30.3.0",
     "jest-environment-node": "^30.3.0",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.6",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
