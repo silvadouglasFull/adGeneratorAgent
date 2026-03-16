@@ -20,6 +20,42 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Banco local com Docker Compose
+
+O projeto possui um PostgreSQL local via Docker Compose em `docker-compose.yml`.
+
+### Variáveis de ambiente
+
+As credenciais do banco são lidas de um arquivo de ambiente informado no comando.
+Use `.env.local` por padrão; se preferir, pode usar `.env`.
+
+Variáveis usadas:
+
+- `POSTGRES_DB`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+
+### Subir e parar o banco
+
+```bash
+docker compose --env-file .env.local up -d
+docker compose --env-file .env.local down
+```
+
+Alternativa usando `.env`:
+
+```bash
+docker compose --env-file .env up -d
+docker compose --env-file .env down
+```
+
+### Verificar saúde do container
+
+```bash
+docker ps
+docker compose logs -f postgres
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
