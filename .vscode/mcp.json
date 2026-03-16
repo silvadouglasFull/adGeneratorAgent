@@ -33,8 +33,9 @@
         "PATH": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin:/usr/local/bin:/usr/bin:/bin"
       }
     },
-    "openai-docs": {
-      "url": "https://developers.openai.com/api/docs/"
+    "openaiDeveloperDocs": {
+      "type": "http",
+      "url": "https://developers.openai.com/mcp"
     },
     "gemini-docs": {
       "url": "https://ai.google.dev/gemini-api/docs?hl=pt-br#javascript"

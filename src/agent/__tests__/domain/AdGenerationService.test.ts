@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const mockInitChatModel = jest.fn();
+const mockChatOpenAI = jest.fn();
+const mockChatGoogleGenerativeAI = jest.fn();
 
-jest.mock("langchain/chat_models/universal", () => ({
-    initChatModel: (...args: unknown[]) => mockInitChatModel(...args),
+jest.mock("@langchain/openai", () => ({
+    ChatOpenAI: jest.fn().mockImplementation((...args: unknown[]) => mockChatOpenAI(...args)),
+}));
+
+jest.mock("@langchain/google-genai", () => ({
+    ChatGoogleGenerativeAI: jest.fn().mockImplementation((...args: unknown[]) => mockChatGoogleGenerativeAI(...args)),
 }));
 
 jest.mock("../../prompt", () => ({
@@ -32,8 +37,10 @@ describe("AdGenerationService", () => {
         registry = ModelRegistry.default();
         modelInitializer = new ModelInitializerService(registry);
         service = new AdGenerationService(modelInitializer, adGeneratorPrompt as any);
-        mockInitChatModel.mockReset();
-        mockInitChatModel.mockResolvedValue({});
+        mockChatOpenAI.mockReset();
+        mockChatGoogleGenerativeAI.mockReset();
+        mockChatOpenAI.mockReturnValue({});
+        mockChatGoogleGenerativeAI.mockReturnValue({});
     });
 
     it("deve gerar anúncio com modelo padrão", async () => {
@@ -46,9 +53,8 @@ describe("AdGenerationService", () => {
     it("deve usar modelo customizado", async () => {
         const request = AdGenerationRequest.create("Produto", "Instruções", "gemini-2.0-flash");
         await service.generate(request);
-        expect(mockInitChatModel).toHaveBeenCalledWith(
-            "gemini-2.0-flash",
-            expect.any(Object)
+        expect(mockChatGoogleGenerativeAI).toHaveBeenCalledWith(
+            expect.objectContaining({ model: "gemini-2.0-flash" })
         );
     });
 

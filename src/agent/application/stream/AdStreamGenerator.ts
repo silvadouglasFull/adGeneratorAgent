@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { RunnableConfig } from "@langchain/core/runnables";
 import { InvalidAdFormatException } from "../../domain/exception/InvalidAdFormatException";
 import { SupportedModel } from "../../domain/model/SupportedModel";

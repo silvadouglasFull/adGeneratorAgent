@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const mockInitChatModel = jest.fn();
+const mockChatOpenAI = jest.fn();
+const mockChatGoogleGenerativeAI = jest.fn();
 
-jest.mock("langchain/chat_models/universal", () => ({
-    initChatModel: (...args: unknown[]) => mockInitChatModel(...args),
+jest.mock("@langchain/openai", () => ({
+    ChatOpenAI: jest.fn().mockImplementation((...args: unknown[]) => mockChatOpenAI(...args)),
+}));
+
+jest.mock("@langchain/google-genai", () => ({
+    ChatGoogleGenerativeAI: jest.fn().mockImplementation((...args: unknown[]) => mockChatGoogleGenerativeAI(...args)),
 }));
 
 jest.mock("../../prompt", () => ({
@@ -40,8 +45,10 @@ describe("AdGeneratorGraphBuilder", () => {
             adGenerationService,
             validationService
         );
-        mockInitChatModel.mockReset();
-        mockInitChatModel.mockResolvedValue({});
+        mockChatOpenAI.mockReset();
+        mockChatGoogleGenerativeAI.mockReset();
+        mockChatOpenAI.mockReturnValue({});
+        mockChatGoogleGenerativeAI.mockReturnValue({});
     });
 
     it("deve compilar grafo sem erros", () => {

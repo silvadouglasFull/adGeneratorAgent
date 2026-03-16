@@ -2,10 +2,11 @@
 
 import { BaseLanguageModel } from "@langchain/core/language_models/base";
 import { AdGenerationRequest } from "../model/AdGenerationRequest";
+import { SupportedModel } from "../model/SupportedModel";
 
 export class AdGenerationService {
     constructor(
-        private modelInitializer: { initialize: (model: string, temp?: number, maxRetries?: number) => Promise<BaseLanguageModel> },
+        private modelInitializer: { initialize: (model: SupportedModel, temp?: number, maxRetries?: number) => Promise<BaseLanguageModel> },
         private prompt: any
     ) { }
 

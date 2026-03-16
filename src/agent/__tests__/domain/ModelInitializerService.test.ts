@@ -1,9 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+const mockChatOpenAI = jest.fn();
+const mockChatGoogleGenerativeAI = jest.fn();
 
-const mockInitChatModel = jest.fn();
+jest.mock("@langchain/openai", () => ({
+    ChatOpenAI: jest.fn().mockImplementation((...args: unknown[]) => mockChatOpenAI(...args)),
+}));
 
-jest.mock("langchain/chat_models/universal", () => ({
-    initChatModel: (...args: unknown[]) => mockInitChatModel(...args),
+jest.mock("@langchain/google-genai", () => ({
+    ChatGoogleGenerativeAI: jest.fn().mockImplementation((...args: unknown[]) => mockChatGoogleGenerativeAI(...args)),
 }));
 
 import { ModelRegistry } from "../../domain/model/ModelRegistry";
@@ -17,16 +20,17 @@ describe("ModelInitializerService", () => {
         process.env.GENAI_API = "test-gemini-key";
         registry = ModelRegistry.default();
         service = new ModelInitializerService(registry);
-        mockInitChatModel.mockReset();
-        mockInitChatModel.mockResolvedValue({});
+        mockChatOpenAI.mockReset();
+        mockChatGoogleGenerativeAI.mockReset();
+        mockChatOpenAI.mockReturnValue({});
+        mockChatGoogleGenerativeAI.mockReturnValue({});
     });
 
     it("deve inicializar modelo openai corretamente", async () => {
         await service.initialize("gpt-4o-mini");
-        expect(mockInitChatModel).toHaveBeenCalledWith(
-            "gpt-4o-mini",
+        expect(mockChatOpenAI).toHaveBeenCalledWith(
             expect.objectContaining({
-                modelProvider: "openai",
+                model: "gpt-4o-mini",
                 temperature: 0.7,
                 maxRetries: 0,
             })
@@ -35,10 +39,9 @@ describe("ModelInitializerService", () => {
 
     it("deve inicializar modelo google-genai corretamente", async () => {
         await service.initialize("gemini-2.0-flash");
-        expect(mockInitChatModel).toHaveBeenCalledWith(
-            "gemini-2.0-flash",
+        expect(mockChatGoogleGenerativeAI).toHaveBeenCalledWith(
             expect.objectContaining({
-                modelProvider: "google-genai",
+                model: "gemini-2.0-flash",
                 apiKey: "test-gemini-key",
                 temperature: 0.7,
                 maxRetries: 0,
@@ -48,16 +51,14 @@ describe("ModelInitializerService", () => {
 
     it("deve respeitar temperatura customizada", async () => {
         await service.initialize("gpt-4o-mini", 0.5);
-        expect(mockInitChatModel).toHaveBeenCalledWith(
-            "gpt-4o-mini",
+        expect(mockChatOpenAI).toHaveBeenCalledWith(
             expect.objectContaining({ temperature: 0.5 })
         );
     });
 
     it("deve respeitar maxRetries customizado", async () => {
         await service.initialize("gpt-4o-mini", 0.7, 3);
-        expect(mockInitChatModel).toHaveBeenCalledWith(
-            "gpt-4o-mini",
+        expect(mockChatOpenAI).toHaveBeenCalledWith(
             expect.objectContaining({ maxRetries: 3 })
         );
     });
@@ -69,11 +70,6 @@ describe("ModelInitializerService", () => {
         });
         const invalidService = new ModelInitializerService(invalidRegistry);
 
-        try {
-            await invalidService.initialize("modelo-invalido" as any);
-            fail("Deveria ter lançado exceção");
-        } catch (error: any) {
-            expect(error.message).toContain("não configurado");
-        }
+        await expect(invalidService.initialize("modelo-invalido" as never)).rejects.toThrow("não configurado");
     });
 });

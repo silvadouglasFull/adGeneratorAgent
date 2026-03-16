@@ -527,7 +527,7 @@ T27 → T28 → T29 → T30 → T31 → T32 → T33
 
 ---
 
-# Feature: Serviço de Catálogo de Modelos
+# Feature: Serviço de Catálogo de Modelos (OpenAI + Google Gemini)
 
 Spec de referência: `openspec/specs/model-catalog-service.md`
 Tasks detalhadas: `openspec/model-catalog-service-tasks.md`
@@ -542,15 +542,18 @@ Criar um serviço separado do agente para reaproveitar e padronizar:
 - `getFreeModels(userId)`
 - `getModelInfo(modelName, userId)`
 
+com retorno unificado de modelos disponíveis de **OpenAI** e **Google Gemini**.
+
 ## Escopo Resumido
 
 - [ ] Definir contratos de domínio (`ChatModel`, `IModelCatalogService`)
-- [ ] Implementar provider Google Models e adapter de API key
+- [ ] Implementar providers OpenAI + Google Gemini e adapter de API key por provider
+- [ ] Mesclar lista de modelos dos dois providers com deduplicação por nome
 - [ ] Implementar `ModelCatalogService` desacoplado do `adGeneratorAgent`
 - [ ] Cobrir com testes unitários e validar build/type-check
 
 ## Ordem de execução sugerida
 
 ```text
-Seguir T1 → T10 em openspec/model-catalog-service-tasks.md
+Seguir T1 → T11 em openspec/model-catalog-service-tasks.md
 ```
