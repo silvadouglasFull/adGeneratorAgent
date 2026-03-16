@@ -20,6 +20,9 @@ importers:
       '@langchain/openai':
         specifier: ^1.2.13
         version: 1.2.13(@langchain/core@1.1.32(openai@6.29.0(zod@4.3.6)))
+      langchain:
+        specifier: ^1.2.32
+        version: 1.2.32(@langchain/core@1.1.32(openai@6.29.0(zod@4.3.6)))(openai@6.29.0(zod@4.3.6))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       next:
         specifier: 16.1.6
         version: 16.1.6(@babel/core@7.29.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -2111,6 +2114,12 @@ packages:
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
+
+  langchain@1.2.32:
+    resolution: {integrity: sha512-LwT0+ClCx9dLDSt8SQpZAdOHLlmcbPJUvUhFgS18boGfKvUFbXom8+xN20wiHMktwB3RB1CRyDLPRMP+tMabMA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@langchain/core': ^1.1.32
 
   langsmith@0.5.10:
     resolution: {integrity: sha512-unBdaaD/CqAOLIYjd9kT33FgHUMvHSsyBIPbQa+p/rE/Sv/l4pAC5ISEE79zphxi+vV4qxHqEgqahVXj2Xvz7A==}
@@ -5483,6 +5492,27 @@ snapshots:
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
+
+  langchain@1.2.32(@langchain/core@1.1.32(openai@6.29.0(zod@4.3.6)))(openai@6.29.0(zod@4.3.6))(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+    dependencies:
+      '@langchain/core': 1.1.32(openai@6.29.0(zod@4.3.6))
+      '@langchain/langgraph': 1.2.2(@langchain/core@1.1.32(openai@6.29.0(zod@4.3.6)))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(zod@4.3.6)
+      '@langchain/langgraph-checkpoint': 1.0.0(@langchain/core@1.1.32(openai@6.29.0(zod@4.3.6)))
+      langsmith: 0.5.10(openai@6.29.0(zod@4.3.6))
+      uuid: 11.1.0
+      zod: 4.3.6
+    transitivePeerDependencies:
+      - '@angular/core'
+      - '@opentelemetry/api'
+      - '@opentelemetry/exporter-trace-otlp-proto'
+      - '@opentelemetry/sdk-trace-base'
+      - openai
+      - react
+      - react-dom
+      - svelte
+      - vue
+      - ws
+      - zod-to-json-schema
 
   langsmith@0.5.10(openai@6.29.0(zod@4.3.6)):
     dependencies:

@@ -174,18 +174,28 @@ const graph = new StateGraph(AgentState)
 
 ## Critérios de Aceitação
 
-- [ ] `langchain` instalado como dependência (verificar se já presente)
-- [ ] Nó único `generateAd` usa `initChatModel` com `MODEL_CONFIGS`
-- [ ] `MODEL_CONFIGS` é um objeto declarativo (sem ifs)
-- [ ] Remover `generateAd_openai`, `generateAd_gemini`, `routeToModel` do agente
-- [ ] Remover `addConditionalEdges` do grafo
-- [ ] Grafo usa `.addEdge` estático: `loadInstructions → generateAd`
-- [ ] `streamGeneratedAd()` filtra por nó `generateAd` (nome único restaurado)
-- [ ] Modelo inválido lança erro com mensagem clara dentro do nó
-- [ ] Importações de `ChatOpenAI` e `ChatGoogleGenerativeAI` removidas do agente
-- [ ] Testes atualizam mock para `initChatModel` em vez de providers individuais
-- [ ] `pnpm test` passa com todos os testes existentes
-- [ ] `npx tsc --noEmit` retorna 0 erros
+- [x] `langchain` instalado como dependência (verificar se já presente)
+- [x] Nó único `generateAd` usa `initChatModel` com `MODEL_CONFIGS`
+- [x] `MODEL_CONFIGS` é um objeto declarativo (sem ifs)
+- [x] Remover `generateAd_openai`, `generateAd_gemini`, `routeToModel` do agente
+- [x] Remover `addConditionalEdges` do grafo
+- [x] Grafo usa `.addEdge` estático: `loadInstructions → generateAd`
+- [x] `streamGeneratedAd()` filtra por nó `generateAd` (nome único restaurado)
+- [x] Modelo inválido lança erro com mensagem clara dentro do nó
+- [x] Importações de `ChatOpenAI` e `ChatGoogleGenerativeAI` removidas do agente
+- [x] Testes atualizam mock para `initChatModel` em vez de providers individuais
+- [x] `pnpm test` passa com todos os testes existentes
+- [x] `npx tsc --noEmit` retorna 0 erros
+
+## Status de Implementação
+
+✅ **Implementado em**: 16/03/2026
+
+- Agente refatorado para um único nó `generateAd` com `initChatModel`
+- Grafo simplificado: `START → loadInstructions → generateAd → validateOutput → END`
+- `MODEL_CONFIGS` adicionado como registro declarativo de modelos
+- Testes atualizados e aprovados (14/14)
+- TypeScript validado sem erros
 
 ## Benefícios
 

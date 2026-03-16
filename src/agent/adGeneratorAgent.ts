@@ -1,15 +1,25 @@
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { Annotation, END, START, StateGraph } from "@langchain/langgraph";
-import { ChatOpenAI } from "@langchain/openai";
 import { readFileSync } from "fs";
+import { initChatModel } from "langchain/chat_models/universal";
 import { join } from "path";
 import { adGeneratorPrompt } from "./prompt";
 
 export const SUPPORTED_MODELS = ["gpt-4o-mini", "gemini-2.0-flash"] as const;
 export type SupportedModel = (typeof SUPPORTED_MODELS)[number];
 
-// Exports para testing
-export { generateAd_gemini, generateAd_openai, routeToModel };
+type ModelConfig = {
+    modelProvider: "openai" | "google-genai";
+    apiKey?: string;
+};
+
+// Registro declarativo de modelos: adicionar novo modelo exige apenas uma nova entrada aqui.
+export const MODEL_CONFIGS: Record<SupportedModel, ModelConfig> = {
+    "gpt-4o-mini": { modelProvider: "openai" },
+    "gemini-2.0-flash": {
+        modelProvider: "google-genai",
+        apiKey: process.env.GENAI_API,
+    },
+};
 
 const AgentState = Annotation.Root({
     input: Annotation<string>(),
@@ -27,48 +37,22 @@ async function loadInstructions(): Promise<Partial<AgentStateType>> {
 }
 
 /**
- * Função roteadora que decide qual nó de modelo executar baseado no estado.
- * Implementa roteamento condicional (conditional edges) em vez de if/else dentro do nó.
+ * Nó único de geração que instancia dinamicamente o modelo via initChatModel.
+ * O provedor é resolvido por configuração declarativa em MODEL_CONFIGS.
  */
-function routeToModel(state: AgentStateType): string {
-    const model = state.model ?? "gpt-4o-mini";
-    return model === "gemini-2.0-flash" ? "generateAd_gemini" : "generateAd_openai";
-}
+export async function generateAd(state: AgentStateType): Promise<Partial<AgentStateType>> {
+    const selectedModel = state.model ?? "gpt-4o-mini";
+    const modelConfig = MODEL_CONFIGS[selectedModel];
 
-/**
- * Nó especializado para gerar anúncio usando ChatOpenAI (gpt-4o-mini).
- * Responsável apenas pela geração com o modelo OpenAI.
- */
-async function generateAd_openai(state: AgentStateType): Promise<Partial<AgentStateType>> {
-    const model = new ChatOpenAI({
-        model: "gpt-4o-mini",
-        temperature: 0.7,
-        maxRetries: 0,
-    });
-
-    const chain = adGeneratorPrompt.pipe(model);
-    const response = await chain.invoke({
-        instructions: state.instructions,
-        input: state.input,
-    });
-
-    const ad = typeof response.content === "string" ? response.content : String(response.content);
-    return { ad };
-}
-
-/**
- * Nó especializado para gerar anúncio usando ChatGoogleGenerativeAI (gemini-2.0-flash).
- * Responsável apenas pela geração com o modelo Google Gemini.
- */
-async function generateAd_gemini(state: AgentStateType): Promise<Partial<AgentStateType>> {
-    const geminiApiKey = process.env.GENAI_API;
-    if (!geminiApiKey) {
-        throw new Error("A variável de ambiente GENAI_API é obrigatória para usar o modelo gemini-2.0-flash.");
+    if (!modelConfig) {
+        throw new Error(
+            `Modelo "${selectedModel}" não configurado. Modelos suportados: ${SUPPORTED_MODELS.join(", ")}`
+        );
     }
 
-    const model = new ChatGoogleGenerativeAI({
-        model: "gemini-2.0-flash",
-        apiKey: geminiApiKey,
+    const model = await initChatModel(selectedModel, {
+        modelProvider: modelConfig.modelProvider,
+        apiKey: modelConfig.apiKey,
         temperature: 0.7,
         maxRetries: 0,
     });
@@ -93,19 +77,12 @@ async function validateOutput(state: AgentStateType): Promise<Partial<AgentState
 
 const graph = new StateGraph(AgentState)
     .addNode("loadInstructions", loadInstructions)
-    // Nós especializados por modelo (sem if/else dentro do nó)
-    .addNode("generateAd_openai", generateAd_openai)
-    .addNode("generateAd_gemini", generateAd_gemini)
+    // Grafo linear com nó único de geração baseado em initChatModel.
+    .addNode("generateAd", generateAd)
     .addNode("validateOutput", validateOutput)
     .addEdge(START, "loadInstructions")
-    // Roteamento condicional baseado no state.model
-    .addConditionalEdges("loadInstructions", routeToModel, {
-        generateAd_openai: "generateAd_openai",
-        generateAd_gemini: "generateAd_gemini",
-    })
-    // Ambos os nós de modelo levam para validação
-    .addEdge("generateAd_openai", "validateOutput")
-    .addEdge("generateAd_gemini", "validateOutput")
+    .addEdge("loadInstructions", "generateAd")
+    .addEdge("generateAd", "validateOutput")
     .addEdge("validateOutput", END);
 
 export const adGeneratorAgent = graph.compile();
@@ -158,8 +135,7 @@ export async function* streamGeneratedAd({
     let fullAd = "";
 
     for await (const [messageChunk, metadata] of stream) {
-        // Filtra apenas mensagens dos nós de geração de anúncio (ambos openai e gemini)
-        if (metadata?.langgraph_node !== "generateAd_openai" && metadata?.langgraph_node !== "generateAd_gemini") {
+        if (metadata?.langgraph_node !== "generateAd") {
             continue;
         }
 

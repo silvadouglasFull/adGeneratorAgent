@@ -14,6 +14,7 @@
     "@langchain/google-genai": "^2.1.25",
     "@langchain/langgraph": "^1.2.2",
     "@langchain/openai": "^1.2.13",
+    "langchain": "^1.2.32",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"

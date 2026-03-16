@@ -1,17 +1,10 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
-// Mock do @langchain/openai e @langchain/core para evitar custo real em CI
-jest.mock("@langchain/openai", () => ({
-    ChatOpenAI: jest.fn().mockImplementation(() => ({
-        invoke: jest.fn().mockResolvedValue({ content: "# Produto X\n\n**O melhor produto**\n\n## ✨ Destaques\n\n- Item 1\n- Item 2\n\n## 🚀 Aproveite agora!\n\nCompre já!" }),
-    })),
-}));
+const mockInitChatModel = jest.fn();
 
-jest.mock("@langchain/google-genai", () => ({
-    ChatGoogleGenerativeAI: jest.fn().mockImplementation(() => ({
-        invoke: jest.fn().mockResolvedValue({ content: "# Produto Gemini\n\n**Texto de teste**" }),
-    })),
+jest.mock("langchain/chat_models/universal", () => ({
+    initChatModel: (...args: unknown[]) => mockInitChatModel(...args),
 }));
 
 jest.mock("@langchain/core/prompts", () => ({
@@ -29,6 +22,8 @@ jest.mock("@langchain/core/prompts", () => ({
 describe("AdGeneratorAgent", () => {
     beforeEach(() => {
         process.env.GENAI_API = "fake-gemini-key";
+        mockInitChatModel.mockReset();
+        mockInitChatModel.mockResolvedValue({});
     });
 
     it("deve retornar um Markdown que começa com #", async () => {
