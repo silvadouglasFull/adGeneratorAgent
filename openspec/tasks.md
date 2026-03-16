@@ -597,3 +597,27 @@ Tasks detalhadas: `openspec/model-selection-dropdown-and-models-route-tasks.md`
 ```text
 Seguir T1 → T7 em openspec/model-selection-dropdown-and-models-route-tasks.md
 ```
+
+---
+
+# Feature: Ferramenta de Geração de Imagem (GPT Image 1.5)
+
+Spec de referência: `openspec/specs/image-generation-tool.md`
+Tasks detalhadas: `openspec/image-generation-tool-tasks.md`
+
+## Escopo Resumido
+
+- [ ] Adicionar `"gpt-image-1.5"` como modelo suportado para tracking de tokens
+- [ ] Criar serviço de detecção de intenção de imagem no input do usuário
+- [ ] Criar prompt de Diretor de Arte Imobiliário para gerar prompt técnico de imagem
+- [ ] Criar serviço de geração de imagem via API OpenAI (modelo fixo GPT Image 1.5)
+- [ ] Adicionar nós de imagem ao grafo LangGraph com roteamento condicional
+- [ ] Emitir evento SSE `image` na rota existente + registrar tokens de imagem separadamente
+- [ ] Criar componente `AdImagePreview` e integrar na UI (imagem acima, texto abaixo)
+- [ ] Cobrir com testes e validar `pnpm test` + `npx tsc --noEmit`
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1 → T13 em openspec/image-generation-tool-tasks.md
+```
