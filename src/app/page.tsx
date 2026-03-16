@@ -135,12 +135,12 @@ export default function Home() {
                 rows={5}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ex: Tênis casual masculino, cor azul, solado de borracha, confortável para uso diário, R$199"
+                placeholder="Ex: Apartamento 2 quartos em Palmitos/SC, 78m², suíte, varanda com churrasqueira, 1 vaga, condomínio com elevador e salão de festas, R$ 420.000"
                 className="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm resize-none"
                 required
               />
               <p className="mt-1.5 text-xs text-gray-400">
-                Inclua características, público-alvo e preço para melhores resultados.
+                Inclua tipo de imóvel, localização, metragem, diferenciais e preço para gerar um anúncio imobiliário mais assertivo.
               </p>
             </div>
 
