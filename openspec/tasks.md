@@ -421,3 +421,104 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 | T26  | Baixa        | 10min   |
 
 **Total Estimado**: ~3.5 horas
+
+---
+
+# Feature: Refatoração com Clean Code, SOLID e DDD
+
+Spec de referência: `openspec/specs/clean-code-ddd-refactoring.md`
+
+---
+
+## Fase 1 — Setup Estrutural
+
+### T27 — Criar estrutura de pastas por camada
+
+- [x] Criar `src/agent/domain/model/`
+- [x] Criar `src/agent/domain/service/`
+- [x] Criar `src/agent/domain/exception/`
+- [x] Criar `src/agent/application/graph/`
+- [x] Criar `src/agent/application/stream/`
+- [x] Criar `src/agent/infrastructure/state/`
+- [x] Criar `src/agent/__tests__/domain/`
+- [x] Criar `src/agent/__tests__/application/`
+- **Critério**: Estrutura DDD criada conforme spec ✅
+
+## Fase 2 — Domain Layer
+
+### T28 — Extrair modelos, value objects e registry
+
+- [x] Criar `SupportedModel.ts` (tipos + guard)
+- [x] Criar `ModelConfig.ts`
+- [x] Criar `ModelRegistry.ts` com `default()`, `get()`, `isSupported()`
+- [x] Criar `AdGenerationRequest.ts`
+- [x] Remover configuração inline do agente monolítico
+- **Critério**: Registro declarativo de modelos centralizado ✅
+
+### T29 — Criar exceções de domínio
+
+- [x] Criar `DomainException.ts`
+- [x] Criar `ModelNotFoundException.ts`
+- [x] Criar `InvalidAdFormatException.ts`
+- **Critério**: Erros semânticos do domínio isolados ✅
+
+### T30 — Extrair serviços de domínio
+
+- [x] Criar `InstructionService.ts`
+- [x] Criar `ModelInitializerService.ts`
+- [x] Criar `AdGenerationService.ts`
+- [x] Criar `OutputValidationService.ts`
+- [x] Aplicar responsabilidade única por classe
+- **Critério**: Fluxo de geração encapsulado em serviços coesos ✅
+
+## Fase 3 — Application/Infrastructure Layer
+
+### T31 — Extrair estado, grafo e streaming
+
+- [x] Criar `AgentStateDefinition.ts`
+- [x] Criar `AdGeneratorGraphBuilder.ts`
+- [x] Criar `MessageParser.ts`
+- [x] Criar `AdStreamGenerator.ts`
+- [x] Manter fluxo linear: `loadInstructions -> generateAd -> validateOutput`
+- **Critério**: Orquestração separada da regra de negócio ✅
+
+### T32 — Refatorar `adGeneratorAgent.ts` para facade
+
+- [x] Transformar `adGeneratorAgent.ts` em facade de composição
+- [x] Re-exportar contrato público (`adGeneratorAgent`, `streamGeneratedAd`, tipos)
+- [x] Remover comentários desnecessários e lógica monolítica
+- **Critério**: Interface pública preservada com implementação desacoplada ✅
+
+## Fase 4 — Testes e Validação
+
+### T33 — Reestruturar testes e validar comportamento
+
+- [x] Criar testes em `__tests__/domain/`
+- [x] Criar testes em `__tests__/application/`
+- [x] Validar rota API existente sem quebra
+- [x] Executar `pnpm test` com sucesso (49/49)
+- [x] Executar `npx tsc --noEmit` com sucesso (0 erros)
+- [x] Verificar equivalência funcional do serviço (mesma lógica de negócio)
+- **Critério**: Refatoração concluída sem regressão comportamental ✅
+
+---
+
+## Ordem de Execução Sugerida (Clean Code + SOLID + DDD)
+
+```
+T27 → T28 → T29 → T30 → T31 → T32 → T33
+```
+
+## Estimativa de Complexidade (Clean Code + SOLID + DDD)
+
+| Task | Complexidade | Esforço |
+| ---- | ------------ | ------- |
+| T27  | Baixa        | 0.5h    |
+| T28  | Média        | 1.5h    |
+| T29  | Baixa        | 0.5h    |
+| T30  | Alta         | 2h      |
+| T31  | Alta         | 2h      |
+| T32  | Média        | 1h      |
+| T33  | Média        | 1h      |
+
+**Total Estimado**: ~8.5 horas

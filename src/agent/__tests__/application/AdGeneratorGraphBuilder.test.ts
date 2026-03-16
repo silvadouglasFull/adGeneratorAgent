@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const mockInitChatModel = jest.fn();
 
 jest.mock("langchain/chat_models/universal", () => ({
@@ -15,11 +16,11 @@ jest.mock("../../prompt", () => ({
 }));
 
 import { AdGeneratorGraphBuilder } from "../../application/graph/AdGeneratorGraphBuilder";
+import { ModelRegistry } from "../../domain/model/ModelRegistry";
+import { AdGenerationService } from "../../domain/service/AdGenerationService";
 import { InstructionService } from "../../domain/service/InstructionService";
 import { ModelInitializerService } from "../../domain/service/ModelInitializerService";
-import { AdGenerationService } from "../../domain/service/AdGenerationService";
 import { OutputValidationService } from "../../domain/service/OutputValidationService";
-import { ModelRegistry } from "../../domain/model/ModelRegistry";
 import { adGeneratorPrompt } from "../../prompt";
 
 describe("AdGeneratorGraphBuilder", () => {

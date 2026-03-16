@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { ModelNotFoundException } from "../../domain/exception/ModelNotFoundException";
 import { ModelRegistry } from "../../domain/model/ModelRegistry";
 

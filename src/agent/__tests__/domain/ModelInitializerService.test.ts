@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const mockInitChatModel = jest.fn();
 
 jest.mock("langchain/chat_models/universal", () => ({
