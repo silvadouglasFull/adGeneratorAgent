@@ -177,17 +177,17 @@ src/
 
 ## Critérios de Aceitação
 
-- [ ] O agente detecta intenção de geração de imagem no input do usuário
-- [ ] A imagem é gerada exclusivamente pelo modelo GPT Image 1.5
-- [ ] O texto do anúncio continua usando o modelo selecionado pelo usuário
-- [ ] O consumo de tokens da imagem é registrado como registro separado no banco
-- [ ] O campo `modelUsed` do registro de imagem é `"gpt-image-1.5"`
-- [ ] A API retorna evento SSE `image` com a imagem gerada
-- [ ] Quando não há pedido de imagem, o fluxo permanece inalterado
-- [ ] A UI exibe imagem acima do texto do anúncio
-- [ ] Testes cobrem: detecção de intenção, geração de imagem, registro de tokens, fluxo sem imagem
-- [ ] `pnpm test` passa
-- [ ] `npx tsc --noEmit` passa sem erros
+- [x] O agente detecta intenção de geração de imagem no input do usuário
+- [x] A imagem é gerada exclusivamente pelo modelo GPT Image 1.5
+- [x] O texto do anúncio continua usando o modelo selecionado pelo usuário
+- [x] O consumo de tokens da imagem é registrado como registro separado no banco
+- [x] O campo `modelUsed` do registro de imagem é `"gpt-image-1.5"`
+- [x] A API retorna evento SSE `image` com a imagem gerada
+- [x] Quando não há pedido de imagem, o fluxo permanece inalterado
+- [x] A UI exibe imagem acima do texto do anúncio
+- [x] Testes cobrem: detecção de intenção, geração de imagem, registro de tokens, fluxo sem imagem
+- [x] `pnpm test` passa
+- [x] `npx tsc --noEmit` passa sem erros
 
 ## Restrições
 

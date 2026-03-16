@@ -607,14 +607,14 @@ Tasks detalhadas: `openspec/image-generation-tool-tasks.md`
 
 ## Escopo Resumido
 
-- [ ] Adicionar `"gpt-image-1.5"` como modelo suportado para tracking de tokens
-- [ ] Criar serviço de detecção de intenção de imagem no input do usuário
-- [ ] Criar prompt de Diretor de Arte Imobiliário para gerar prompt técnico de imagem
-- [ ] Criar serviço de geração de imagem via API OpenAI (modelo fixo GPT Image 1.5)
-- [ ] Adicionar nós de imagem ao grafo LangGraph com roteamento condicional
-- [ ] Emitir evento SSE `image` na rota existente + registrar tokens de imagem separadamente
-- [ ] Criar componente `AdImagePreview` e integrar na UI (imagem acima, texto abaixo)
-- [ ] Cobrir com testes e validar `pnpm test` + `npx tsc --noEmit`
+- [x] Adicionar `"gpt-image-1.5"` como modelo suportado para tracking de tokens
+- [x] Criar serviço de detecção de intenção de imagem no input do usuário
+- [x] Criar prompt de Diretor de Arte Imobiliário para gerar prompt técnico de imagem
+- [x] Criar serviço de geração de imagem via API OpenAI (modelo fixo GPT Image 1.5)
+- [x] Adicionar nós de imagem ao grafo LangGraph com roteamento condicional
+- [x] Emitir evento SSE `image` na rota existente + registrar tokens de imagem separadamente
+- [x] Criar componente `AdImagePreview` e integrar na UI (imagem acima, texto abaixo)
+- [x] Cobrir com testes e validar `pnpm test` + `npx tsc --noEmit`
 
 ## Ordem de execução sugerida
 
