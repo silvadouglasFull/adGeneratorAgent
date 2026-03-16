@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { BaseLanguageModel } from "@langchain/core/language_models/base";
 import { AdGenerationRequest } from "../model/AdGenerationRequest";
 

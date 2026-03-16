@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { BaseLanguageModel } from "@langchain/core/language_models/base";
 import { initChatModel } from "langchain/chat_models/universal";
 import { ModelRegistry } from "../model/ModelRegistry";
 
 export class ModelInitializerService {
-    constructor(private registry: ModelRegistry) {}
+    constructor(private registry: ModelRegistry) { }
 
     async initialize(
         modelName: string,
