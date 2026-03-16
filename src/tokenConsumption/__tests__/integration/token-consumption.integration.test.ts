@@ -45,7 +45,7 @@ function createMockRepository(): ITokenConsumptionRepository {
                 periodEnd: new Date(),
                 totalTokens: 0,
                 requestCount: 0,
-                byModel: { "gpt-4o-mini": 0, "gemini-2.0-flash": 0 },
+                byModel: { "gpt-4o-mini": 0, "gemini-2.0-flash": 0, "gpt-image-1.5": 0 },
             })
         ),
         getByRequestId: jest.fn().mockResolvedValue(null),

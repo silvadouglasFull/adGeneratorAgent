@@ -1,6 +1,7 @@
-import { AdStreamGenerator } from "../../application/stream/AdStreamGenerator";
+import { AdStreamGenerator, StreamResult } from "../../application/stream/AdStreamGenerator";
 import { MessageParser } from "../../application/stream/MessageParser";
 import { InvalidAdFormatException } from "../../domain/exception/InvalidAdFormatException";
+import { ImageIntentDetector } from "../../domain/service/ImageIntentDetector";
 
 type GraphEvent = [unknown, { langgraph_node?: string }];
 
@@ -30,7 +31,7 @@ describe("AdStreamGenerator", () => {
         const stream = generator.stream({ input: "Produto X", model: "gpt-4o-mini" });
 
         const emittedTokens: string[] = [];
-        let finalResult: { ad: string; usage?: { inputTokens: number; outputTokens: number; totalTokens: number } } | undefined;
+        let finalResult: StreamResult | undefined;
 
         for (; ;) {
             const step = await stream.next();
@@ -42,7 +43,7 @@ describe("AdStreamGenerator", () => {
         }
 
         expect(emittedTokens).toEqual(["# Título", "\n\nDescrição"]);
-        expect(finalResult).toEqual({ ad: "# Título\n\nDescrição" });
+        expect(finalResult).toEqual({ ad: "# Título\n\nDescrição", usage: undefined, imageUrl: undefined, imageUsage: undefined });
         expect(graph.stream).toHaveBeenCalledWith(
             { input: "Produto X", model: "gpt-4o-mini" },
             { streamMode: "messages" }
@@ -82,6 +83,8 @@ describe("AdStreamGenerator", () => {
                 outputTokens: 20,
                 totalTokens: 30,
             },
+            imageUrl: undefined,
+            imageUsage: undefined,
         });
     });
 
@@ -101,5 +104,88 @@ describe("AdStreamGenerator", () => {
                 // noop
             }
         }).rejects.toThrow(InvalidAdFormatException);
+    });
+
+    it("deve retornar imageUrl e imageUsage quando imagem for solicitada", async () => {
+        const graph = {
+            stream: jest.fn().mockResolvedValue(
+                createAsyncIterable([
+                    [{ content: "# Anúncio com Imagem" }, { langgraph_node: "generateAd" }],
+                ])
+            ),
+        };
+
+        const imageIntentDetector = new ImageIntentDetector();
+        const mockImagePromptService = {
+            generate: jest.fn().mockResolvedValue("A modern apartment HDR shot"),
+        };
+        const mockImageGenerationService = {
+            generate: jest.fn().mockResolvedValue({
+                imageUrl: "data:image/png;base64,abc123",
+                usage: { inputTokens: 100, outputTokens: 200 },
+            }),
+        };
+
+        const generator = new AdStreamGenerator(
+            graph,
+            MessageParser,
+            imageIntentDetector,
+            mockImagePromptService as any,
+            mockImageGenerationService as any
+        );
+
+        const stream = generator.stream({ input: "Produto com imagem publicitária" });
+
+        let finalResult: StreamResult | undefined;
+        for (; ;) {
+            const step = await stream.next();
+            if (step.done) {
+                finalResult = step.value;
+                break;
+            }
+        }
+
+        expect(finalResult?.imageUrl).toBe("data:image/png;base64,abc123");
+        expect(finalResult?.imageUsage).toEqual({ inputTokens: 100, outputTokens: 200 });
+        expect(mockImagePromptService.generate).toHaveBeenCalledWith("Produto com imagem publicitária", undefined);
+        expect(mockImageGenerationService.generate).toHaveBeenCalledWith("A modern apartment HDR shot");
+    });
+
+    it("deve retornar sem imagem quando input não solicitar imagem", async () => {
+        const graph = {
+            stream: jest.fn().mockResolvedValue(
+                createAsyncIterable([
+                    [{ content: "# Anúncio Simples" }, { langgraph_node: "generateAd" }],
+                ])
+            ),
+        };
+
+        const imageIntentDetector = new ImageIntentDetector();
+        const mockImagePromptService = { generate: jest.fn() };
+        const mockImageGenerationService = { generate: jest.fn() };
+
+        const generator = new AdStreamGenerator(
+            graph,
+            MessageParser,
+            imageIntentDetector,
+            mockImagePromptService as any,
+            mockImageGenerationService as any
+        );
+
+        const stream = generator.stream({ input: "Produto premium luxo" });
+
+        let finalResult: StreamResult | undefined;
+        for (; ;) {
+            const step = await stream.next();
+            if (step.done) {
+                finalResult = step.value;
+                break;
+            }
+        }
+
+        expect(finalResult?.imageUrl).toBeUndefined();
+        expect(finalResult?.imageUsage).toBeUndefined();
+        expect(mockImagePromptService.generate).not.toHaveBeenCalled();
+        expect(mockImageGenerationService.generate).not.toHaveBeenCalled();
     });
 });

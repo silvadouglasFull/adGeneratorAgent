@@ -2,12 +2,22 @@
 import { RunnableConfig } from "@langchain/core/runnables";
 import { InvalidAdFormatException } from "../../domain/exception/InvalidAdFormatException";
 import { SupportedModel } from "../../domain/model/SupportedModel";
+import { ImageGenerationResult, ImageGenerationService } from "../../domain/service/ImageGenerationService";
+import { ImageIntentDetector } from "../../domain/service/ImageIntentDetector";
+import { ImagePromptService } from "../../domain/service/ImagePromptService";
 import { MessageParser } from "./MessageParser";
 
 export type TokenUsage = {
     inputTokens: number;
     outputTokens: number;
     totalTokens: number;
+};
+
+export type StreamResult = {
+    ad: string;
+    usage?: TokenUsage;
+    imageUrl?: string;
+    imageUsage?: { inputTokens: number; outputTokens: number };
 };
 
 function toNumber(value: unknown): number | undefined {
@@ -69,7 +79,10 @@ function extractTokenUsage(messageChunk: unknown): Partial<TokenUsage> | null {
 export class AdStreamGenerator {
     constructor(
         private graph: any,
-        private messageParser: typeof MessageParser
+        private messageParser: typeof MessageParser,
+        private imageIntentDetector?: ImageIntentDetector,
+        private imagePromptService?: ImagePromptService,
+        private imageGenerationService?: ImageGenerationService
     ) { }
 
     async *stream({
@@ -78,7 +91,7 @@ export class AdStreamGenerator {
     }: {
         input: string;
         model?: SupportedModel;
-    }): AsyncGenerator<string, { ad: string; usage?: TokenUsage }, void> {
+    }): AsyncGenerator<string, StreamResult, void> {
         const stream = (await this.graph.stream(
             { input, model },
             { streamMode: "messages" } as RunnableConfig
@@ -121,21 +134,26 @@ export class AdStreamGenerator {
             usage.outputTokens !== undefined ||
             usage.totalTokens !== undefined;
 
-        if (!hasUsage) {
-            return { ad: trimmedAd };
-        }
+        const finalUsage = hasUsage
+            ? {
+                inputTokens: usage.inputTokens ?? 0,
+                outputTokens: usage.outputTokens ?? 0,
+                totalTokens: usage.totalTokens ?? (usage.inputTokens ?? 0) + (usage.outputTokens ?? 0),
+            }
+            : undefined;
 
-        const inputTokens = usage.inputTokens ?? 0;
-        const outputTokens = usage.outputTokens ?? 0;
-        const totalTokens = usage.totalTokens ?? inputTokens + outputTokens;
+        let imageResult: ImageGenerationResult | undefined;
+
+        if (this.imageIntentDetector?.detect(input) && this.imagePromptService && this.imageGenerationService) {
+            const imagePrompt = await this.imagePromptService.generate(input, model);
+            imageResult = await this.imageGenerationService.generate(imagePrompt);
+        }
 
         return {
             ad: trimmedAd,
-            usage: {
-                inputTokens,
-                outputTokens,
-                totalTokens,
-            },
+            usage: finalUsage,
+            imageUrl: imageResult?.imageUrl,
+            imageUsage: imageResult?.usage,
         };
     }
 }

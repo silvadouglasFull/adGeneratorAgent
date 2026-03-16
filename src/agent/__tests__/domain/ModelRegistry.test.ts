@@ -25,6 +25,7 @@ describe("ModelRegistry", () => {
     it("isSupported deve retornar true para modelo válido", () => {
         expect(registry.isSupported("gpt-4o-mini")).toBe(true);
         expect(registry.isSupported("gemini-2.0-flash")).toBe(true);
+        expect(registry.isSupported("gpt-image-1.5")).toBe(true);
     });
 
     it("isSupported deve retornar false para modelo inválido", () => {
@@ -36,6 +37,7 @@ describe("ModelRegistry", () => {
         const defaultRegistry = ModelRegistry.default();
         expect(defaultRegistry.get("gpt-4o-mini")).toBeDefined();
         expect(defaultRegistry.get("gemini-2.0-flash")).toBeDefined();
+        expect(defaultRegistry.get("gpt-image-1.5")).toBeDefined();
     });
 
     it("deve passar apiKey para gemini-2.0-flash", () => {
@@ -43,5 +45,10 @@ describe("ModelRegistry", () => {
         const freshRegistry = ModelRegistry.default();
         const config = freshRegistry.get("gemini-2.0-flash");
         expect(config.apiKey).toBe("test-api-key");
+    });
+
+    it("deve retornar configuração openai-image para gpt-image-1.5", () => {
+        const config = registry.get("gpt-image-1.5");
+        expect(config.modelProvider).toBe("openai-image");
     });
 });

@@ -1,4 +1,4 @@
-import { SUPPORTED_MODELS, type SupportedModel, streamGeneratedAd } from "@/agent/adGeneratorAgent";
+import { streamGeneratedAd, TEXT_MODELS, type SupportedModel } from "@/agent/adGeneratorAgent";
 import { TokenConsumptionEvent } from "@/tokenConsumption/domain/model/TokenConsumptionEvent";
 import {
     ensureTokenConsumptionConsumerStarted,
@@ -40,17 +40,17 @@ export async function POST(request: Request) {
     const requestedModel = body?.model;
     const model: SupportedModel =
         typeof requestedModel === "string" &&
-            (SUPPORTED_MODELS as readonly string[]).includes(requestedModel)
+            (TEXT_MODELS as readonly string[]).includes(requestedModel)
             ? (requestedModel as SupportedModel)
             : "gpt-4o-mini";
 
     if (
         typeof requestedModel === "string" &&
-        !(SUPPORTED_MODELS as readonly string[]).includes(requestedModel)
+        !(TEXT_MODELS as readonly string[]).includes(requestedModel)
     ) {
         return Response.json(
             {
-                error: `Modelo inválido. Modelos suportados: ${SUPPORTED_MODELS.join(", ")}.`,
+                error: `Modelo inválido. Modelos suportados: ${TEXT_MODELS.join(", ")}.`,
             },
             { status: 400 }
         );
@@ -88,6 +88,17 @@ export async function POST(request: Request) {
 
                 const generationResult = streamStep.value;
 
+                if (generationResult?.imageUrl) {
+                    controller.enqueue(
+                        encoder.encode(
+                            `data: ${JSON.stringify({
+                                type: "image",
+                                imageUrl: generationResult.imageUrl,
+                            })}\n\n`
+                        )
+                    );
+                }
+
                 controller.enqueue(
                     encoder.encode(
                         `data: ${JSON.stringify({
@@ -96,10 +107,18 @@ export async function POST(request: Request) {
                                 model,
                                 generatedAt,
                                 usage: generationResult?.usage ?? null,
+                                ...(generationResult?.imageUrl
+                                    ? {
+                                        imageModel: "gpt-image-1.5",
+                                        imageUsage: generationResult.imageUsage ?? null,
+                                    }
+                                    : {}),
                             },
                         })}\n\n`
                     )
                 );
+
+                const requestId = crypto.randomUUID();
 
                 const inputTokens =
                     generationResult?.usage?.inputTokens ?? estimateTokenCount(input.trim());
@@ -107,7 +126,7 @@ export async function POST(request: Request) {
                     generationResult?.usage?.outputTokens ?? estimateTokenCount(fullOutput);
 
                 const tokenEvent = TokenConsumptionEvent.create({
-                    requestId: crypto.randomUUID(),
+                    requestId,
                     modelUsed: model,
                     inputTokens,
                     outputTokens,
@@ -117,6 +136,20 @@ export async function POST(request: Request) {
                 tokenConsumptionContainer.useCase.execute(tokenEvent).catch((error) => {
                     console.error("Falha ao registrar consumo de tokens", error);
                 });
+
+                if (generationResult?.imageUsage) {
+                    const imageTokenEvent = TokenConsumptionEvent.create({
+                        requestId: crypto.randomUUID(),
+                        modelUsed: "gpt-image-1.5",
+                        inputTokens: generationResult.imageUsage.inputTokens,
+                        outputTokens: generationResult.imageUsage.outputTokens,
+                        timestamp: new Date(),
+                    });
+
+                    tokenConsumptionContainer.useCase.execute(imageTokenEvent).catch((error) => {
+                        console.error("Falha ao registrar consumo de tokens de imagem", error);
+                    });
+                }
             } catch (error) {
                 const message =
                     error instanceof Error ? error.message : "Erro interno ao gerar o anúncio.";

@@ -28,6 +28,7 @@ export class ModelRegistry {
                 modelProvider: "google-genai",
                 apiKey: process.env.GENAI_API,
             },
+            "gpt-image-1.5": { modelProvider: "openai-image" },
         });
     }
 }
