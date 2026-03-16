@@ -282,3 +282,142 @@ T9 → T10 → T11 → T12 → T13 → T14 → T15 → T16 → T17 → T18
 | T18  | Média        | 1h      |
 
 **Total Estimado**: ~7.5 horas
+
+---
+
+# Feature: Refatoração com initChatModel
+
+Spec de referência: `openspec/specs/init-chat-model.md`
+
+---
+
+## Fase 1 — Setup
+
+### T19 — Verificar e instalar dependência `langchain`
+
+- [ ] Verificar se `langchain` já está no `package.json`
+- [ ] Se não estiver: executar `pnpm add langchain`
+- [ ] Validar que `initChatModel` pode ser importado de `langchain/chat_models/universal`
+- [ ] Confirmar que `@langchain/openai` e `@langchain/google-genai` continuam instalados (peer deps)
+- **Critério**: `import { initChatModel } from "langchain/chat_models/universal"` compila sem erro
+
+---
+
+## Fase 2 — Refatoração do Agente
+
+### T20 — Atualizar testes antes da refatoração
+
+- [ ] Em `/src/agent/__tests__/adGeneratorAgent.test.ts`:
+  - [ ] Atualizar mock: substituir mocks de `ChatOpenAI` e `ChatGoogleGenerativeAI` por mock de `initChatModel`
+  - [ ] Mock de `initChatModel` retorna objeto com `.pipe()` que resolve com Markdown válido
+  - [ ] Garantir que os 5 testes existentes continuam passando com o novo mock
+- [ ] Em `/src/agent/__tests__/modelRouting.test.ts`:
+  - [ ] Remover testes de `routeToModel`, `generateAd_openai`, `generateAd_gemini` (não existirão mais)
+  - [ ] Adicionar testes para o nó `generateAd` com `MODEL_CONFIGS`:
+    - [ ] Testar: `generateAd` com `model: "gpt-4o-mini"` chama `initChatModel` com `modelProvider: "openai"`
+    - [ ] Testar: `generateAd` com `model: "gemini-2.0-flash"` chama `initChatModel` com `modelProvider: "google-genai"`
+    - [ ] Testar: `generateAd` com `model: undefined` usa `gpt-4o-mini` como default
+- **Critério**: Testes escritos e esperando a implementação (podem falhar temporariamente)
+
+### T21 — Refatorar `adGeneratorAgent.ts` com `initChatModel`
+
+- [ ] Em `/src/agent/adGeneratorAgent.ts`:
+  - [ ] Adicionar import: `import { initChatModel } from "langchain/chat_models/universal"`
+  - [ ] Remover imports: `ChatOpenAI` de `@langchain/openai` e `ChatGoogleGenerativeAI` de `@langchain/google-genai`
+  - [ ] Criar tipo `ModelConfig` e constante `MODEL_CONFIGS`:
+    ```typescript
+    type ModelConfig = { modelProvider: string; apiKey?: string };
+    const MODEL_CONFIGS: Record<SupportedModel, ModelConfig> = {
+      "gpt-4o-mini": { modelProvider: "openai" },
+      "gemini-2.0-flash": {
+        modelProvider: "google-genai",
+        apiKey: process.env.GENAI_API,
+      },
+    };
+    ```
+  - [ ] Criar função `generateAd(state)` única que:
+    - Lê `state.model ?? "gpt-4o-mini"`
+    - Busca configuração em `MODEL_CONFIGS[selectedModel]`
+    - Lança erro se modelo não configurado: `Modelo "${selectedModel}" não configurado. Modelos suportados: ${SUPPORTED_MODELS.join(", ")}`
+    - Chama `await initChatModel(selectedModel, { ...config, temperature: 0.7, maxRetries: 0 })`
+    - Invoca chain com `adGeneratorPrompt.pipe(model)`
+    - Retorna `{ ad }`
+  - [ ] Remover funções: `generateAd_openai`, `generateAd_gemini`, `routeToModel`
+  - [ ] Atualizar grafo:
+    - Remover `.addNode("generateAd_openai", ...)` e `.addNode("generateAd_gemini", ...)`
+    - Adicionar `.addNode("generateAd", generateAd)`
+    - Remover `.addConditionalEdges(...)`
+    - Adicionar `.addEdge("loadInstructions", "generateAd")`
+    - Remover `.addEdge("generateAd_openai", "validateOutput")` e `.addEdge("generateAd_gemini", "validateOutput")`
+    - Adicionar `.addEdge("generateAd", "validateOutput")`
+  - [ ] Remover export de `routeToModel`, `generateAd_openai`, `generateAd_gemini`
+  - [ ] Atualizar filtro em `streamGeneratedAd()`:
+    - Substituir condição de dois nós por filtro único: `metadata?.langgraph_node !== "generateAd"`
+- **Critério**: Arquivo salvo, compilação pode falhar temporariamente até T22
+
+### T22 — Resolver TypeScript e compilar
+
+- [ ] Executar `npx tsc --noEmit`
+- [ ] Corrigir eventuais erros de tipo (principalmente tipagem de `initChatModel`)
+- [ ] Garantir que `MODEL_CONFIGS` está tipado corretamente com `Record<SupportedModel, ModelConfig>`
+- [ ] Garantir que não restam referências a `ChatOpenAI`, `ChatGoogleGenerativeAI` no agente
+- **Critério**: `npx tsc --noEmit` retorna 0 erros
+
+---
+
+## Fase 3 — Testes
+
+### T23 — Executar e validar todos os testes
+
+- [ ] Rodar `pnpm test`
+- [ ] Testes do agente devem passar (adGeneratorAgent.test.ts)
+- [ ] Testes de MODEL_CONFIGS devem passar (modelRouting.test.ts atualizado)
+- [ ] Testes da rota devem passar sem modificação (route.test.ts)
+- [ ] Resultado esperado: número igual ou maior que 18 testes passando
+- **Critério**: `pnpm test` — todas as suites verdes, 0 falhas
+
+---
+
+## Fase 4 — Validação
+
+### T24 — Validar TypeScript final
+
+- [ ] Executar `npx tsc --noEmit`
+- [ ] Resultado: 0 erros, 0 warnings
+- **Critério**: Compilação limpa
+
+### T25 — Atualizar documentação interna do código
+
+- [ ] Adicionar comentário em `MODEL_CONFIGS` explicando o padrão de registro declarativo
+- [ ] Atualizar JSDoc de `generateAd()` para refletir uso de `initChatModel`
+- [ ] Atualizar comentário no grafo (remover referências a conditional edges)
+- **Critério**: Código autoexplicativo e atualizado
+
+### T26 — Marcar spec e tasks como concluídos
+
+- [ ] Marcar critérios de aceitação em `init-chat-model.md` como `[x]`
+- [ ] Marcar tasks T19-T26 neste arquivo como `[x]`
+- **Critério**: Documentação 100% atualizada
+
+---
+
+## Ordem de Execução Sugerida (initChatModel)
+
+```
+T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
+```
+
+## Estimativa de Complexidade (initChatModel)
+
+| Task | Complexidade | Esforço |
+| ---- | ------------ | ------- |
+| T19  | Baixa        | 15min   |
+| T20  | Média        | 45min   |
+| T21  | Alta         | 1.5h    |
+| T22  | Baixa        | 30min   |
+| T23  | Baixa        | 15min   |
+| T24  | Baixa        | 5min    |
+| T25  | Baixa        | 20min   |
+| T26  | Baixa        | 10min   |
+
+**Total Estimado**: ~3.5 horas
