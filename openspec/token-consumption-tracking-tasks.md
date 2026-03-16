@@ -10,10 +10,10 @@
 
 **Acceptance Criteria:**
 
-- [ ] `drizzle-orm` e `drizzle-kit` instalados (`pnpm add`)
-- [ ] `drizzle.config.ts` criado na raiz com conexão PostgreSQL
+- [x] `drizzle-orm` e `drizzle-kit` instalados (`pnpm add`)
+- [x] `drizzle.config.ts` criado na raiz com conexão PostgreSQL
 - [ ] Variáveis de ambiente configuradas (`.env.local`)
-- [ ] `pnpm drizzle-kit generate` roda sem erros
+- [x] `pnpm drizzle-kit generate` roda sem erros
 - [ ] Conexão com banco testada (conexão simples)
 
 **Detalhes:**
@@ -28,7 +28,7 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/infrastructure/db/schema.ts` criado
+- [x] Arquivo `src/tokenConsumption/infrastructure/db/schema.ts` criado
 - [ ] Tabela `token_consumptions` definida com:
   - `id`: UUID primary key
   - `requestId`: UUID unique (idempotência)
@@ -45,7 +45,7 @@
   - Compound: `(requestId, status)` para queries rápidas
   - Single: `timestamp` para rangequeries
   - Single: `modelUsed` para agregações
-- [ ] Schema compila sem erros TypeScript
+- [x] Schema compila sem erros TypeScript
 
 **Detalhes:**
 
@@ -59,9 +59,9 @@
 
 **Acceptance Criteria:**
 
-- [ ] Comando `pnpm drizzle-kit generate` cria migration em `src/tokenConsumption/infrastructure/db/migrations/`
-- [ ] Migration é válida (verifica syntax SQL)
-- [ ] Arquivo `src/tokenConsumption/infrastructure/db/migrate.ts` criado (helper para rodar migrations)
+- [x] Comando `pnpm drizzle-kit generate` cria migration em `src/tokenConsumption/infrastructure/db/migrations/`
+- [x] Migration é válida (verifica syntax SQL)
+- [x] Arquivo `src/tokenConsumption/infrastructure/db/migrate.ts` criado (helper para rodar migrations)
 - [ ] `pnpm drizzle-kit push` executa com sucesso
 - [ ] Tabela `token_consumptions` existe no PostgreSQL
 
@@ -76,10 +76,10 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/infrastructure/db/seeds/token_consumption.seed.ts` criado
+- [x] Arquivo `src/tokenConsumption/infrastructure/db/seeds/token_consumption.seed.ts` criado
 - [ ] Seed insere 10-20 registros fake (histórico exemplo)
-- [ ] Seed é idempotente (verifica se já rodou ou usa fixtures)
-- [ ] Script `pnpm db:seed` adicionado em `package.json`
+- [x] Seed é idempotente (verifica se já rodou ou usa fixtures)
+- [x] Script `pnpm db:seed` adicionado em `package.json`
 - [ ] Seed executa sem erro
 
 **Detalhes:**
@@ -96,21 +96,21 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/domain/model/TokenConsumptionEvent.ts` criado
-- [ ] Class imutável com:
+- [x] Arquivo `src/tokenConsumption/domain/model/TokenConsumptionEvent.ts` criado
+- [x] Class imutável com:
   - Constructor privado
   - Factory method `create()` com validações
   - Getters apenas (sem setters)
   - `equals()` para comparação
   - `toString()` para debugging
-- [ ] Validações:
+- [x] Validações:
   - `requestId` é UUID válido
   - `modelUsed` é um dos suportados (`SupportedModel`)
   - `inputTokens`, `outputTokens` > 0
   - `timestamp` no passado/presente
-- [ ] Exceções lançadas em caso de validação inválida
-- [ ] Arquivo `src/tokenConsumption/domain/model/TokenAggregation.ts` criado
-- [ ] Testes: `src/tokenConsumption/__tests__/domain/model/TokenConsumptionEvent.test.ts`
+- [x] Exceções lançadas em caso de validação inválida
+- [x] Arquivo `src/tokenConsumption/domain/model/TokenAggregation.ts` criado
+- [x] Testes: `src/tokenConsumption/__tests__/domain/model/TokenConsumptionEvent.test.ts`
 
 **Detalhes:**
 
@@ -124,14 +124,14 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/domain/exception/TokenConsumptionException.ts` (base)
-- [ ] Exceções específicas:
+- [x] Arquivo `src/tokenConsumption/domain/exception/TokenConsumptionException.ts` (base)
+- [x] Exceções específicas:
   - `TokenConsumptionRepositoryException`
   - `InvalidTokenConsumptionEventException`
   - `QueueConsumerException`
-- [ ] Cada exceção herda de `TokenConsumptionException`
-- [ ] Construtores aceitam `message` e `originalError?`
-- [ ] Sem comentários desnecessários
+- [x] Cada exceção herda de `TokenConsumptionException`
+- [x] Construtores aceitam `message` e `originalError?`
+- [x] Sem comentários desnecessários
 
 **Detalhes:**
 
@@ -144,8 +144,8 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/domain/service/ITokenConsumptionRepository.ts`
-- [ ] Interface com métodos:
+- [x] Arquivo `src/tokenConsumption/domain/service/ITokenConsumptionRepository.ts`
+- [x] Interface com métodos:
   - `save(event): Promise<void>`
   - `getTotalTokensByModel(model): Promise<number>`
   - `getTotalTokensByPeriod(start, end): Promise<TokenAggregation>`
@@ -166,19 +166,19 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/infrastructure/persistence/DrizzleTokenConsumptionRepository.ts`
-- [ ] Class implementa `ITokenConsumptionRepository`
-- [ ] Constructor injeta dependência `db: Database`
-- [ ] Todos os métodos implementados:
+- [x] Arquivo `src/tokenConsumption/infrastructure/persistence/DrizzleTokenConsumptionRepository.ts`
+- [x] Class implementa `ITokenConsumptionRepository`
+- [x] Constructor injeta dependência `db: Database`
+- [x] Todos os métodos implementados:
   - `save()` com idempotência via `requestId` (INSERT OR UPDATE)
   - `getTotalTokensByModel()` com SQL SUM
   - `getTotalTokensByPeriod()` com WHERE timestamp BETWEEN
   - `getByRequestId()` com SELECT simples
   - `getFailedEvents()` com WHERE status = 'failed'
-- [ ] Tratamento de erros:
+- [x] Tratamento de erros:
   - Unique constraint violation (requestId duplicado) → silenciosamente ignora (idempotência)
   - Query error → lança `TokenConsumptionRepositoryException`
-- [ ] Testes: `src/tokenConsumption/__tests__/infrastructure/DrizzleTokenConsumptionRepository.test.ts`
+- [x] Testes: `src/tokenConsumption/__tests__/infrastructure/DrizzleTokenConsumptionRepository.test.ts`
   - Mocks de `db` (fake Drizzle responses)
   - Testes de nominal cases
   - Testes de error cases
@@ -195,11 +195,11 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/infrastructure/db/client.ts` (ou similar)
-- [ ] Exporta instância única `db: Database`
-- [ ] Usa `process.env.DATABASE_URL` (validado)
-- [ ] Pool de conexões configurado
-- [ ] Inicialização apenas uma vez (singleton pattern)
+- [x] Arquivo `src/tokenConsumption/infrastructure/db/client.ts` (ou similar)
+- [x] Exporta instância única `db: Database`
+- [x] Usa `process.env.DATABASE_URL` (validado)
+- [x] Pool de conexões configurado
+- [x] Inicialização apenas uma vez (singleton pattern)
 
 **Detalhes:**
 
@@ -214,11 +214,11 @@
 
 **Acceptance Criteria:**
 
-- [ ] Biblioteca `ioredis` instalada (`pnpm add ioredis`)
-- [ ] Arquivo `src/tokenConsumption/infrastructure/queue/redis-client.ts`
-- [ ] Client singleton exportado
-- [ ] Usa `process.env.REDIS_URL` (ou localhost:6379 default)
-- [ ] Manejo de conexão/desconexão
+- [x] Biblioteca `ioredis` instalada (`pnpm add ioredis`)
+- [x] Arquivo `src/tokenConsumption/infrastructure/queue/redis-client.ts`
+- [x] Client singleton exportado
+- [x] Usa `process.env.REDIS_URL` (ou localhost:6379 default)
+- [x] Manejo de conexão/desconexão
 - [ ] Testes de conectividade simples
 
 **Detalhes:**
@@ -232,15 +232,15 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/infrastructure/queue/RedisTokenConsumptionQueueProducer.ts`
-- [ ] Class implementa `ITokenConsumptionQueueProducer`
-- [ ] Constructor injeta `redis: Redis`
-- [ ] Método `enqueue(event)`:
+- [x] Arquivo `src/tokenConsumption/infrastructure/queue/RedisTokenConsumptionQueueProducer.ts`
+- [x] Class implementa `ITokenConsumptionQueueProducer`
+- [x] Constructor injeta `redis: Redis`
+- [x] Método `enqueue(event)`:
   - Serializa `TokenConsumptionEvent` para JSON
   - Usa `redis.rpush('token_consumption:queue', json)`
   - Não bloqueia (fire-and-forget, sem await da persistência)
   - Lança `QueueConsumerException` se falha
-- [ ] Testes: `src/tokenConsumption/__tests__/infrastructure/RedisTokenConsumptionQueueProducer.test.ts`
+- [x] Testes: `src/tokenConsumption/__tests__/infrastructure/RedisTokenConsumptionQueueProducer.test.ts`
   - Mock de Redis (redis-mock ou jest mock)
   - Testes de enqueue sucesso
   - Testes de enqueue failure
@@ -257,24 +257,24 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/infrastructure/queue/RedisTokenConsumptionQueueConsumer.ts`
-- [ ] Class implementa `ITokenConsumptionQueueConsumer`
-- [ ] Constructor injeta:
+- [x] Arquivo `src/tokenConsumption/infrastructure/queue/RedisTokenConsumptionQueueConsumer.ts`
+- [x] Class implementa `ITokenConsumptionQueueConsumer`
+- [x] Constructor injeta:
   - `redis: Redis`
   - `repository: ITokenConsumptionRepository`
-- [ ] Método `start()`:
+- [x] Método `start()`:
   - Inicia loop infinito (processamento assíncrono)
   - `redis.blpop('token_consumption:queue', 0)` (blocking pop)
   - Processa event, chama `repository.save(event)`
   - Success → retira da fila
   - Fail → enfileira em DLQ com retry count
   - Tratamento graceful (catch, logging, não crashes)
-- [ ] Método `stop()`: cancela loop de processamento
-- [ ] Retry logic:
+- [x] Método `stop()`: cancela loop de processamento
+- [x] Retry logic:
   - Max 3 tentativas
   - Backoff exponencial (setTimeout)
   - Após falhat → move para `token_consumption:dlq`
-- [ ] Testes: `src/tokenConsumption/__tests__/infrastructure/RedisTokenConsumptionQueueConsumer.test.ts`
+- [x] Testes: `src/tokenConsumption/__tests__/infrastructure/RedisTokenConsumptionQueueConsumer.test.ts`
   - Mock de Redis e Repository
   - Teste de processamento nominal
   - Teste de retry e DLQ
@@ -294,9 +294,9 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/application/service/ITokenConsumptionQueueProducer.ts`
+- [x] Arquivo `src/tokenConsumption/application/service/ITokenConsumptionQueueProducer.ts`
   - Métodos: `enqueue(event): Promise<void>`
-- [ ] Arquivo `src/tokenConsumption/application/service/ITokenConsumptionQueueConsumer.ts`
+- [x] Arquivo `src/tokenConsumption/application/service/ITokenConsumptionQueueConsumer.ts`
   - Métodos: `start()`, `stop()`, `process(event)` (interno)
 
 **Detalhes:**
@@ -309,15 +309,15 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/application/usecase/RecordTokenConsumptionUseCase.ts`
-- [ ] Class `RecordTokenConsumptionUseCase`
-- [ ] Constructor injeta `producer: ITokenConsumptionQueueProducer`
-- [ ] Método `execute(event: TokenConsumptionEvent): Promise<void>`
+- [x] Arquivo `src/tokenConsumption/application/usecase/RecordTokenConsumptionUseCase.ts`
+- [x] Class `RecordTokenConsumptionUseCase`
+- [x] Constructor injeta `producer: ITokenConsumptionQueueProducer`
+- [x] Método `execute(event: TokenConsumptionEvent): Promise<void>`
   - Valida event (delega para domain)
   - Chama `producer.enqueue(event)` (fire-and-forget)
   - Retorna void (não aguarda persistência)
   - Lança exception em erro
-- [ ] Testes: `src/tokenConsumption/__tests__/application/RecordTokenConsumptionUseCase.test.ts`
+- [x] Testes: `src/tokenConsumption/__tests__/application/RecordTokenConsumptionUseCase.test.ts`
   - Mock de producer
   - Testes de sucesso/falha
 
@@ -332,14 +332,14 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/tokenConsumption.ts`
-- [ ] Exporta `tokenConsumptionContainer` object com:
+- [x] Arquivo `src/tokenConsumption/tokenConsumption.ts`
+- [x] Exporta `tokenConsumptionContainer` object com:
   - `repository: ITokenConsumptionRepository`
   - `producer: ITokenConsumptionQueueProducer`
   - `consumer: ITokenConsumptionQueueConsumer`
   - `useCase: RecordTokenConsumptionUseCase`
-- [ ] Inicialização lazy ou eager (definir qual padrão)
-- [ ] Sem testes adicionais (é configuração)
+- [x] Inicialização lazy ou eager (definir qual padrão)
+- [x] Sem testes adicionais (é configuração)
 
 **Detalhes:**
 
@@ -354,14 +354,14 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/app/api/agent/generate/route.ts` modificado
-- [ ] Import `tokenConsumptionContainer`
-- [ ] Após geração bem-sucedida do anúncio:
+- [x] Arquivo `src/app/api/agent/generate/route.ts` modificado
+- [x] Import `tokenConsumptionContainer`
+- [x] Após geração bem-sucedida do anúncio:
   - Cria `TokenConsumptionEvent` com tokens do modelo
   - Chama `useCase.execute(event)` (fire-and-forget)
   - Não bloqueia resposta ao cliente
-- [ ] Erro de fila não interrompe resposta (logging apenas)
-- [ ] Testes: `src/app/api/agent/generate/__tests__/route.test.ts` modificado
+- [x] Erro de fila não interrompe resposta (logging apenas)
+- [x] Testes: `src/app/api/agent/generate/__tests__/route.test.ts` modificado
   - Mock de `tokenConsumptionContainer`
   - Verifica que `useCase.execute` foi chamado
 
@@ -376,11 +376,11 @@
 
 **Acceptance Criteria:**
 
-- [ ] Identificado como obter `inputTokens` e `outputTokens` do modelo
+- [x] Identificado como obter `inputTokens` e `outputTokens` do modelo
   - Opção 1: LangChain expõe `usage` em response
   - Opção 2: Contá tokens manualmente (TikToken lib)
-- [ ] Implementado getter de tokens em `AdGeneratorService` ou `AdStreamGenerator`
-- [ ] Tokens disponíveis na route handler (ao final de stream)
+- [x] Implementado getter de tokens em `AdGeneratorService` ou `AdStreamGenerator`
+- [x] Tokens disponíveis na route handler (ao final de stream)
 
 **Detalhes:**
 
@@ -395,8 +395,8 @@
 
 - [ ] Consumer inicia ao startup da aplicação Next.js
 - [ ] Opção 1: Usar middleware/instrumentation.ts
-- [ ] Opção 2: Chamar manualmente em route handler (lazy init)
-- [ ] Consumer roda em background (não bloqueia routes)
+- [x] Opção 2: Chamar manualmente em route handler (lazy init)
+- [x] Consumer roda em background (não bloqueia routes)
 - [ ] Graceful shutdown: parar consumer ao desligar app
 
 **Detalhes:**
@@ -412,15 +412,15 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/__tests__/domain/model/TokenConsumptionEvent.test.ts`
-- [ ] Cobertura:
+- [x] Arquivo `src/tokenConsumption/__tests__/domain/model/TokenConsumptionEvent.test.ts`
+- [x] Cobertura:
   - Factory válida (happy path)
   - Factory com requestId inválido
   - Factory com tokens negativos
   - Factory com timestamp inválido
   - Equals method
   - ToString method
-- [ ] Mínimo 5 testes por classe
+- [x] Mínimo 5 testes por classe
 - [ ] `pnpm test --testPathPattern=domain` passa
 
 ---
@@ -429,14 +429,14 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/__tests__/infrastructure/`
+- [x] Arquivo `src/tokenConsumption/__tests__/infrastructure/`
   - `DrizzleTokenConsumptionRepository.test.ts`
   - `RedisTokenConsumptionQueueProducer.test.ts`
   - `RedisTokenConsumptionQueueConsumer.test.ts`
-- [ ] Mocks:
+- [x] Mocks:
   - Redis mocado (jest.mock ou redis-mock)
   - Drizzle mocado (jest.mock)
-- [ ] Cobertura nominal e error cases
+- [x] Cobertura nominal e error cases
 - [ ] `pnpm test --testPathPattern=infrastructure` passa
 
 ---
