@@ -29,10 +29,10 @@
 
 - [ ] Arquivo `src/agent/infrastructure/providers/ModelProviderFactory.ts` criado
 - [ ] Implementa interface `IModelProviderFactory` (domain)
-- [ ] Para `gpt-4o-mini` / OpenAI: `baseURL = https://oai.hconeai.com`
-- [ ] Para `gemini-2.0-flash` / Gemini: `baseUrl = https://gateway.hconeai.com`
-- [ ] Header `Helicone-Auth: Bearer ${HELICONE_API_KEY}` presente em ambos
-- [ ] Header `Helicone-User-Id: ${userId}` presente em ambos
+- [ ] Para `gpt-4o-mini` / OpenAI: `configuration.baseURL = https://oai.helicone.ai/v1`
+- [ ] Para `gemini-2.0-flash` / Gemini: `heliconeRequestId` será `null` com custo `0` (degradação: `ChatGoogleGenerativeAI` não suporta headers customizados HTTP diretamente)
+- [ ] Header `Helicone-Auth: Bearer ${HELICONE_API_KEY}` presente em OpenAI via `configuration.defaultHeaders`
+- [ ] Header `Helicone-User-Id: ${userId}` presente em OpenAI via `configuration.defaultHeaders`
 - [ ] `AdGeneratorGraphBuilder` usa `ModelProviderFactory` via injeção de dependência
 - [ ] TypeScript compila sem erros
 
@@ -127,8 +127,8 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 - [ ] Arquivo `src/tokenConsumption/infrastructure/providers/HeliconeCostAdapter.ts` criado
 - [ ] Implementa `IHeliconeCostAdapter`
-- [ ] Chama `GET https://api.hconeai.com/v1/request/{heliconeRequestId}`
-- [ ] Autentica com header `Helicone-Auth: Bearer ${HELICONE_API_KEY}`
+- [ ] Chama `GET https://api.helicone.ai/v1/request/{heliconeRequestId}`
+- [ ] Autentica com header `Authorization: Bearer ${HELICONE_API_KEY}`
 - [ ] Extrai `cost_usd` do payload de resposta
 - [ ] Em erro de rede ou parsing, retorna `0` (não propaga exceção)
 - [ ] Log de aviso em caso de falha (sem crash)
@@ -223,9 +223,10 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 ```typescript
 // OpenAI via LangChain
-const heliconeId = result.response_metadata?.headers?.["helicone-id"]
-  ?? result.additional_kwargs?.rawResponse?.headers?.["helicone-id"]
-  ?? null;
+const heliconeId =
+  result.response_metadata?.headers?.["helicone-id"] ??
+  result.additional_kwargs?.rawResponse?.headers?.["helicone-id"] ??
+  null;
 ```
 
 ---
@@ -316,6 +317,7 @@ const heliconeId = result.response_metadata?.headers?.["helicone-id"]
 - [ ] `ModelProviderFactory.create('gemini-2.0-flash', userId)` — instancia `ChatGoogleGenerativeAI` com `baseUrl` Helicone
 
 **Arquivos**:
+
 - `src/tokenConsumption/__tests__/infrastructure/HeliconeCostAdapter.test.ts`
 - `src/tokenConsumption/__tests__/infrastructure/ExchangeRateAdapter.test.ts`
 - `src/agent/__tests__/infrastructure/ModelProviderFactory.test.ts`
@@ -385,24 +387,24 @@ T1.1 → T1.2
 
 ## Complexidade Estimada
 
-| Task  | Complexidade | Observação                                          |
-|-------|--------------|-----------------------------------------------------|
-| T1.1  | Baixa        | Apenas variável de ambiente                         |
-| T1.2  | Média        | Factory + integração com LangGraph existente        |
-| T2.1  | Baixa        | Alteração no schema Drizzle                         |
-| T2.2  | Baixa        | Comando Drizzle                                     |
-| T3.1  | Baixa        | Value object com validação simples                  |
-| T3.2  | Baixa        | Exceção de domínio                                  |
-| T3.3  | Baixa        | Interfaces                                          |
-| T4.1  | Média        | HTTP + parsing + fallback                           |
-| T4.2  | Baixa        | HTTP simples + fallback                             |
-| T5.1  | Média        | Orquestração com DI                                 |
-| T5.2  | Baixa        | Extensão de tipo existente                          |
-| T5.3  | Média        | Integração com consumer existente                   |
-| T6.1  | Média        | Extração de metadata do LangChain (pode variar)     |
-| T7.1  | Baixa        | Route handler simples                               |
-| T7.2  | Média        | Query Drizzle com GROUP BY e SUM                    |
-| T7.3  | Baixa        | Campo + migration                                    |
-| T8.1–5| Alta (total) | Cobertura completa de casos nominais e falha        |
-| T9.1  | Baixa        | Validação final                                     |
-| T9.2  | Baixa        | Atualização de seed                                 |
+| Task   | Complexidade | Observação                                      |
+| ------ | ------------ | ----------------------------------------------- |
+| T1.1   | Baixa        | Apenas variável de ambiente                     |
+| T1.2   | Média        | Factory + integração com LangGraph existente    |
+| T2.1   | Baixa        | Alteração no schema Drizzle                     |
+| T2.2   | Baixa        | Comando Drizzle                                 |
+| T3.1   | Baixa        | Value object com validação simples              |
+| T3.2   | Baixa        | Exceção de domínio                              |
+| T3.3   | Baixa        | Interfaces                                      |
+| T4.1   | Média        | HTTP + parsing + fallback                       |
+| T4.2   | Baixa        | HTTP simples + fallback                         |
+| T5.1   | Média        | Orquestração com DI                             |
+| T5.2   | Baixa        | Extensão de tipo existente                      |
+| T5.3   | Média        | Integração com consumer existente               |
+| T6.1   | Média        | Extração de metadata do LangChain (pode variar) |
+| T7.1   | Baixa        | Route handler simples                           |
+| T7.2   | Média        | Query Drizzle com GROUP BY e SUM                |
+| T7.3   | Baixa        | Campo + migration                               |
+| T8.1–5 | Alta (total) | Cobertura completa de casos nominais e falha    |
+| T9.1   | Baixa        | Validação final                                 |
+| T9.2   | Baixa        | Atualização de seed                             |

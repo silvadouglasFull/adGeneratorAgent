@@ -162,7 +162,7 @@ POST /api/agent/generate
          │
          ▼
   HeliconeCostAdapter.getCostByRequestId(heliconeRequestId)
-  → GET https://api.hconeai.com/v1/request/{id}
+  → GET https://api.helicone.ai/v1/request/{id}
   → extrai campo cost_usd
          │
          ▼
@@ -195,8 +195,8 @@ HELICONE_API_KEY=sk-helicone-...
 
 | Provedor | URL original da OpenAI/Google             | URL via proxy Helicone      |
 | -------- | ----------------------------------------- | --------------------------- |
-| OpenAI   | https://api.openai.com                    | https://oai.hconeai.com     |
-| Gemini   | https://generativelanguage.googleapis.com | https://gateway.hconeai.com |
+| OpenAI   | https://api.openai.com                    | https://oai.helicone.ai/v1     |
+| Gemini   | https://generativelanguage.googleapis.com | https://gateway.helicone.ai |
 
 ### Headers Obrigatórios
 
@@ -261,8 +261,8 @@ GET /api/costs/summary?userId=<uuid>
 
 ### Responsabilidades
 
-- Instanciar `ChatOpenAI` com `baseURL` apontando para Helicone (`https://oai.hconeai.com`).
-- Instanciar `ChatGoogleGenerativeAI` com `baseUrl` apontando para Helicone (`https://gateway.hconeai.com`).
+- Instanciar `ChatOpenAI` com `baseURL` apontando para Helicone (`https://oai.helicone.ai/v1`).
+- Instanciar `ChatGoogleGenerativeAI` com `baseUrl` apontando para Helicone (`https://gateway.helicone.ai`).
 - Injetar headers `Helicone-Auth` e `Helicone-User-Id`.
 - Manter compatibilidade com o `AdGeneratorGraphBuilder` atual (aceitar `SupportedModel`).
 
@@ -311,9 +311,9 @@ interface IModelProviderFactory {
 
 | Serviço                 | Finalidade                   | URL                                                  |
 | ----------------------- | ---------------------------- | ---------------------------------------------------- |
-| Helicone                | Proxy + cálculo de custo     | https://api.hconeai.com                              |
-| Helicone (OpenAI proxy) | Redirecionamento para OpenAI | https://oai.hconeai.com                              |
-| Helicone (Gemini proxy) | Redirecionamento para Gemini | https://gateway.hconeai.com                          |
+| Helicone                | Proxy + cálculo de custo     | https://api.helicone.ai                              |
+| Helicone (OpenAI proxy) | Redirecionamento para OpenAI | https://oai.helicone.ai/v1                              |
+| Helicone (Gemini proxy) | Redirecionamento para Gemini | https://gateway.helicone.ai                          |
 | AwesomeAPI (câmbio)     | Taxa USD→BRL em tempo real   | https://economia.awesomeapi.com.br/json/last/USD-BRL |
 
 ---
