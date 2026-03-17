@@ -77,14 +77,14 @@ Se `REDIS_URL` não estiver definido e `REDIS_PASSWORD` não estiver definido, o
 
 ## Critérios de Aceitação
 
-- [ ] O cliente Redis conecta com sucesso usando as credenciais do `.env.local`
-- [ ] O consumer da fila (`blpop`) funciona sem erro `NOAUTH`
-- [ ] O producer da fila (`rpush`) funciona sem erro `NOAUTH`
-- [ ] O healthcheck do Redis continua `healthy` via `docker compose`
-- [ ] `REDIS_URL` explícito prevalece sobre variáveis individuais
-- [ ] `pnpm test` passa
-- [ ] `npx tsc --noEmit` passa sem erros
-- [ ] Sem credenciais hardcoded no código-fonte
+- [x] O cliente Redis conecta com sucesso usando as credenciais do `.env.local`
+- [x] O consumer da fila (`blpop`) funciona sem erro `NOAUTH`
+- [x] O producer da fila (`rpush`) funciona sem erro `NOAUTH`
+- [x] O healthcheck do Redis continua `healthy` via `docker compose`
+- [x] `REDIS_URL` explícito prevalece sobre variáveis individuais
+- [x] `pnpm test` passa (25 suites, 122 testes)
+- [x] `npx tsc --noEmit` passa sem erros
+- [x] Sem credenciais hardcoded no código-fonte
 
 ## Definição de Pronto (DoD)
 
