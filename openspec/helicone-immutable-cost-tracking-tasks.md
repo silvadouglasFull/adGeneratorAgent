@@ -175,10 +175,10 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/application/service/CostCaptureService.ts` criado
-- [ ] Implementa interface `ICostCaptureService` (domain)
-- [ ] Recebe `IHeliconeCostAdapter` e `IExchangeRateAdapter` por injeção de dependência
-- [ ] Método `capture(heliconeRequestId: string): Promise<CostRecord>`:
+- [x] Arquivo `src/tokenConsumption/application/service/CostCaptureService.ts` criado
+- [x] Implementa interface `ICostCaptureService` (domain)
+- [x] Recebe `IHeliconeCostAdapter` e `IExchangeRateAdapter` por injeção de dependência
+- [x] Método `capture(heliconeRequestId: string): Promise<CostRecord>`:
   - Chama `heliconeCostAdapter.getCostByRequestId(heliconeRequestId)`
   - Chama `exchangeRateAdapter.getUSDtoBRL()`
   - Cria e retorna `CostRecord` via `CostRecord.create()`
@@ -190,10 +190,10 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] Value object `TokenConsumptionEvent` (domain) recebe campo opcional `heliconeRequestId?: string`
-- [ ] `TokenConsumptionQueueProducer.enqueue()` aceita e repassa `heliconeRequestId`
-- [ ] Queue consumer lê `heliconeRequestId` do evento e passa ao `CostCaptureService`
-- [ ] Compatibilidade retroativa: campo opcional não quebra eventos sem `heliconeRequestId`
+- [x] Value object `TokenConsumptionEvent` (domain) recebe campo opcional `heliconeRequestId?: string`
+- [x] `TokenConsumptionQueueProducer.enqueue()` aceita e repassa `heliconeRequestId`
+- [x] Queue consumer lê `heliconeRequestId` do evento e passa ao `CostCaptureService`
+- [x] Compatibilidade retroativa: campo opcional não quebra eventos sem `heliconeRequestId`
 
 ---
 
@@ -201,10 +201,10 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] Consumer chama `CostCaptureService.capture(heliconeRequestId)` após receber evento
-- [ ] `TokenConsumptionRepository.save()` recebe `CostRecord` junto ao evento
-- [ ] `costUSD`, `costBRL`, `exchangeRateAtExecution`, `heliconeRequestId` persistidos na tabela
-- [ ] Falha no `CostCaptureService` não impede persistência do evento (salva com custo zerado)
+- [x] Consumer chama `CostCaptureService.capture(heliconeRequestId)` após receber evento
+- [x] `TokenConsumptionRepository.save()` recebe `CostRecord` junto ao evento
+- [x] `costUSD`, `costBRL`, `exchangeRateAtExecution`, `heliconeRequestId` persistidos na tabela
+- [x] Falha no `CostCaptureService` não impede persistência do evento (salva com custo zerado)
 
 ---
 
@@ -214,10 +214,10 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] `AdStreamGenerator` (ou nó do LangGraph) captura o header/metadata `helicone-id` do response
-- [ ] `heliconeRequestId` extraído de `response_metadata?.headers?.["helicone-id"]` (OpenAI) ou equivalente (Gemini)
-- [ ] `heliconeRequestId` adicionado ao evento enfileirado no `TokenConsumptionQueueProducer`
-- [ ] Se não encontrado, enfileira com `heliconeRequestId = null`
+- [x] `AdStreamGenerator` (ou nó do LangGraph) captura o header/metadata `helicone-id` do response
+- [x] `heliconeRequestId` extraído de `response_metadata?.headers?.["helicone-id"]` (OpenAI) ou equivalente (Gemini)
+- [x] `heliconeRequestId` adicionado ao evento enfileirado no `TokenConsumptionQueueProducer`
+- [x] Se não encontrado, enfileira com `heliconeRequestId = null`
 
 **Detalhes de lookup no LangChain:**
 
@@ -237,10 +237,10 @@ const heliconeId =
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/app/api/costs/summary/route.ts` criado
-- [ ] Método `GET` com query param obrigatório `userId`
-- [ ] Retorna 400 se `userId` ausente ou inválido (não UUID)
-- [ ] Retorna 200 com payload:
+- [x] Arquivo `src/app/api/costs/summary/route.ts` criado
+- [x] Método `GET` com query param opcional `userId` (retorna sumário global se ausente)
+- [x] Retorna 400 se `userId` fornecido mas inválido (não UUID)
+- [x] Retorna 200 com payload:
   ```json
   {
     "totalCostUSD": number,
@@ -252,29 +252,29 @@ const heliconeId =
     "period": { "start": string, "end": string }
   }
   ```
-- [ ] Soma `cost_usd` e `cost_brl` diretamente do banco via `SUM()` (não recalcula)
-- [ ] Agrupa por `model_used`
-- [ ] `period` retorna o intervalo entre o primeiro e último registro do usuário
+- [x] Soma `cost_usd` e `cost_brl` diretamente do banco via `SUM()` (não recalcula)
+- [x] Agrupa por `model_used`
+- [x] `period` retorna o intervalo entre o primeiro e último registro do usuário
 
 ### T7.2 — Criar `CostSummaryRepository`
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/infrastructure/persistence/CostSummaryRepository.ts` criado
-- [ ] Método `getSummaryByUserId(userId: string): Promise<CostSummary>`:
+- [x] Arquivo `src/tokenConsumption/infrastructure/persistence/CostSummaryRepository.ts` criado
+- [x] Método `getSummary(userId?: string): Promise<CostSummary>`:
   - Query com `SUM(cost_usd)`, `SUM(cost_brl)`, `COUNT(*)`
   - GROUP BY `model_used`
-  - Filtro por `userId` (quando campo `userId` for adicionado ao schema — ver T7.3)
-- [ ] Retorna objeto `CostSummary` tipado
+  - Filtro por `userId` quando fornecido (opcional)
+- [x] Retorna objeto `CostSummary` tipado
 
 ### T7.3 — Adicionar campo `userId` à tabela `token_consumptions`
 
 **Acceptance Criteria:**
 
-- [ ] Campo `userId` (`varchar(100)` nullable) adicionado ao schema Drizzle
-- [ ] Migration gerada e executada
-- [ ] `TokenConsumptionEvent` e producer/consumer atualizado para incluir `userId`
-- [ ] Índice simples em `userId` para queries de sumário
+- [x] Campo `userId` (`varchar(100)` nullable) adicionado ao schema Drizzle
+- [x] Migration gerada e executada
+- [x] `TokenConsumptionEvent` e producer/consumer atualizado para incluir `userId`
+- [x] Índice simples em `userId` para queries de sumário
 
 ---
 
@@ -284,9 +284,9 @@ const heliconeId =
 
 **Acceptance Criteria:**
 
-- [ ] `CostRecord.create()` — testa criação válida, `costUSD` negativo lança exceção
-- [ ] `CostRecord.zero()` — retorna record zerado
-- [ ] `CostRecordValidationException` — mensagem de erro correta
+- [x] `CostRecord.create()` — testa criação válida, `costUSD` negativo lança exceção
+- [x] `CostRecord.zero()` — retorna record zerado
+- [x] `CostRecordValidationException` — mensagem de erro correta
 
 **Arquivo**: `src/tokenConsumption/__tests__/domain/CostRecord.test.ts`
 
@@ -296,10 +296,10 @@ const heliconeId =
 
 **Acceptance Criteria:**
 
-- [ ] `CostCaptureService.capture()` — retorna `CostRecord` com custo correto
-- [ ] `CostCaptureService.capture()` — retorna `CostRecord.zero()` em falha do Helicone
-- [ ] `CostCaptureService.capture()` — aplica fallback de câmbio em falha do `ExchangeRateAdapter`
-- [ ] Mock de `IHeliconeCostAdapter` e `IExchangeRateAdapter`
+- [x] `CostCaptureService.capture()` — retorna `CostRecord` com custo correto
+- [x] `CostCaptureService.capture()` — retorna `CostRecord.zero()` em falha do Helicone
+- [x] `CostCaptureService.capture()` — aplica fallback de câmbio em falha do `ExchangeRateAdapter`
+- [x] Mock de `IHeliconeCostAdapter` e `IExchangeRateAdapter`
 
 **Arquivo**: `src/tokenConsumption/__tests__/application/CostCaptureService.test.ts`
 
@@ -309,12 +309,12 @@ const heliconeId =
 
 **Acceptance Criteria:**
 
-- [ ] `HeliconeCostAdapter` — mock de `fetch`, retorna `cost_usd` corretamente
-- [ ] `HeliconeCostAdapter` — erro de rede retorna `0`
-- [ ] `ExchangeRateAdapter` — mock de `fetch`, retorna taxa corretamente
-- [ ] `ExchangeRateAdapter` — payload inválido retorna fallback `6.0`
-- [ ] `ModelProviderFactory.create('gpt-4o-mini', userId)` — instancia `ChatOpenAI` com `baseURL` Helicone
-- [ ] `ModelProviderFactory.create('gemini-2.0-flash', userId)` — instancia `ChatGoogleGenerativeAI` com `baseUrl` Helicone
+- [x] `HeliconeCostAdapter` — mock de `fetch`, retorna `cost_usd` corretamente
+- [x] `HeliconeCostAdapter` — erro de rede retorna `0`
+- [x] `ExchangeRateAdapter` — mock de `fetch`, retorna taxa corretamente
+- [x] `ExchangeRateAdapter` — payload inválido retorna fallback `6.0`
+- [x] `ModelProviderFactory.create('gpt-4o-mini', userId)` — instancia `ChatOpenAI` com `baseURL` Helicone
+- [x] `ModelProviderFactory.create('gemini-2.0-flash', userId)` — instancia `ChatGoogleGenerativeAI` com `baseUrl` Helicone
 
 **Arquivos**:
 
@@ -328,10 +328,10 @@ const heliconeId =
 
 **Acceptance Criteria:**
 
-- [ ] Pipeline completo: evento enfileirado → consumer processa → custo capturado → persistido no banco
-- [ ] Verificar `costUSD > 0` quando `HeliconeCostAdapter` retorna valor real
-- [ ] Verificar `costUSD = 0` quando `heliconeRequestId` é null
-- [ ] Usar mocks de Redis e PostgreSQL in-memory (sem dependência de serviços reais em CI)
+- [x] Pipeline completo: evento enfileirado → consumer processa → custo capturado → persistido no banco
+- [x] Verificar `costUSD > 0` quando `HeliconeCostAdapter` retorna valor real
+- [x] Verificar `costUSD = 0` quando `heliconeRequestId` é null
+- [x] Usar mocks de Redis e PostgreSQL in-memory (sem dependência de serviços reais em CI)
 
 **Arquivo**: `src/tokenConsumption/__tests__/integration/CostCapturePipeline.test.ts`
 
@@ -341,10 +341,10 @@ const heliconeId =
 
 **Acceptance Criteria:**
 
-- [ ] GET sem `userId` → 400
-- [ ] GET com `userId` inválido (não UUID) → 400
-- [ ] GET com `userId` válido → 200 + payload correto
-- [ ] Soma de custo calculada a partir do banco (mock do repository)
+- [x] GET sem `userId` → 200 (sumário global)
+- [x] GET com `userId` inválido (não UUID) → 400
+- [x] GET com `userId` válido → 200 + payload correto
+- [x] Soma de custo calculada a partir do banco (mock do repository)
 
 **Arquivo**: `src/app/api/costs/summary/__tests__/route.test.ts`
 
@@ -356,16 +356,16 @@ const heliconeId =
 
 **Acceptance Criteria:**
 
-- [ ] `npx tsc --noEmit` sem erros
-- [ ] `pnpm test` passa (todos os testes)
-- [ ] Nenhum teste existente quebrado
+- [x] `npx tsc --noEmit` sem erros
+- [x] `pnpm test` passa (todos os testes)
+- [x] Nenhum teste existente quebrado
 
 ### T9.2 — Atualizar seeds com dados de custo
 
 **Acceptance Criteria:**
 
-- [ ] Seed existente em `src/tokenConsumption/infrastructure/db/seeds/` atualizado
-- [ ] Registros incluem valores realistas de `cost_usd` (ex: 0.0001–0.01), `cost_brl` e `exchange_rate_at_execution`
+- [x] Seed existente em `src/tokenConsumption/infrastructure/db/seeds/` atualizado
+- [x] Registros incluem valores realistas de `cost_usd` (ex: 0.0001–0.01), `cost_brl` e `exchange_rate_at_execution`
 
 ---
 

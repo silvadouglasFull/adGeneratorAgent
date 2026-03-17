@@ -621,3 +621,34 @@ Tasks detalhadas: `openspec/image-generation-tool-tasks.md`
 ```text
 Seguir T1 → T13 em openspec/image-generation-tool-tasks.md
 ```
+
+---
+
+# Feature: Registro Imutável de Custos via Helicone (Multi-Modelo)
+
+Spec de referência: `openspec/specs/helicone-immutable-cost-tracking.md`
+Tasks detalhadas: `openspec/helicone-immutable-cost-tracking-tasks.md`
+
+Status: **Concluído em 17/03/2026**
+
+## Escopo Resumido
+
+- [x] Configuração do gateway Helicone (`HELICONE_API_KEY`, `ModelProviderFactory` com proxy OpenAI + Gemini)
+- [x] Migração do schema Drizzle (campos `helicone_request_id`, `cost_usd`, `cost_brl`, `exchange_rate_at_execution`, `user_id`)
+- [x] Domain: value object `CostRecord` (imutável), exceção `CostRecordValidationException`, interfaces de porta
+- [x] Infrastructure: `HeliconeCostAdapter` (API Helicone), `ExchangeRateAdapter` (AwesomeAPI USD→BRL)
+- [x] Application: `CostCaptureService` orquestra captura de custo com DI
+- [x] Integração: `TokenConsumptionEvent` + queue consumer capturam custo antes de persistir
+- [x] Captura do `helicone-id` no `AdStreamGenerator` via `response_metadata`
+- [x] Endpoint `GET /api/costs/summary` com `userId` opcional (retorna sumário global se ausente)
+- [x] `CostSummaryRepository` com `SUM()`, `COUNT()`, `GROUP BY model_used`
+- [x] Testes: 7 suites (domain, application, infrastructure, integração, route) — todos passando
+- [x] Validação: `npx tsc --noEmit` 0 erros, `pnpm test` 32 suites / 153 testes
+
+**Nota**: `ModelProviderFactory` foi criado e testado, mas ainda não integrado ao fluxo do `AdGeneratorGraphBuilder` (integração pendente).
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1.1 → T9.2 em openspec/helicone-immutable-cost-tracking-tasks.md
+```
