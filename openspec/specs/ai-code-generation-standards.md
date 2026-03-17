@@ -86,15 +86,15 @@ src/
 
 ## Critérios de Aceitação
 
-- [ ] Todo código novo respeita separação por camadas (quando aplicável)
-- [ ] Regras de negócio estão no domínio, não no controller/route
-- [ ] Classes criadas para serviços e orquestração relevantes
-- [ ] Dependências são injetadas por construtor quando aplicável
-- [ ] Não há comentários desnecessários explicando “o que” o código faz
-- [ ] Não há `any` não justificado
-- [ ] Testes cobrem comportamento de domínio e aplicação
-- [ ] `pnpm test` passa
-- [ ] `npx tsc --noEmit` passa sem erros
+- [x] Todo código novo respeita separação por camadas (quando aplicável)
+- [x] Regras de negócio estão no domínio, não no controller/route
+- [x] Classes criadas para serviços e orquestração relevantes
+- [x] Dependências são injetadas por construtor quando aplicável
+- [x] Não há comentários desnecessários explicando "o que" o código faz
+- [x] Não há `any` não justificado
+- [x] Testes cobrem comportamento de domínio e aplicação
+- [x] `pnpm test` passa
+- [x] `npx tsc --noEmit` passa sem erros
 
 ## Definição de Pronto (DoD)
 

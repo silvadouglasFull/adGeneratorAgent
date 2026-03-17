@@ -94,16 +94,16 @@ POSTGRES_PORT=5432
 
 ## Critérios de Aceitação
 
-- [ ] Existe `docker-compose.yml` com serviço `postgres`
-- [ ] O serviço lê variáveis de ambiente de `.env` ou `.env.local`
-- [ ] Se `.env` e `.env.local` coexistirem, `.env.local` tem precedência
-- [ ] `docker compose up -d` inicia o PostgreSQL sem erro
-- [ ] `docker ps` mostra container em estado `healthy`
-- [ ] Conexão ao banco funciona com credenciais definidas no env
-- [ ] Dados persistem após reinício do container
-- [ ] Credenciais reais não são commitadas
-- [ ] `.env.example` documenta as variáveis obrigatórias
-- [ ] README descreve como subir/parar o banco local
+- [x] Existe `docker-compose.yml` com serviço `postgres`
+- [x] O serviço lê variáveis de ambiente de `.env` ou `.env.local`
+- [x] Se `.env` e `.env.local` coexistirem, `.env.local` tem precedência
+- [x] `docker compose up -d` inicia o PostgreSQL sem erro
+- [x] `docker ps` mostra container em estado `healthy`
+- [x] Conexão ao banco funciona com credenciais definidas no env
+- [x] Dados persistem após reinício do container
+- [x] Credenciais reais não são commitadas
+- [x] `.env.example` documenta as variáveis obrigatórias
+- [x] README descreve como subir/parar o banco local
 
 ## Definição de Pronto (DoD)
 

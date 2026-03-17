@@ -108,18 +108,18 @@ src/agent/
 
 ## Critérios de Aceitação
 
-- [ ] Criar `ModelCatalogService` separado do agente (`adGeneratorAgent` não consulta API de modelos diretamente)
-- [ ] Implementar `getAvailableModels(userId)` com agregação OpenAI + Google Gemini
-- [ ] Implementar `getFreeModels(userId)` reutilizando `getAvailableModels`
-- [ ] Implementar `getModelInfo(modelName, userId)` reutilizando `getAvailableModels`
-- [ ] Mesclar os modelos dos dois providers com deduplicação por nome
-- [ ] Em falta de API key de ambos providers, retorno deve ser `[]` (sem throw)
-- [ ] Em erro de um provider, manter retorno parcial com os modelos do provider saudável
-- [ ] Em erro de todos providers, retorno deve ser `[]` com log de erro
-- [ ] Adicionar modelo(s) default no resultado de disponíveis (quando aplicável)
-- [ ] Cobrir cenários com testes unitários (sucesso, sem chave, sem models, erro de fetch por provider, filtros, merge, deduplicação)
-- [ ] `pnpm test` verde
-- [ ] `npx tsc --noEmit` sem erros
+- [x] Criar `ModelCatalogService` separado do agente (`adGeneratorAgent` não consulta API de modelos diretamente)
+- [x] Implementar `getAvailableModels(userId)` com agregação OpenAI + Google Gemini
+- [x] Implementar `getFreeModels(userId)` reutilizando `getAvailableModels`
+- [x] Implementar `getModelInfo(modelName, userId)` reutilizando `getAvailableModels`
+- [x] Mesclar os modelos dos dois providers com deduplicação por nome
+- [x] Em falta de API key de ambos providers, retorno deve ser `[]` (sem throw)
+- [x] Em erro de um provider, manter retorno parcial com os modelos do provider saudável
+- [x] Em erro de todos providers, retorno deve ser `[]` com log de erro
+- [x] Adicionar modelo(s) default no resultado de disponíveis (quando aplicável)
+- [x] Cobrir cenários com testes unitários (sucesso, sem chave, sem models, erro de fetch por provider, filtros, merge, deduplicação)
+- [x] `pnpm test` verde
+- [x] `npx tsc --noEmit` sem erros
 
 ## Regras de Compatibilidade
 

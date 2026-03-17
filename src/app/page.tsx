@@ -1,33 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { AdImagePreview } from "@/components/AdImagePreview";
+import { ModelDropdown, type ModelOption } from "@/components/ModelDropdown";
+import { useEffect, useState } from "react";
 
 interface AdResponse {
   ad: string;
+  imageUrl?: string;
   metadata: {
     model?: string;
     generatedAt?: string;
+    imageModel?: string;
   };
 }
 
-const MODELS = [
-  { value: "gpt-4o-mini", label: "GPT-4o Mini", provider: "OpenAI" },
-  { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash", provider: "Google" },
-] as const;
-
-type ModelValue = (typeof MODELS)[number]["value"];
-
 export default function Home() {
   const [input, setInput] = useState("");
-  const [selectedModel, setSelectedModel] = useState<ModelValue>("gpt-4o-mini");
+  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini");
   const [result, setResult] = useState<AdResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
+  const [models, setModels] = useState<ModelOption[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(true);
+  const [modelsError, setModelsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchModels() {
+      try {
+        const res = await fetch("/api/agent/models");
+        if (!res.ok) {
+          setModelsError("Falha ao carregar modelos disponíveis.");
+          return;
+        }
+        const data = await res.json() as { models: ModelOption[] };
+        setModels(data.models);
+        if (data.models.length > 0 && !data.models.some((m: ModelOption) => m.name === selectedModel)) {
+          setSelectedModel(data.models[0].name);
+        }
+      } catch {
+        setModelsError("Falha ao carregar modelos disponíveis.");
+      } finally {
+        setModelsLoading(false);
+      }
+    }
+    fetchModels();
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setResult(null);
+    setImageLoading(false);
     setLoading(true);
 
     try {
@@ -71,23 +95,37 @@ export default function Home() {
               }
 
               const payload = JSON.parse(dataLine.slice(6)) as {
-                type: "token" | "done" | "error";
+                type: "token" | "done" | "error" | "image";
                 content?: string;
                 error?: string;
-                metadata?: { model?: string; generatedAt?: string };
+                imageUrl?: string;
+                metadata?: { model?: string; generatedAt?: string; imageModel?: string };
               };
 
               if (payload.type === "token" && payload.content) {
                 ad += payload.content;
+                setImageLoading(true);
                 setResult((previous) => ({
                   ad,
+                  imageUrl: previous?.imageUrl,
+                  metadata: previous?.metadata ?? {},
+                }));
+              }
+
+              if (payload.type === "image" && payload.imageUrl) {
+                setImageLoading(false);
+                setResult((previous) => ({
+                  ad: previous?.ad ?? ad,
+                  imageUrl: payload.imageUrl,
                   metadata: previous?.metadata ?? {},
                 }));
               }
 
               if (payload.type === "done") {
+                setImageLoading(false);
                 setResult((previous) => ({
                   ad: previous?.ad ?? ad,
+                  imageUrl: previous?.imageUrl,
                   metadata: payload.metadata ?? previous?.metadata ?? {},
                 }));
               }
@@ -148,22 +186,14 @@ export default function Home() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Modelo de IA
               </label>
-              <div className="grid grid-cols-2 gap-3">
-                {MODELS.map((m) => (
-                  <button
-                    key={m.value}
-                    type="button"
-                    onClick={() => setSelectedModel(m.value)}
-                    className={`flex flex-col items-start rounded-xl border px-4 py-3 text-left transition-colors ${selectedModel === m.value
-                        ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-500"
-                        : "border-gray-200 bg-white hover:border-gray-300"
-                      }`}
-                  >
-                    <span className="text-sm font-semibold text-gray-900">{m.label}</span>
-                    <span className="text-xs text-gray-400">{m.provider}</span>
-                  </button>
-                ))}
-              </div>
+              <ModelDropdown
+                models={models}
+                selected={selectedModel}
+                onChange={setSelectedModel}
+                disabled={loading}
+                loading={modelsLoading}
+                error={modelsError}
+              />
             </div>
 
             <button
@@ -229,11 +259,19 @@ export default function Home() {
               <h2 className="text-lg font-semibold text-gray-900">Anúncio Gerado</h2>
               {result.metadata.model && result.metadata.generatedAt && (
                 <span className="text-xs text-gray-400">
-                  {result.metadata.model} ·{" "}
+                  {result.metadata.model}
+                  {result.metadata.imageModel && ` + ${result.metadata.imageModel}`}
+                  {" · "}
                   {new Date(result.metadata.generatedAt).toLocaleString("pt-BR")}
                 </span>
               )}
             </div>
+
+            {/* Image Preview */}
+            <AdImagePreview
+              imageUrl={result.imageUrl ?? null}
+              loading={imageLoading}
+            />
 
             {/* Ad Preview */}
             <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-2xl p-8">

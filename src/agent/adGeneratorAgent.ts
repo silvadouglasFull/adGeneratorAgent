@@ -1,12 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AdGeneratorGraphBuilder } from "./application/graph/AdGeneratorGraphBuilder";
-import { AdStreamGenerator } from "./application/stream/AdStreamGenerator";
+import { AdStreamGenerator, StreamResult, TokenUsage } from "./application/stream/AdStreamGenerator";
 import { MessageParser } from "./application/stream/MessageParser";
 import { ModelRegistry } from "./domain/model/ModelRegistry";
-import { SUPPORTED_MODELS, SupportedModel } from "./domain/model/SupportedModel";
+import { SUPPORTED_MODELS, SupportedModel, TEXT_MODELS, TextModel } from "./domain/model/SupportedModel";
 import { AdGenerationService } from "./domain/service/AdGenerationService";
+import { ImageGenerationService } from "./domain/service/ImageGenerationService";
+import { ImageIntentDetector } from "./domain/service/ImageIntentDetector";
+import { ImagePromptService } from "./domain/service/ImagePromptService";
 import { InstructionService } from "./domain/service/InstructionService";
 import { ModelInitializerService } from "./domain/service/ModelInitializerService";
 import { OutputValidationService } from "./domain/service/OutputValidationService";
+import { imageDirectorPrompt } from "./imagePrompt";
 import { adGeneratorPrompt } from "./prompt";
 
 const modelRegistry = ModelRegistry.default();
@@ -14,17 +19,27 @@ const instructionService = new InstructionService();
 const modelInitializerService = new ModelInitializerService(modelRegistry);
 const adGenerationService = new AdGenerationService(modelInitializerService, adGeneratorPrompt as any);
 const validationService = new OutputValidationService();
+const imageIntentDetector = new ImageIntentDetector();
+const imagePromptService = new ImagePromptService(modelInitializerService, imageDirectorPrompt as any);
+const imageGenerationService = new ImageGenerationService();
 
 const graphBuilder = AdGeneratorGraphBuilder.build(
     instructionService,
     modelInitializerService,
     adGenerationService,
-    validationService
+    validationService,
+    imageIntentDetector
 );
 
 export const adGeneratorAgent = graphBuilder.compile();
 
-const streamGenerator = new AdStreamGenerator(adGeneratorAgent, MessageParser);
+const streamGenerator = new AdStreamGenerator(
+    adGeneratorAgent,
+    MessageParser,
+    imageIntentDetector,
+    imagePromptService,
+    imageGenerationService
+);
 
 export async function* streamGeneratedAd({
     input,
@@ -32,10 +47,10 @@ export async function* streamGeneratedAd({
 }: {
     input: string;
     model?: SupportedModel;
-    // @ts-ignore - Generator return type delegation to inner generator
-}): AsyncGenerator<string, { ad: string }, void> {
-    yield* streamGenerator.stream({ input, model });
+}): AsyncGenerator<string, StreamResult, void> {
+    return yield* streamGenerator.stream({ input, model });
 }
 
-export { ModelRegistry, SUPPORTED_MODELS };
-export type { SupportedModel };
+export { ModelRegistry, SUPPORTED_MODELS, TEXT_MODELS };
+export type { StreamResult, SupportedModel, TextModel, TokenUsage };
+

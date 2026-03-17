@@ -6,6 +6,9 @@ export const AgentState = Annotation.Root({
     model: Annotation<SupportedModel | undefined>(),
     instructions: Annotation<string>(),
     ad: Annotation<string>(),
+    shouldGenerateImage: Annotation<boolean | undefined>(),
+    imagePrompt: Annotation<string | undefined>(),
+    imageUrl: Annotation<string | undefined>(),
 });
 
 export type AgentStateType = typeof AgentState.State;

@@ -23,6 +23,7 @@ jest.mock("../../prompt", () => ({
 import { AdGeneratorGraphBuilder } from "../../application/graph/AdGeneratorGraphBuilder";
 import { ModelRegistry } from "../../domain/model/ModelRegistry";
 import { AdGenerationService } from "../../domain/service/AdGenerationService";
+import { ImageIntentDetector } from "../../domain/service/ImageIntentDetector";
 import { InstructionService } from "../../domain/service/InstructionService";
 import { ModelInitializerService } from "../../domain/service/ModelInitializerService";
 import { OutputValidationService } from "../../domain/service/OutputValidationService";
@@ -38,12 +39,14 @@ describe("AdGeneratorGraphBuilder", () => {
         const modelInitializer = new ModelInitializerService(registry);
         const adGenerationService = new AdGenerationService(modelInitializer, adGeneratorPrompt as any);
         const validationService = new OutputValidationService();
+        const imageIntentDetector = new ImageIntentDetector();
 
         graph = AdGeneratorGraphBuilder.build(
             instructionService,
             modelInitializer,
             adGenerationService,
-            validationService
+            validationService,
+            imageIntentDetector
         );
         mockChatOpenAI.mockReset();
         mockChatGoogleGenerativeAI.mockReset();
@@ -80,5 +83,18 @@ describe("AdGeneratorGraphBuilder", () => {
         const compiled = graph.compile();
         const result = await compiled.invoke({ input: "Produto Z" });
         expect(result.ad.startsWith("#")).toBe(true);
+    });
+
+    it("compiled graph deve retornar shouldGenerateImage false para input sem pedido de geração", async () => {
+        const compiled = graph.compile();
+        const result = await compiled.invoke({ input: "Produto premium" });
+        expect(result.shouldGenerateImage).toBe(false);
+        expect(result.imageUrl).toBeUndefined();
+    });
+
+    it("compiled graph deve detectar intenção de geração", async () => {
+        const compiled = graph.compile();
+        const result = await compiled.invoke({ input: "Produto com imagem publicitária" });
+        expect(result.shouldGenerateImage).toBe(true);
     });
 });

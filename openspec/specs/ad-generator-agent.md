@@ -10,7 +10,7 @@ Criar um agente LangGraph que funcione como serviço stateless:
 
 1. Recebe um input do usuário (descrição do produto/serviço)
 2. Consulta o manual de instruções (regras de geração de anúncio)
-3. Gera e retorna o anúncio em Markdown por streaming (token a token)
+3. Gera e retorna o anúncio em Markdown
 
 ## Critérios de Aceitação
 
@@ -18,7 +18,7 @@ Criar um agente LangGraph que funcione como serviço stateless:
 - [x] O agente carrega o manual de instruções antes de gerar o anúncio
 - [x] O anúncio gerado segue as regras do manual (tom, estrutura, tamanho)
 - [x] O retorno é sempre em formato Markdown válido
-- [x] A API expõe um endpoint `POST /api/agent/generate` que recebe JSON (`input`, `model?`) e responde via stream SSE
+- [x] A API expõe um endpoint `POST /api/agent/generate` que recebe e retorna JSON
 - [x] O endpoint responde em menos de 30 segundos
 - [x] Erros retornam mensagens claras com status HTTP adequado
 
@@ -31,25 +31,23 @@ POST /api/agent/generate
 Content-Type: application/json
 
 {
-  "input": "Tênis casual masculino, cor azul, solado de borracha, R$199",
-  "model": "gpt-4o-mini"
+  "input": "Tênis casual masculino, cor azul, solado de borracha, R$199"
 }
 ```
 
-### Response (sucesso - streaming)
+### Response (sucesso)
 
 ```http
 HTTP 200 OK
-Content-Type: text/event-stream
+Content-Type: application/json
 
-data: {"type":"token","content":"# Tênis Casual Masculino Azul"}
-
-data: {"type":"token","content":"\n\n**Conforto e estilo para o dia a dia**"}
-
-data: {"type":"done","metadata":{"model":"gpt-4o-mini","generatedAt":"2026-03-16T10:00:00Z"}}
-
-> `model` é opcional no request.
-> Valores suportados: `gpt-4o-mini` (default) e `gemini-2.0-flash`.
+{
+  "ad": "# Tênis Casual Masculino Azul\n\n...",
+  "metadata": {
+    "model": "gpt-4o-mini",
+    "generatedAt": "2026-03-16T10:00:00Z"
+  }
+}
 ```
 
 ### Response (erro)
@@ -89,16 +87,14 @@ POST /api/agent/generate
     └──────────────────────────┘
        │
        ▼
-  Retorna stream SSE (tokens + metadata final)
+  Retorna { ad: string, metadata: object }
 ```
 
 ## Tech Stack
 
 - **Framework**: Next.js (App Router)
 - **Agent**: LangGraph (`@langchain/langgraph`)
-- **LLM**:
-  - OpenAI `gpt-4o-mini` via `@langchain/openai`
-  - Google `gemini-2.0-flash` via `@langchain/google-genai`
+- **LLM**: OpenAI `gpt-4o-mini` via `@langchain/openai`
 - **Linguagem**: TypeScript
 - **Testes**: Jest + supertest
 
@@ -110,6 +106,7 @@ POST /api/agent/generate
 
 ## Não incluso nesta versão (v1)
 
+- Streaming de resposta
 - Histórico de anúncios gerados
 - Múltiplos modelos de anúncio
 - Interface gráfica

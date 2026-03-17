@@ -67,6 +67,7 @@ describe("ModelInitializerService", () => {
         const invalidRegistry = new ModelRegistry({
             "gpt-4o-mini": { modelProvider: "openai" },
             "gemini-2.0-flash": { modelProvider: "google-genai" },
+            "gpt-image-1.5": { modelProvider: "openai-image" },
         });
         const invalidService = new ModelInitializerService(invalidRegistry);
 

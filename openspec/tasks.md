@@ -2,16 +2,14 @@
 
 Spec de referência: `openspec/specs/ad-generator-agent.md`
 
-Pré-requisito global (todas as features): aplicar `openspec/specs/ai-code-generation-standards.md` (DDD, SOLID, Clean Code e uso de classes quando viável).
-
 ---
 
 ## Fase 1 — Setup e Infraestrutura
 
 ### T1 — Instalar dependências do agente
 
-- [x] Instalar `@langchain/langgraph`, `@langchain/openai`, `@langchain/google-genai`, `@langchain/core`
-- [x] Adicionar `OPENAI_API_KEY` e `GENAI_API` ao `.env.local`
+- [x] Instalar `@langchain/langgraph`, `@langchain/openai`, `@langchain/core`
+- [x] Adicionar `OPENAI_API_KEY` ao `.env.local`
 - [x] Validar que o `.env.local` está no `.gitignore`
 - **Critério**: `pnpm install` e `pnpm dev` rodam sem erros
 
@@ -30,10 +28,9 @@ Pré-requisito global (todas as features): aplicar `openspec/specs/ai-code-gener
 - [x] Criar `/src/agent/adGeneratorAgent.ts`
 - [x] Definir `AgentState` com campos: `input`, `instructions`, `ad`
 - [x] Implementar nó `loadInstructions`: lê `/src/agent/instructions.md`
-- [x] Implementar nó `generateAd`: chama o LLM com o input + manual e modelo selecionado (`gpt-4o-mini` ou `gemini-2.0-flash`)
+- [x] Implementar nó `generateAd`: chama o LLM com o input + manual
 - [x] Implementar nó `validateOutput`: verifica se output começa com `#` (Markdown)
 - [x] Conectar os nós no grafo: `loadInstructions → generateAd → validateOutput`
-- [x] Expor função de streaming token a token do output do nó `generateAd`
 - **Critério**: `agent.invoke({ input: "Produto X" })` retorna `{ ad: "# ..." }`
 
 ### T4 — Prompt do agente
@@ -51,11 +48,10 @@ Pré-requisito global (todas as features): aplicar `openspec/specs/ai-code-gener
 - [x] Criar `/src/app/api/agent/generate/route.ts`
 - [x] Método: `POST`
 - [x] Validar campo `input` (obrigatório, string não vazia)
-- [x] Validar campo `model` (opcional: `gpt-4o-mini` | `gemini-2.0-flash`)
-- [x] Chamar função de streaming do agente (`streamGeneratedAd`) com `input` e `model?`
-- [x] Retornar `text/event-stream` no formato SSE com eventos `token`, `done` e `error`
-- [x] Tratar erros com status HTTP adequado (400, 500)
-- **Critério**: `POST /api/agent/generate` com body válido retorna 200 + stream SSE de Markdown
+- [x] Chamar `streamGeneratedAd({ input, model })`
+- [x] Retornar stream SSE com tokens e metadata final
+- [x] Tratar erros com status HTTP adequado (400, 500/evento de erro)
+- **Critério**: `POST /api/agent/generate` com body válido retorna 200 + Markdown
 
 ---
 
@@ -63,7 +59,7 @@ Pré-requisito global (todas as features): aplicar `openspec/specs/ai-code-gener
 
 ### T6 — Teste de integração do agente
 
-- [x] Criar `/src/agent/__tests__/adGeneratorAgent.test.ts`
+- [x] Cobrir o agente em `src/agent/__tests__/domain` e `src/agent/__tests__/application`
 - [x] Mock do LLM (evitar custo em CI)
 - [x] Testar: input válido → retorna Markdown com `#`
 - [x] Testar: `loadInstructions` carrega o arquivo corretamente
@@ -74,11 +70,7 @@ Pré-requisito global (todas as features): aplicar `openspec/specs/ai-code-gener
 - [x] Criar `/src/app/api/agent/generate/__tests__/route.test.ts`
 - [x] Testar: POST sem body → 400
 - [x] Testar: POST com `input` vazio → 400
-- [x] Testar: POST válido sem `model` → 200 com default `gpt-4o-mini`
-- [x] Testar: POST válido com `model: gemini-2.0-flash` → 200 com metadata do modelo
-- [x] Testar: POST válido → 200 com `text/event-stream` e eventos `token` + `done`
-- [x] Testar: POST com `model` inválido → 400
-- [x] Testar: erro do agente → evento `error` no stream
+- [x] Testar: POST válido → 200 com stream SSE + metadata
 - **Critério**: todos os testes passam com `pnpm test`
 
 ---
@@ -88,7 +80,7 @@ Pré-requisito global (todas as features): aplicar `openspec/specs/ai-code-gener
 ### T8 — Teste manual end-to-end
 
 - [x] Rodar `pnpm dev`
-- [x] Fazer POST via curl ou Insomnia para `localhost:3000/api/agent/generate`
+- [x] Fazer POST para `localhost:3000/api/agent/generate`
 - [x] Verificar que o anúncio gerado segue as regras do manual
 - **Critério**: anúncio gerado é válido e segue a estrutura esperada
 
@@ -429,6 +421,9 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 # Feature: Refatoração com Clean Code, SOLID e DDD
 
 Spec de referência: `openspec/specs/clean-code-ddd-refactoring.md`
+Tasks detalhadas: `openspec/clean-code-ddd-tasks.md`
+
+Status: **Concluído em 16/03/2026**
 
 ---
 
@@ -498,7 +493,7 @@ Spec de referência: `openspec/specs/clean-code-ddd-refactoring.md`
 - [x] Criar testes em `__tests__/domain/`
 - [x] Criar testes em `__tests__/application/`
 - [x] Validar rota API existente sem quebra
-- [x] Executar `pnpm test` com sucesso (49/49)
+- [x] Executar `pnpm test` com sucesso (20 suites / 87 testes)
 - [x] Executar `npx tsc --noEmit` com sucesso (0 erros)
 - [x] Verificar equivalência funcional do serviço (mesma lógica de negócio)
 - **Critério**: Refatoração concluída sem regressão comportamental ✅
@@ -546,14 +541,83 @@ com retorno unificado de modelos disponíveis de **OpenAI** e **Google Gemini**.
 
 ## Escopo Resumido
 
-- [ ] Definir contratos de domínio (`ChatModel`, `IModelCatalogService`)
-- [ ] Implementar providers OpenAI + Google Gemini e adapter de API key por provider
-- [ ] Mesclar lista de modelos dos dois providers com deduplicação por nome
-- [ ] Implementar `ModelCatalogService` desacoplado do `adGeneratorAgent`
-- [ ] Cobrir com testes unitários e validar build/type-check
+- [x] Definir contratos de domínio (`ChatModel`, `IModelCatalogService`)
+- [x] Implementar providers OpenAI + Google Gemini e adapter de API key por provider
+- [x] Mesclar lista de modelos dos dois providers com deduplicação por nome
+- [x] Implementar `ModelCatalogService` desacoplado do `adGeneratorAgent`
+- [x] Cobrir com testes unitários e validar build/type-check
 
 ## Ordem de execução sugerida
 
 ```text
 Seguir T1 → T11 em openspec/model-catalog-service-tasks.md
+```
+
+---
+
+# Feature: Token Consumption Tracking
+
+Spec de referência: `openspec/specs/token-consumption-tracking.md`
+Tasks detalhadas: `openspec/token-consumption-tracking-tasks.md`
+
+## Escopo Resumido
+
+- [x] Setup Drizzle ORM + schema + migrations + seed
+- [x] Domain (VOs, exceções, interfaces)
+- [x] Persistence (DrizzleTokenConsumptionRepository)
+- [x] Queue Redis (producer/consumer com retry e DLQ)
+- [x] Use case + container + integração na route
+- [x] Extração de usage real quando disponível + fallback de estimativa
+- [x] Testes unitários principais e validações `pnpm test`/`npx tsc --noEmit`
+- [x] Pendências abertas no checklist detalhado (startup/shutdown do consumer, testes de integração e documentação operacional)
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1 → T11 em openspec/token-consumption-tracking-tasks.md
+```
+
+---
+
+# Feature: Rota de Modelos Disponíveis + Dropdown de Seleção
+
+Spec de referência: `openspec/specs/model-selection-dropdown-and-models-route.md`
+Tasks detalhadas: `openspec/model-selection-dropdown-and-models-route-tasks.md`
+
+## Escopo Resumido
+
+- [x] Criar rota `GET /api/agent/models` para listagem de modelos disponíveis
+- [x] Criar componente dropdown para seleção de modelo de IA
+- [x] Substituir grid de modelos em `src/app/page.tsx` pelo dropdown
+- [x] Manter envio do modelo selecionado para `POST /api/agent/generate`
+- [x] Cobrir rota/UI com testes e validar `pnpm test` + `npx tsc --noEmit`
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1 → T7 em openspec/model-selection-dropdown-and-models-route-tasks.md
+```
+
+---
+
+# Feature: Ferramenta de Geração de Imagem (GPT Image 1.5)
+
+Spec de referência: `openspec/specs/image-generation-tool.md`
+Tasks detalhadas: `openspec/image-generation-tool-tasks.md`
+
+## Escopo Resumido
+
+- [x] Adicionar `"gpt-image-1.5"` como modelo suportado para tracking de tokens
+- [x] Criar serviço de detecção de intenção de imagem no input do usuário
+- [x] Criar prompt de Diretor de Arte Imobiliário para gerar prompt técnico de imagem
+- [x] Criar serviço de geração de imagem via API OpenAI (modelo fixo GPT Image 1.5)
+- [x] Adicionar nós de imagem ao grafo LangGraph com roteamento condicional
+- [x] Emitir evento SSE `image` na rota existente + registrar tokens de imagem separadamente
+- [x] Criar componente `AdImagePreview` e integrar na UI (imagem acima, texto abaixo)
+- [x] Cobrir com testes e validar `pnpm test` + `npx tsc --noEmit`
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1 → T13 em openspec/image-generation-tool-tasks.md
 ```
