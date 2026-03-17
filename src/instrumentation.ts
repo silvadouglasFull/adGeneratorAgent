@@ -9,7 +9,6 @@ export async function register() {
 
         const shutdown = async () => {
             await tokenConsumptionContainer.consumer.stop();
-            process.exit(0);
         };
 
         process.on("SIGTERM", shutdown);
