@@ -10,6 +10,7 @@ jest.mock("@langchain/google-genai", () => ({
 }));
 
 import { ModelRegistry } from "../../domain/model/ModelRegistry";
+import type { IModelProviderFactory } from "../../domain/service/IModelProviderFactory";
 import { ModelInitializerService } from "../../domain/service/ModelInitializerService";
 
 describe("ModelInitializerService", () => {
@@ -72,5 +73,29 @@ describe("ModelInitializerService", () => {
         const invalidService = new ModelInitializerService(invalidRegistry);
 
         await expect(invalidService.initialize("modelo-invalido" as never)).rejects.toThrow("não configurado");
+    });
+
+    describe("com ModelProviderFactory injetado", () => {
+        it("deve delegar para o factory quando disponível", async () => {
+            const mockModel = { _type: "mock-model" };
+            const mockFactory: IModelProviderFactory = {
+                create: jest.fn().mockReturnValue(mockModel),
+            };
+            const serviceWithFactory = new ModelInitializerService(registry, mockFactory);
+
+            const result = await serviceWithFactory.initialize("gpt-4o-mini");
+
+            expect(mockFactory.create).toHaveBeenCalledWith("gpt-4o-mini");
+            expect(result).toBe(mockModel);
+            expect(mockChatOpenAI).not.toHaveBeenCalled();
+        });
+
+        it("deve usar instanciação direta quando factory não fornecido", async () => {
+            const serviceWithoutFactory = new ModelInitializerService(registry);
+
+            await serviceWithoutFactory.initialize("gpt-4o-mini");
+
+            expect(mockChatOpenAI).toHaveBeenCalled();
+        });
     });
 });

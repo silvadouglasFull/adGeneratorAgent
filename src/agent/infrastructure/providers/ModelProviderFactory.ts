@@ -16,14 +16,15 @@ export class ModelProviderFactory implements IModelProviderFactory {
         private readonly heliconeApiKey: string | undefined = process.env.HELICONE_API_KEY
     ) { }
 
-    create(model: SupportedModel, userId: string): BaseChatModel {
+    create(model: SupportedModel, userId?: string): BaseChatModel {
         const config = this.registry.get(model);
+        const resolvedUserId = userId ?? "anonymous";
 
         if (config.modelProvider === "openai") {
-            return this.createOpenAI(model, config, userId);
+            return this.createOpenAI(model, config, resolvedUserId);
         }
 
-        return this.createGemini(model, config, userId);
+        return this.createGemini(model, config, resolvedUserId);
     }
 
     private createOpenAI(model: SupportedModel, config: ModelConfig, userId: string): BaseChatModel {
