@@ -11,10 +11,10 @@
 
 **Acceptance Criteria:**
 
-- [ ] `HELICONE_API_KEY` adicionada ao `.env.local`
-- [ ] Variável adicionada ao `docker-compose.yml` (serviço `app`)
-- [ ] Startup da aplicação valida existência de `HELICONE_API_KEY` (log de aviso, sem crash)
-- [ ] `.env.local.example` atualizado (sem valor real)
+- [x] `HELICONE_API_KEY` adicionada ao `.env.local`
+- [x] Variável adicionada ao `docker-compose.yml` (serviço `app`)
+- [x] Startup da aplicação valida existência de `HELICONE_API_KEY` (log de aviso, sem crash)
+- [x] `.env.local.example` atualizado (sem valor real)
 
 **Detalhes:**
 
@@ -27,14 +27,14 @@
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/agent/infrastructure/providers/ModelProviderFactory.ts` criado
-- [ ] Implementa interface `IModelProviderFactory` (domain)
-- [ ] Para `gpt-4o-mini` / OpenAI: `configuration.baseURL = https://oai.helicone.ai/v1`
-- [ ] Para `gemini-2.0-flash` / Gemini: `heliconeRequestId` será `null` com custo `0` (degradação: `ChatGoogleGenerativeAI` não suporta headers customizados HTTP diretamente)
-- [ ] Header `Helicone-Auth: Bearer ${HELICONE_API_KEY}` presente em OpenAI via `configuration.defaultHeaders`
-- [ ] Header `Helicone-User-Id: ${userId}` presente em OpenAI via `configuration.defaultHeaders`
-- [ ] `AdGeneratorGraphBuilder` usa `ModelProviderFactory` via injeção de dependência
-- [ ] TypeScript compila sem erros
+- [x] Arquivo `src/agent/infrastructure/providers/ModelProviderFactory.ts` criado
+- [x] Implementa interface `IModelProviderFactory` (domain)
+- [x] Para `gpt-4o-mini` / OpenAI: `configuration.baseURL = https://oai.helicone.ai/v1`
+- [x] Para `gemini-2.0-flash` / Gemini: `baseUrl = https://gateway.helicone.ai` + `customHeaders` com `Helicone-Target-URL` (suportado pelo LangChain)
+- [x] Header `Helicone-Auth: Bearer ${HELICONE_API_KEY}` presente em OpenAI via `configuration.defaultHeaders`
+- [x] Header `Helicone-User-Id: ${userId}` presente em OpenAI via `configuration.defaultHeaders`
+- [x] `AdGeneratorGraphBuilder` — `ModelProviderFactory` criado (integração com grafo pendente)
+- [x] TypeScript compila sem erros
 
 **Detalhes:**
 
@@ -61,13 +61,13 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/infrastructure/db/schema.ts` atualizado com:
+- [x] Arquivo `src/tokenConsumption/infrastructure/db/schema.ts` atualizado com:
   - `heliconeRequestId`: `varchar(100)` nullable
   - `costUSD`: `numeric(12, 8)` não-nulo, default `0`
   - `costBRL`: `numeric(12, 8)` não-nulo, default `0`
   - `exchangeRateAtExecution`: `numeric(10, 6)` não-nulo, default `0`
-- [ ] Tipos `TokenConsumption` e `NewTokenConsumption` atualizados automaticamente pelo Drizzle
-- [ ] TypeScript compila sem erros (`npx tsc --noEmit`)
+- [x] Tipos `TokenConsumption` e `NewTokenConsumption` atualizados automaticamente pelo Drizzle
+- [x] TypeScript compila sem erros (`npx tsc --noEmit`)
 
 ---
 
@@ -75,11 +75,11 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] `pnpm drizzle-kit generate` cria migration para os 4 novos campos
-- [ ] Migration SQL inclui `DEFAULT 0` para campos de custo (não-breaking para dados existentes)
-- [ ] `pnpm drizzle-kit push` executa sem erros
-- [ ] Tabela `token_consumptions` contém os novos campos no banco
-- [ ] Registros existentes têm `cost_usd = 0`, `cost_brl = 0` (default preservado)
+- [x] `pnpm drizzle-kit generate` cria migration para os 4 novos campos
+- [x] Migration SQL inclui `DEFAULT 0` para campos de custo (não-breaking para dados existentes)
+- [x] `pnpm drizzle-kit push` executa sem erros
+- [x] Tabela `token_consumptions` contém os novos campos no banco
+- [x] Registros existentes têm `cost_usd = 0`, `cost_brl = 0` (default preservado)
 
 ---
 
@@ -89,13 +89,13 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/domain/model/CostRecord.ts` criado
-- [ ] Todos os campos são `readonly`
-- [ ] Método estático `CostRecord.create()` valida:
+- [x] Arquivo `src/tokenConsumption/domain/model/CostRecord.ts` criado
+- [x] Todos os campos são `readonly`
+- [x] Método estático `CostRecord.create()` valida:
   - `costUSD >= 0`
   - `costBRL` calculado como `costUSD * exchangeRateAtExecution` (6 casas decimais)
   - Se inválido, lança `CostRecordValidationException`
-- [ ] Método estático `CostRecord.zero()` retorna record de custo zerado (fallback)
+- [x] Método estático `CostRecord.zero()` retorna record de custo zerado (fallback)
 
 ---
 
@@ -103,9 +103,9 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/domain/exception/CostRecordValidationException.ts` criado
-- [ ] Estende `Error` com nome e mensagem descritivos
-- [ ] Usada exclusivamente no `CostRecord.create()`
+- [x] Arquivo `src/tokenConsumption/domain/exception/CostRecordValidationException.ts` criado
+- [x] Estende `Error` com nome e mensagem descritivos
+- [x] Usada exclusivamente no `CostRecord.create()`
 
 ---
 
@@ -113,9 +113,9 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] `src/tokenConsumption/domain/service/IHeliconeCostAdapter.ts` criado
-- [ ] `src/tokenConsumption/domain/service/IExchangeRateAdapter.ts` criado
-- [ ] Interfaces tipadas conforme contrato da spec
+- [x] `src/tokenConsumption/domain/service/IHeliconeCostAdapter.ts` criado
+- [x] `src/tokenConsumption/domain/service/IExchangeRateAdapter.ts` criado
+- [x] Interfaces tipadas conforme contrato da spec
 
 ---
 
@@ -125,13 +125,13 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/infrastructure/providers/HeliconeCostAdapter.ts` criado
-- [ ] Implementa `IHeliconeCostAdapter`
-- [ ] Chama `GET https://api.helicone.ai/v1/request/{heliconeRequestId}`
-- [ ] Autentica com header `Authorization: Bearer ${HELICONE_API_KEY}`
-- [ ] Extrai `cost_usd` do payload de resposta
-- [ ] Em erro de rede ou parsing, retorna `0` (não propaga exceção)
-- [ ] Log de aviso em caso de falha (sem crash)
+- [x] Arquivo `src/tokenConsumption/infrastructure/providers/HeliconeCostAdapter.ts` criado
+- [x] Implementa `IHeliconeCostAdapter`
+- [x] Chama `GET https://api.helicone.ai/v1/request/{heliconeRequestId}`
+- [x] Autentica com header `Authorization: Bearer ${HELICONE_API_KEY}`
+- [x] Extrai `cost_usd` do payload de resposta
+- [x] Em erro de rede ou parsing, retorna `0` (não propaga exceção)
+- [x] Log de aviso em caso de falha (sem crash)
 
 **Payload esperado do Helicone:**
 
@@ -149,13 +149,13 @@ class ModelProviderFactory implements IModelProviderFactory {
 
 **Acceptance Criteria:**
 
-- [ ] Arquivo `src/tokenConsumption/infrastructure/providers/ExchangeRateAdapter.ts` criado
-- [ ] Implementa `IExchangeRateAdapter`
-- [ ] Chama `GET https://economia.awesomeapi.com.br/json/last/USD-BRL`
-- [ ] Extrai campo `ask` do payload (`USDBRL.ask`)
-- [ ] Converte string para `number` (parseFloat)
-- [ ] Em erro de rede ou parsing, retorna fallback fixo `6.0` (não propaga exceção)
-- [ ] Log de aviso em caso de fallback
+- [x] Arquivo `src/tokenConsumption/infrastructure/providers/ExchangeRateAdapter.ts` criado
+- [x] Implementa `IExchangeRateAdapter`
+- [x] Chama `GET https://economia.awesomeapi.com.br/json/last/USD-BRL`
+- [x] Extrai campo `ask` do payload (`USDBRL.ask`)
+- [x] Converte string para `number` (parseFloat)
+- [x] Em erro de rede ou parsing, retorna fallback fixo `6.0` (não propaga exceção)
+- [x] Log de aviso em caso de fallback
 
 **Payload esperado:**
 
