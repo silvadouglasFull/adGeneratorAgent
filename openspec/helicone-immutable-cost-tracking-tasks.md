@@ -33,7 +33,7 @@
 - [x] Para `gemini-2.0-flash` / Gemini: `baseUrl = https://gateway.helicone.ai` + `customHeaders` com `Helicone-Target-URL` (suportado pelo LangChain)
 - [x] Header `Helicone-Auth: Bearer ${HELICONE_API_KEY}` presente em OpenAI via `configuration.defaultHeaders`
 - [x] Header `Helicone-User-Id: ${userId}` presente em OpenAI via `configuration.defaultHeaders`
-- [x] `AdGeneratorGraphBuilder` — `ModelProviderFactory` criado (integração com grafo pendente)
+- [x] `AdGeneratorGraphBuilder` — `ModelProviderFactory` integrado via `ModelInitializerService` com DI
 - [x] TypeScript compila sem erros
 
 **Detalhes:**

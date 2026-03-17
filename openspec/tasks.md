@@ -643,9 +643,8 @@ Status: **Concluído em 17/03/2026**
 - [x] Endpoint `GET /api/costs/summary` com `userId` opcional (retorna sumário global se ausente)
 - [x] `CostSummaryRepository` com `SUM()`, `COUNT()`, `GROUP BY model_used`
 - [x] Testes: 7 suites (domain, application, infrastructure, integração, route) — todos passando
-- [x] Validação: `npx tsc --noEmit` 0 erros, `pnpm test` 32 suites / 153 testes
-
-**Nota**: `ModelProviderFactory` foi criado e testado, mas ainda não integrado ao fluxo do `AdGeneratorGraphBuilder` (integração pendente).
+- [x] Validação: `npx tsc --noEmit` 0 erros, `pnpm test` 32 suites / 155 testes
+- [x] Integração: `ModelProviderFactory` injetado no `ModelInitializerService` (proxy Helicone ativo quando `HELICONE_API_KEY` presente)
 
 ## Ordem de execução sugerida
 
