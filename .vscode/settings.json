@@ -1,3 +1,8 @@
 {
-  "js/ts.tsdk.path": "node_modules/typescript/lib"
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "chat.mcp.serverSampling": {
+    "adGeneratorAgent/.vscode/mcp.json: docs-helicone.ai": {
+      "allowedModels": ["copilot/auto", "copilotcli/claude-sonnet-4.6"]
+    }
+  }
 }
