@@ -86,18 +86,3 @@ export const db = new Proxy(
         },
     }
 );
-
-// Handle graceful shutdown on process termination
-if (typeof process !== 'undefined') {
-    process.on('SIGTERM', async () => {
-        console.log('SIGTERM received, closing database connection...');
-        await closeDatabase();
-        process.exit(0);
-    });
-
-    process.on('SIGINT', async () => {
-        console.log('SIGINT received, closing database connection...');
-        await closeDatabase();
-        process.exit(0);
-    });
-}
