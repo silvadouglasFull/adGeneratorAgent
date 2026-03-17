@@ -18,7 +18,22 @@ export type StreamResult = {
     usage?: TokenUsage;
     imageUrl?: string;
     imageUsage?: { inputTokens: number; outputTokens: number };
+    heliconeRequestId?: string;
 };
+
+function extractHeliconeRequestId(messageChunk: unknown): string | undefined {
+    if (!messageChunk || typeof messageChunk !== "object") {
+        return undefined;
+    }
+
+    const chunk = messageChunk as {
+        response_metadata?: {
+            headers?: Record<string, string>;
+        };
+    };
+
+    return chunk.response_metadata?.headers?.["helicone-id"] ?? undefined;
+}
 
 function toNumber(value: unknown): number | undefined {
     if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
@@ -99,6 +114,7 @@ export class AdStreamGenerator {
 
         let fullAd = "";
         let usage: Partial<TokenUsage> = {};
+        let heliconeRequestId: string | undefined;
 
         for await (const [messageChunk, metadata] of stream) {
             if (metadata?.langgraph_node !== "generateAd") {
@@ -108,6 +124,10 @@ export class AdStreamGenerator {
             const chunkUsage = extractTokenUsage(messageChunk);
             if (chunkUsage) {
                 usage = { ...usage, ...chunkUsage };
+            }
+
+            if (!heliconeRequestId) {
+                heliconeRequestId = extractHeliconeRequestId(messageChunk);
             }
 
             const token = this.messageParser.parse(
@@ -154,6 +174,7 @@ export class AdStreamGenerator {
             usage: finalUsage,
             imageUrl: imageResult?.imageUrl,
             imageUsage: imageResult?.usage,
+            heliconeRequestId,
         };
     }
 }

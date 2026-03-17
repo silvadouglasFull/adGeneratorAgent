@@ -1,6 +1,7 @@
 import {
     index,
     integer,
+    numeric,
     pgEnum,
     pgTable,
     text,
@@ -51,6 +52,15 @@ export const tokenConsumptionsTable = pgTable(
         // Error details if status is 'failed'
         errorMessage: text('error_message'),
 
+        // Helicone cost tracking fields (immutable after persistence)
+        heliconeRequestId: varchar('helicone_request_id', { length: 100 }),
+        costUsd: numeric('cost_usd', { precision: 12, scale: 8 }).notNull().default('0'),
+        costBrl: numeric('cost_brl', { precision: 12, scale: 8 }).notNull().default('0'),
+        exchangeRateAtExecution: numeric('exchange_rate_at_execution', { precision: 10, scale: 6 }).notNull().default('0'),
+
+        // User identification for cost summary queries
+        userId: varchar('user_id', { length: 100 }),
+
         // Audit timestamps
         createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
             .notNull()
@@ -67,6 +77,7 @@ export const tokenConsumptionsTable = pgTable(
         statusIdx: index('idx_status').on(table.status),
         timestampIdx: index('idx_timestamp').on(table.timestamp),
         modelUsedIdx: index('idx_model_used').on(table.modelUsed),
+        userIdIdx: index('idx_user_id').on(table.userId),
     })
 );
 

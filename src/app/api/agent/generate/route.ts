@@ -131,6 +131,7 @@ export async function POST(request: Request) {
                     inputTokens,
                     outputTokens,
                     timestamp: new Date(),
+                    heliconeRequestId: generationResult?.heliconeRequestId,
                 });
 
                 tokenConsumptionContainer.useCase.execute(tokenEvent).catch((error) => {
