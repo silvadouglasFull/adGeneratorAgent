@@ -1,7 +1,7 @@
 jest.mock("@/tokenConsumption/infrastructure/persistence/CostSummaryRepository", () => {
     return {
         CostSummaryRepository: jest.fn().mockImplementation(() => ({
-            getSummaryByUserId: jest.fn().mockResolvedValue({
+            getSummary: jest.fn().mockResolvedValue({
                 totalCostUSD: 0.04321,
                 totalCostBRL: 0.230012,
                 requestCount: 42,
@@ -21,13 +21,13 @@ jest.mock("@/tokenConsumption/infrastructure/persistence/CostSummaryRepository",
 import { GET } from "@/app/api/costs/summary/route";
 
 describe("GET /api/costs/summary", () => {
-    it("deve retornar 400 quando userId está ausente", async () => {
+    it("deve retornar 200 com sumário global quando userId está ausente", async () => {
         const request = new Request("http://localhost/api/costs/summary");
         const response = await GET(request);
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(200);
         const body = await response.json();
-        expect(body.error).toContain("userId");
+        expect(body.totalCostUSD).toBe(0.04321);
     });
 
     it("deve retornar 400 quando userId não é UUID válido", async () => {

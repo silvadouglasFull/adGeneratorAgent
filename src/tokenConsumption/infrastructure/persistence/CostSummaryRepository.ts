@@ -23,8 +23,8 @@ type DatabaseLike = typeof defaultDb;
 export class CostSummaryRepository {
     constructor(private readonly db: DatabaseLike = defaultDb) { }
 
-    async getSummaryByUserId(userId: string): Promise<CostSummary> {
-        const rows = (await this.db
+    async getSummary(userId?: string): Promise<CostSummary> {
+        const query = this.db
             .select({
                 modelUsed: tokenConsumptionsTable.modelUsed,
                 totalCostUSD: sql<string>`coalesce(sum(${tokenConsumptionsTable.costUsd}), 0)`,
@@ -33,16 +33,20 @@ export class CostSummaryRepository {
                 minTimestamp: min(tokenConsumptionsTable.timestamp),
                 maxTimestamp: max(tokenConsumptionsTable.timestamp),
             })
-            .from(tokenConsumptionsTable)
-            .where(eq(tokenConsumptionsTable.userId, userId))
-            .groupBy(tokenConsumptionsTable.modelUsed)) as Array<{
-                modelUsed: string;
-                totalCostUSD: string;
-                totalCostBRL: string;
-                requestCount: number;
-                minTimestamp: Date | null;
-                maxTimestamp: Date | null;
-            }>;
+            .from(tokenConsumptionsTable);
+
+        if (userId) {
+            query.where(eq(tokenConsumptionsTable.userId, userId));
+        }
+
+        const rows = (await query.groupBy(tokenConsumptionsTable.modelUsed)) as Array<{
+            modelUsed: string;
+            totalCostUSD: string;
+            totalCostBRL: string;
+            requestCount: number;
+            minTimestamp: Date | null;
+            maxTimestamp: Date | null;
+        }>;
 
         let totalCostUSD = 0;
         let totalCostBRL = 0;
