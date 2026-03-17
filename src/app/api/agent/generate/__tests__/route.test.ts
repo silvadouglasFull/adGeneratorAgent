@@ -4,7 +4,7 @@ const mockUseCaseExecute = jest.fn();
 const mockEnsureConsumerStarted = jest.fn();
 
 jest.mock("@/agent/adGeneratorAgent", () => ({
-    SUPPORTED_MODELS: ["gpt-4o-mini", "gemini-2.0-flash"],
+    TEXT_MODELS: ["gpt-4o-mini", "gemini-2.0-flash"],
     streamGeneratedAd: (...args: unknown[]) => mockStreamGeneratedAd(...args),
 }));
 
@@ -188,5 +188,62 @@ describe("POST /api/agent/generate", () => {
         expect(response.status).toBe(200);
         expect(body).toContain('"type":"error"');
         expect(body).toContain("Falha no agente");
+    });
+
+    it("retorna evento image quando resultado inclui imageUrl", async () => {
+        mockStreamGeneratedAd.mockImplementation(async function* () {
+            yield "# Anúncio com Imagem";
+            return {
+                ad: "# Anúncio com Imagem",
+                usage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+                imageUrl: "data:image/png;base64,abc123",
+                imageUsage: { inputTokens: 100, outputTokens: 200 },
+            };
+        });
+
+        const request = new Request("http://localhost/api/agent/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ input: "Produto com imagem" }),
+        });
+
+        const response = await POST(request);
+        const body = await response.text();
+
+        expect(response.status).toBe(200);
+        expect(body).toContain('"type":"image"');
+        expect(body).toContain('"imageUrl":"data:image/png;base64,abc123"');
+        expect(body).toContain('"imageModel":"gpt-image-1.5"');
+        expect(body).toContain('"imageUsage"');
+        expect(mockUseCaseExecute).toHaveBeenCalledTimes(2);
+
+        const firstEvent = mockUseCaseExecute.mock.calls[0][0] as { modelUsed: string };
+        const secondEvent = mockUseCaseExecute.mock.calls[1][0] as { modelUsed: string };
+        expect(firstEvent.modelUsed).toBe("gpt-4o-mini");
+        expect(secondEvent.modelUsed).toBe("gpt-image-1.5");
+    });
+
+    it("não emite evento image quando resultado não inclui imageUrl", async () => {
+        mockStreamGeneratedAd.mockImplementation(async function* () {
+            yield "# Anúncio Simples";
+            return {
+                ad: "# Anúncio Simples",
+                usage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+            };
+        });
+
+        const request = new Request("http://localhost/api/agent/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ input: "Produto sem imagem" }),
+        });
+
+        const response = await POST(request);
+        const body = await response.text();
+
+        expect(response.status).toBe(200);
+        expect(body).not.toContain('"type":"image"');
+        expect(body).not.toContain('"imageModel"');
+        expect(mockUseCaseExecute).toHaveBeenCalledTimes(1);
     });
 });

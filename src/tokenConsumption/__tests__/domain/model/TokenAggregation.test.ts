@@ -10,6 +10,7 @@ describe("TokenAggregation", () => {
             byModel: {
                 "gpt-4o-mini": 900,
                 "gemini-2.0-flash": 600,
+                "gpt-image-1.5": 0,
             },
         });
 
@@ -28,6 +29,7 @@ describe("TokenAggregation", () => {
                 byModel: {
                     "gpt-4o-mini": 100,
                     "gemini-2.0-flash": 0,
+                    "gpt-image-1.5": 0,
                 },
             });
         }).toThrow("periodStart não pode ser maior que periodEnd");

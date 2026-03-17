@@ -1,13 +1,16 @@
 "use client";
 
+import { AdImagePreview } from "@/components/AdImagePreview";
 import { ModelDropdown, type ModelOption } from "@/components/ModelDropdown";
 import { useEffect, useState } from "react";
 
 interface AdResponse {
   ad: string;
+  imageUrl?: string;
   metadata: {
     model?: string;
     generatedAt?: string;
+    imageModel?: string;
   };
 }
 
@@ -17,6 +20,7 @@ export default function Home() {
   const [result, setResult] = useState<AdResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
   const [models, setModels] = useState<ModelOption[]>([]);
   const [modelsLoading, setModelsLoading] = useState(true);
   const [modelsError, setModelsError] = useState<string | null>(null);
@@ -47,6 +51,7 @@ export default function Home() {
     e.preventDefault();
     setError(null);
     setResult(null);
+    setImageLoading(false);
     setLoading(true);
 
     try {
@@ -90,23 +95,37 @@ export default function Home() {
               }
 
               const payload = JSON.parse(dataLine.slice(6)) as {
-                type: "token" | "done" | "error";
+                type: "token" | "done" | "error" | "image";
                 content?: string;
                 error?: string;
-                metadata?: { model?: string; generatedAt?: string };
+                imageUrl?: string;
+                metadata?: { model?: string; generatedAt?: string; imageModel?: string };
               };
 
               if (payload.type === "token" && payload.content) {
                 ad += payload.content;
+                setImageLoading(true);
                 setResult((previous) => ({
                   ad,
+                  imageUrl: previous?.imageUrl,
+                  metadata: previous?.metadata ?? {},
+                }));
+              }
+
+              if (payload.type === "image" && payload.imageUrl) {
+                setImageLoading(false);
+                setResult((previous) => ({
+                  ad: previous?.ad ?? ad,
+                  imageUrl: payload.imageUrl,
                   metadata: previous?.metadata ?? {},
                 }));
               }
 
               if (payload.type === "done") {
+                setImageLoading(false);
                 setResult((previous) => ({
                   ad: previous?.ad ?? ad,
+                  imageUrl: previous?.imageUrl,
                   metadata: payload.metadata ?? previous?.metadata ?? {},
                 }));
               }
@@ -240,11 +259,19 @@ export default function Home() {
               <h2 className="text-lg font-semibold text-gray-900">Anúncio Gerado</h2>
               {result.metadata.model && result.metadata.generatedAt && (
                 <span className="text-xs text-gray-400">
-                  {result.metadata.model} ·{" "}
+                  {result.metadata.model}
+                  {result.metadata.imageModel && ` + ${result.metadata.imageModel}`}
+                  {" · "}
                   {new Date(result.metadata.generatedAt).toLocaleString("pt-BR")}
                 </span>
               )}
             </div>
+
+            {/* Image Preview */}
+            <AdImagePreview
+              imageUrl={result.imageUrl ?? null}
+              loading={imageLoading}
+            />
 
             {/* Ad Preview */}
             <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-2xl p-8">

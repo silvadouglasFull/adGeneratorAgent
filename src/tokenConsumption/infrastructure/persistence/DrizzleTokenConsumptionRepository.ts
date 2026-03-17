@@ -92,6 +92,7 @@ export class DrizzleTokenConsumptionRepository implements ITokenConsumptionRepos
             const byModel: Record<SupportedModel, number> = {
                 "gpt-4o-mini": 0,
                 "gemini-2.0-flash": 0,
+                "gpt-image-1.5": 0,
             };
 
             let totalTokens = 0;
