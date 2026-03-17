@@ -212,18 +212,18 @@ src/
 
 ## Critérios de Aceitação
 
-- [ ] **CA1**: Estrutura DDD criada conforme diagrama
-- [ ] **CA2**: `ModelRegistry` substitui `MODEL_CONFIGS`, método `get()` implementado
-- [ ] **CA3**: Serviços de domínio criados (`InstructionService`, `ModelInitializerService`, `AdGenerationService`, `OutputValidationService`)
-- [ ] **CA4**: Exceções específicas de domínio lançadas (`ModelNotFoundException`, `InvalidAdFormatException`)
-- [ ] **CA5**: `AdGeneratorGraphBuilder` constrói grafo sem nodes implementarem lógica
-- [ ] **CA6**: `MessageParser` centraliza parse de mensagens
-- [ ] **CA7**: `AdStreamGenerator` implementado com stream assíncrono
-- [ ] **CA8**: `adGeneratorAgent.ts` atua como facade exportando interface pública
-- [ ] **CA9**: Todos os comentários desnecessários removidos, nomenclatura comunica intenção
-- [ ] **CA10**: Testes refatorados para estrutura modular (domain/, application/)
-- [ ] **CA11**: TypeScript: 0 erros, sem `@ts-ignore`
-- [ ] **CA12**: Testes passando: 100% de cobertura para serviços; API route funciona transparentemente
+- [x] **CA1**: Estrutura DDD criada conforme diagrama
+- [x] **CA2**: `ModelRegistry` substitui `MODEL_CONFIGS`, método `get()` implementado
+- [x] **CA3**: Serviços de domínio criados (`InstructionService`, `ModelInitializerService`, `AdGenerationService`, `OutputValidationService`)
+- [x] **CA4**: Exceções específicas de domínio lançadas (`ModelNotFoundException`, `InvalidAdFormatException`)
+- [x] **CA5**: `AdGeneratorGraphBuilder` constrói grafo sem nodes implementarem lógica
+- [x] **CA6**: `MessageParser` centraliza parse de mensagens
+- [x] **CA7**: `AdStreamGenerator` implementado com stream assíncrono
+- [x] **CA8**: `adGeneratorAgent.ts` atua como facade exportando interface pública
+- [x] **CA9**: Todos os comentários desnecessários removidos, nomenclatura comunica intenção
+- [x] **CA10**: Testes refatorados para estrutura modular (domain/, application/)
+- [x] **CA11**: TypeScript: 0 erros, sem `@ts-ignore`
+- [x] **CA12**: Testes passando: 100% de cobertura para serviços; API route funciona transparentemente
 
 ## Estimativa de Tempo
 

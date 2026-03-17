@@ -9,10 +9,10 @@ Spec obrigatória de padrões: `openspec/specs/ai-code-generation-standards.md`
 
 ### T1 — Definir contrato de ambiente
 
-- [ ] Confirmar variáveis obrigatórias: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`
-- [ ] Criar `.env.example` com placeholders
-- [ ] Garantir que `.env` e `.env.local` estejam ignorados no versionamento
-- **Critério**: variáveis obrigatórias documentadas e sem segredos commitados
+- [x] Confirmar variáveis obrigatórias: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`
+- [x] Criar `.env.example` com placeholders
+- [x] Garantir que `.env` e `.env.local` estejam ignorados no versionamento
+- **Critério**: variáveis obrigatórias documentadas e sem segredos commitados ✅
 
 ---
 
@@ -20,25 +20,25 @@ Spec obrigatória de padrões: `openspec/specs/ai-code-generation-standards.md`
 
 ### T2 — Criar serviço PostgreSQL
 
-- [ ] Criar `docker-compose.yml` com serviço `postgres`
-- [ ] Definir imagem oficial do PostgreSQL (tag estável)
-- [ ] Configurar `container_name` e `restart` adequado para dev
-- [ ] Mapear porta `${POSTGRES_PORT}:5432`
-- **Critério**: `docker compose config` sem erros
+- [x] Criar `docker-compose.yml` com serviço `postgres`
+- [x] Definir imagem oficial do PostgreSQL (tag estável)
+- [x] Configurar `container_name` e `restart` adequado para dev
+- [x] Mapear porta `${POSTGRES_PORT}:5432`
+- **Critério**: `docker compose config` sem erros ✅
 
 ### T3 — Configurar variáveis de ambiente com fallback
 
-- [ ] Configurar leitura de `.env` e `.env.local`
-- [ ] Definir precedência de `.env.local` sobre `.env` quando ambos existirem
-- [ ] Injetar credenciais no container via `environment`/`env_file`
-- **Critério**: container sobe com credenciais corretas no cenário `.env` e no cenário `.env.local`
+- [x] Configurar leitura de `.env` e `.env.local`
+- [x] Definir precedência de `.env.local` sobre `.env` quando ambos existirem
+- [x] Injetar credenciais no container via `environment`/`env_file`
+- **Critério**: container sobe com credenciais corretas no cenário `.env` e no cenário `.env.local` ✅
 
 ### T4 — Adicionar persistência e healthcheck
 
-- [ ] Criar volume nomeado para dados (`postgres_data`)
-- [ ] Anexar volume em `/var/lib/postgresql/data`
-- [ ] Configurar `healthcheck` com `pg_isready`
-- **Critério**: `docker ps` mostra status `healthy` após subida
+- [x] Criar volume nomeado para dados (`postgres_data`)
+- [x] Anexar volume em `/var/lib/postgresql/data`
+- [x] Configurar `healthcheck` com `pg_isready`
+- **Critério**: `docker ps` mostra status `healthy` após subida ✅
 
 ---
 
@@ -46,11 +46,11 @@ Spec obrigatória de padrões: `openspec/specs/ai-code-generation-standards.md`
 
 ### T5 — Atualizar README
 
-- [ ] Documentar pré-requisitos (Docker e Compose)
-- [ ] Documentar criação de `.env.local` a partir de `.env.example`
-- [ ] Documentar comandos de start/stop/logs
-- [ ] Documentar como testar conexão no banco
-- **Critério**: onboarding local executável sem orientação adicional
+- [x] Documentar pré-requisitos (Docker e Compose)
+- [x] Documentar criação de `.env.local` a partir de `.env.example`
+- [x] Documentar comandos de start/stop/logs
+- [x] Documentar como testar conexão no banco
+- **Critério**: onboarding local executável sem orientação adicional ✅
 
 ---
 
@@ -58,26 +58,26 @@ Spec obrigatória de padrões: `openspec/specs/ai-code-generation-standards.md`
 
 ### T6 — Validar cenário com `.env`
 
-- [ ] Subir stack com `docker compose up -d`
-- [ ] Validar variáveis aplicadas e conexão ao banco
-- [ ] Reiniciar container e validar persistência
-- **Critério**: banco acessível e persistente
+- [x] Subir stack com `docker compose up -d`
+- [x] Validar variáveis aplicadas e conexão ao banco
+- [x] Reiniciar container e validar persistência
+- **Critério**: banco acessível e persistente ✅
 
 ### T7 — Validar cenário com `.env.local`
 
-- [ ] Configurar valores diferentes em `.env.local`
-- [ ] Subir stack e validar uso das credenciais de `.env.local`
-- [ ] Confirmar precedência sobre `.env`
-- **Critério**: credenciais ativas correspondem a `.env.local`
+- [x] Configurar valores diferentes em `.env.local`
+- [x] Subir stack e validar uso das credenciais de `.env.local`
+- [x] Confirmar precedência sobre `.env`
+- **Critério**: credenciais ativas correspondem a `.env.local` ✅
 
 ### T8 — Checklist final
 
-- [ ] `docker compose config` válido
-- [ ] `docker compose up -d` e `docker compose down` funcionando
-- [ ] Container `postgres` saudável
-- [ ] README e `.env.example` atualizados
-- [ ] Sem segredos reais no repositório
-- **Critério**: feature pronta para uso por qualquer dev do time
+- [x] `docker compose config` válido
+- [x] `docker compose up -d` e `docker compose down` funcionando
+- [x] Container `postgres` saudável
+- [x] README e `.env.example` atualizados
+- [x] Sem segredos reais no repositório
+- **Critério**: feature pronta para uso por qualquer dev do time ✅
 
 ---
 

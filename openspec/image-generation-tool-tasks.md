@@ -151,10 +151,10 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
 - [x] Executar `pnpm test` — todos os testes passam
 - [x] Executar `npx tsc --noEmit` — 0 erros
-- [ ] Validar manualmente:
-  - [ ] Input sem pedido de imagem → fluxo normal (apenas texto)
-  - [ ] Input com pedido de imagem → texto + imagem exibidos na UI
-  - [ ] Verificar no banco que há 2 registros de token consumption (texto + imagem)
+- [x] Validar manualmente:
+  - [x] Input sem pedido de imagem → fluxo normal (apenas texto)
+  - [x] Input com pedido de imagem → texto + imagem exibidos na UI
+  - [x] Verificar no banco que há 2 registros de token consumption (texto + imagem)
 - **Critério**: sem regressões, feature funcional end-to-end
 
 ---

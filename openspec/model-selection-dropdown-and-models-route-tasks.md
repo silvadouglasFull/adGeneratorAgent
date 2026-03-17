@@ -68,7 +68,7 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
 - [x] Executar `pnpm test` — 21 suites, 91 testes passando
 - [x] Executar `npx tsc --noEmit` — 0 erros
-- [ ] Validar manualmente: selecionar modelo no dropdown e gerar anúncio com sucesso
+- [x] Validar manualmente: selecionar modelo no dropdown e gerar anúncio com sucesso ✓
 - **Critério**: sem regressões no fluxo de geração ✅
 
 ---

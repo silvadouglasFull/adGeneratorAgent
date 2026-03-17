@@ -35,7 +35,7 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 - [x] Executar `npx tsc --noEmit` — 0 erros
 - [x] Executar `docker compose up -d` — containers saudáveis (postgres healthy, redis healthy)
 - [x] Executar `pnpm dev` — sem erros `NOAUTH` no console ✓
-- [ ] Testar manualmente `POST /api/agent/generate` — tokens enfileirados e consumidos
+- [x] Testar manualmente `POST /api/agent/generate` — tokens enfileirados e consumidos ✓
 - **Critério**: fluxo end-to-end funcional sem erros de autenticação Redis
 
 ---
