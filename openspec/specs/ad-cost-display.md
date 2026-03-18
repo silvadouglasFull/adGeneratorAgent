@@ -91,15 +91,15 @@ Formato: `R$ 0,0003` (4 casas decimais, locale pt-BR).
 
 ## Critérios de Aceitação
 
-- [ ] Rota `POST /api/agent/generate` chama `CostCaptureService.capture()` quando `heliconeRequestId` disponível
-- [ ] Evento SSE `done` inclui campo `costBRL` no metadata (`number | null`)
-- [ ] Tipo `AdResponse` em `page.tsx` inclui `costBRL?: number | null` no metadata
-- [ ] UI exibe custo formatado no header do resultado quando `costBRL` não é `null`
-- [ ] UI omite custo quando `costBRL` é `null`
-- [ ] Falha no `CostCaptureService` não impede envio do evento `done` (costBRL = null)
-- [ ] `npx tsc --noEmit` sem erros
-- [ ] `pnpm test` passa (todos os testes)
-- [ ] Testes da rota cobrem cenário com e sem custo
+- [x] Rota `POST /api/agent/generate` chama `CostCaptureService.capture()` quando `heliconeRequestId` disponível
+- [x] Evento SSE `done` inclui campo `costBRL` no metadata (`number | null`)
+- [x] Tipo `AdResponse` em `page.tsx` inclui `costBRL?: number | null` no metadata
+- [x] UI exibe custo formatado no header do resultado quando `costBRL` não é `null`
+- [x] UI omite custo quando `costBRL` é `null`
+- [x] Falha no `CostCaptureService` não impede envio do evento `done` (costBRL = null)
+- [x] `npx tsc --noEmit` sem erros
+- [x] `pnpm test` passa (todos os testes)
+- [x] Testes da rota cobrem cenário com e sem custo
 
 ## Definição de Pronto (DoD)
 

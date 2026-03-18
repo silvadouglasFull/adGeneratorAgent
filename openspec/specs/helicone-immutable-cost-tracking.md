@@ -195,7 +195,7 @@ HELICONE_API_KEY=sk-helicone-...
 
 | Provedor | URL original da OpenAI/Google             | URL via proxy Helicone      |
 | -------- | ----------------------------------------- | --------------------------- |
-| OpenAI   | https://api.openai.com                    | https://oai.helicone.ai/v1     |
+| OpenAI   | https://api.openai.com                    | https://oai.helicone.ai/v1  |
 | Gemini   | https://generativelanguage.googleapis.com | https://gateway.helicone.ai |
 
 ### Headers Obrigatórios
@@ -280,20 +280,20 @@ interface IModelProviderFactory {
 
 ## Critérios de Aceitação
 
-- [ ] `HELICONE_API_KEY` configurada e validada em startup
-- [ ] `ModelProviderFactory` instancia modelos com proxy Helicone para OpenAI e Gemini
-- [ ] Header `helicone-id` extraído do response e enfileirado junto com o evento de token
-- [ ] Migração Drizzle adiciona `cost_usd`, `cost_brl`, `exchange_rate_at_execution`, `helicone_request_id` sem quebrar schema existente
-- [ ] `HeliconeCostAdapter` busca custo real via API do Helicone (`GET /v1/request/{id}`)
-- [ ] `ExchangeRateAdapter` busca taxa USD→BRL de fonte externa no momento da execução
-- [ ] `CostRecord` value object valida: `costUSD >= 0`, `costBRL = costUSD * exchangeRate`
-- [ ] `TokenConsumptionRepository.save()` persiste os campos de custo junto ao evento
-- [ ] Custo salvo nunca é recalculado por serviço externo (somente leitura após persistência)
-- [ ] `GET /api/costs/summary` retorna soma de custos agrupados por modelo
-- [ ] Testes unitários cobrem `CostRecord`, `CostCaptureService`, `HeliconeCostAdapter`, `ExchangeRateAdapter`
-- [ ] Testes de integração cobrem o pipeline completo (fila → captura → persistência)
-- [ ] `pnpm test` passa sem erros
-- [ ] `npx tsc --noEmit` sem erros
+- [x] `HELICONE_API_KEY` configurada e validada em startup
+- [x] `ModelProviderFactory` instancia modelos com proxy Helicone para OpenAI e Gemini
+- [x] Header `helicone-id` extraído do response e enfileirado junto com o evento de token
+- [x] Migração Drizzle adiciona `cost_usd`, `cost_brl`, `exchange_rate_at_execution`, `helicone_request_id` sem quebrar schema existente
+- [x] `HeliconeCostAdapter` busca custo real via API do Helicone (`GET /v1/request/{id}`)
+- [x] `ExchangeRateAdapter` busca taxa USD→BRL de fonte externa no momento da execução
+- [x] `CostRecord` value object valida: `costUSD >= 0`, `costBRL = costUSD * exchangeRate`
+- [x] `TokenConsumptionRepository.save()` persiste os campos de custo junto ao evento
+- [x] Custo salvo nunca é recalculado por serviço externo (somente leitura após persistência)
+- [x] `GET /api/costs/summary` retorna soma de custos agrupados por modelo
+- [x] Testes unitários cobrem `CostRecord`, `CostCaptureService`, `HeliconeCostAdapter`, `ExchangeRateAdapter`
+- [x] Testes de integração cobrem o pipeline completo (fila → captura → persistência)
+- [x] `pnpm test` passa sem erros
+- [x] `npx tsc --noEmit` sem erros
 
 ---
 
@@ -312,7 +312,7 @@ interface IModelProviderFactory {
 | Serviço                 | Finalidade                   | URL                                                  |
 | ----------------------- | ---------------------------- | ---------------------------------------------------- |
 | Helicone                | Proxy + cálculo de custo     | https://api.helicone.ai                              |
-| Helicone (OpenAI proxy) | Redirecionamento para OpenAI | https://oai.helicone.ai/v1                              |
+| Helicone (OpenAI proxy) | Redirecionamento para OpenAI | https://oai.helicone.ai/v1                           |
 | Helicone (Gemini proxy) | Redirecionamento para Gemini | https://gateway.helicone.ai                          |
 | AwesomeAPI (câmbio)     | Taxa USD→BRL em tempo real   | https://economia.awesomeapi.com.br/json/last/USD-BRL |
 

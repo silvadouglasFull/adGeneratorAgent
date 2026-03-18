@@ -11,8 +11,6 @@
 
 **Acceptance Criteria:**
 
-- [ ] `tokenConsumptionContainer` em `src/tokenConsumption/tokenConsumption.ts` exporta `costCaptureService`
-- [ ] TypeScript compila sem erros
 - [x] `tokenConsumptionContainer` em `src/tokenConsumption/tokenConsumption.ts` exporta `costCaptureService`
 - [x] TypeScript compila sem erros
 
@@ -26,7 +24,6 @@
 
 **Acceptance Criteria:**
 
-- [ ] Em `src/app/api/agent/generate/route.ts`, após o stream finalizar:
 - [x] Em `src/app/api/agent/generate/route.ts`, após o stream finalizar:
   - Se `heliconeRequestId` disponível, chama `costCaptureService.capture(heliconeRequestId)`
   - Extrai `costBRL` do `CostRecord` retornado

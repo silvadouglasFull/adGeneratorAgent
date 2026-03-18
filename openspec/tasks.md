@@ -701,3 +701,28 @@ Status: **Concluído em 18/03/2026**
 ```text
 Seguir T1.1 → T3.3 em openspec/token-cost-backfill-tasks.md
 ```
+
+---
+
+# Feature: Dashboard de Consumo de Tokens e Custo por Token
+
+Spec de referência: `openspec/specs/token-consumption-dashboard.md`
+Tasks detalhadas: `openspec/token-consumption-dashboard-tasks.md`
+
+Status: **Concluído em 18/03/2026**
+
+## Escopo Resumido
+
+- [x] Criar página `/dashboard` com visualização interativa e legível
+- [x] Exibir 4 gráficos de barras (tokens total, tokens por anúncio, real/token total, real/token por anúncio)
+- [x] Manter consistência visual com os padrões de cor do sistema (ex.: `text-indigo-700`, `text-gray-900`, `text-gray-700`, `text-gray-100`)
+- [x] Implementar endpoint `GET /api/costs/dashboard` para dados do dashboard
+- [x] Aplicar cálculo de `realPorToken` no backend com tratamento de divisão por zero
+- [x] Cobrir backend e frontend com testes
+- [x] Validar `pnpm test` + `npx tsc --noEmit`
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1 → T12 em openspec/token-consumption-dashboard-tasks.md
+```

@@ -15,6 +15,7 @@
 - [x] Hardening de startup/shutdown do consumer fora de lazy init
 - [x] Testes de integração E2E com Redis + PostgreSQL reais
 - [ ] Benchmark de throughput
+- [ ] `pnpm lint` sem erros
 - [x] Documentação operacional (`README` da feature + plano de extração)
 
 ---
@@ -546,7 +547,7 @@
 - [x] `pnpm db:seed` executa
 - [x] `pnpm test` passa (todas as suites)
 - [x] `npx tsc --noEmit` sem erros
-- [ ] `pnpm build` compila sem erro
+- [x] `pnpm build` compila sem erro
 - [ ] `pnpm lint` (se aplicável) sem erro
 - [x] Não há `any` type não justificado
 - [x] Código segue DDD/SOLID (revisão manual)
