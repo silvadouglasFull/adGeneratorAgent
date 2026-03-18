@@ -83,14 +83,14 @@ Regras:
 
 ## Critérios de Aceitação
 
-- [ ] Existe endpoint `POST /api/costs/backfill`
-- [ ] Endpoint valida `limit` e retorna 400 para input inválido
-- [ ] Backfill atualiza registros elegíveis quando custo for maior que zero
-- [ ] Registros sem custo materializado continuam sem atualização (skipped)
-- [ ] Processamento resiliente: falha em item não interrompe lote
-- [ ] Testes de rota e serviço cobrindo sucesso/validação/falha parcial
-- [ ] `pnpm test` passa
-- [ ] `npx tsc --noEmit` passa
+- [x] Existe endpoint `POST /api/costs/backfill`
+- [x] Endpoint valida `limit` e retorna 400 para input inválido
+- [x] Backfill atualiza registros elegíveis quando custo for maior que zero
+- [x] Registros sem custo materializado continuam sem atualização (skipped)
+- [x] Processamento resiliente: falha em item não interrompe lote
+- [x] Testes de rota e serviço cobrindo sucesso/validação/falha parcial
+- [x] `pnpm test` passa
+- [x] `npx tsc --noEmit` passa
 
 ## Definição de Pronto (DoD)
 
