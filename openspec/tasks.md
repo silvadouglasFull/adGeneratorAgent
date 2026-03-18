@@ -677,3 +677,27 @@ Status: **Concluído em 18/03/2026**
 ```text
 Seguir T1.1 → T3.2 em openspec/ad-cost-display-tasks.md
 ```
+
+---
+
+# Feature: Backfill de Custos de Token via Helicone
+
+Spec de referência: `openspec/specs/token-cost-backfill.md`
+Tasks detalhadas: `openspec/token-cost-backfill-tasks.md`
+
+Status: **Concluído em 18/03/2026**
+
+## Escopo Resumido
+
+- [x] Criar endpoint `POST /api/costs/backfill`
+- [x] Buscar registros com `helicone_request_id` não nulo e `cost_usd = 0`
+- [x] Reprocessar custo via `CostCaptureService` e atualizar persistência
+- [x] Retornar sumário operacional (`scanned`, `updated`, `skipped`, `failed`)
+- [x] Cobrir com testes de rota e serviço
+- [x] Validar `pnpm test` + `npx tsc --noEmit`
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1.1 → T3.3 em openspec/token-cost-backfill-tasks.md
+```
