@@ -4,6 +4,15 @@ export type SpinnerProps = {
     height?: string | number
     viewBox?: string
 }
+
+function toCssSize(value: string | number): string {
+    if (typeof value === "number") {
+        return `${value * 0.25}rem`;
+    }
+
+    return value;
+}
+
 export const Spinner = ({
     color = 'text-indigo-600',
     height = 8,
@@ -12,7 +21,11 @@ export const Spinner = ({
 }: SpinnerProps) => {
     return (
         <svg
-            className={`animate-spin h-${height} w-${width} ${color}`}
+            className={`animate-spin ${color}`}
+            style={{
+                width: toCssSize(width),
+                height: toCssSize(height),
+            }}
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox={viewBox}
