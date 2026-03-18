@@ -17,11 +17,15 @@ import { adGeneratorPrompt } from "./prompt";
 const modelRegistry = ModelRegistry.default();
 const instructionService = new InstructionService();
 
+import { LiteLLMProxyProvider } from "./infrastructure/providers/LiteLLMProxyProvider";
 import { ModelProviderFactory } from "./infrastructure/providers/ModelProviderFactory";
 const modelProviderFactory = process.env.HELICONE_API_KEY
     ? new ModelProviderFactory(modelRegistry, process.env.HELICONE_API_KEY)
     : undefined;
-const modelInitializerService = new ModelInitializerService(modelRegistry, modelProviderFactory);
+const liteLLMProvider = process.env.LITELLM_PROXY_URL && process.env.LITELLM_API_KEY
+    ? new LiteLLMProxyProvider(process.env.LITELLM_PROXY_URL, process.env.LITELLM_API_KEY)
+    : undefined;
+const modelInitializerService = new ModelInitializerService(modelRegistry, modelProviderFactory, liteLLMProvider);
 const adGenerationService = new AdGenerationService(modelInitializerService, adGeneratorPrompt as any);
 const validationService = new OutputValidationService();
 const imageIntentDetector = new ImageIntentDetector();

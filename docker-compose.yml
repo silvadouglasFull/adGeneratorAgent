@@ -50,6 +50,26 @@ services:
       retries: 10
       start_period: 10s
 
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: ad-generator-litellm
+    restart: unless-stopped
+    ports:
+      - "${LITELLM_PORT:-4000}:4000"
+    volumes:
+      - ./litellm/config.yaml:/app/config.yaml
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GENAI_API: ${GENAI_API}
+      LITELLM_API_KEY: ${LITELLM_API_KEY}
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
 volumes:
   postgres_data:
   redis_data:
