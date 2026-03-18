@@ -2,10 +2,18 @@
 
 import { BaseLanguageModel } from "@langchain/core/language_models/base";
 import { SupportedModel } from "../model/SupportedModel";
+import { ModelProviderOptions } from "./IModelProviderFactory";
 
 export class ImagePromptService {
     constructor(
-        private modelInitializer: { initialize: (model: SupportedModel, temp?: number, maxRetries?: number) => Promise<BaseLanguageModel> },
+        private modelInitializer: {
+            initialize: (
+                model: SupportedModel,
+                temp?: number,
+                maxRetries?: number,
+                options?: ModelProviderOptions
+            ) => Promise<BaseLanguageModel>
+        },
         private prompt: any
     ) { }
 

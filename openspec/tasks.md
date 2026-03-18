@@ -659,18 +659,18 @@ Seguir T1.1 → T9.2 em openspec/helicone-immutable-cost-tracking-tasks.md
 Spec de referência: `openspec/specs/ad-cost-display.md`
 Tasks detalhadas: `openspec/ad-cost-display-tasks.md`
 
-Status: **Pendente**
+Status: **Concluído em 18/03/2026**
 
 ## Escopo Resumido
 
-- [ ] Expor `CostCaptureService` no container de Token Consumption
-- [ ] Chamar `CostCaptureService.capture()` inline na rota `POST /api/agent/generate` (após stream, antes do evento `done`)
-- [ ] Incluir `costBRL` no metadata do evento SSE `done` (`number | null`)
-- [ ] Atualizar tipo `AdResponse` em `page.tsx` com `costBRL` opcional
-- [ ] Exibir custo formatado (`R$ 0,0003`) no header do resultado, entre modelo e data
-- [ ] Omitir custo na UI quando `costBRL` é `null`
-- [ ] Cobrir com testes: cenário com custo, sem custo, e falha no serviço
-- [ ] Validar `npx tsc --noEmit` + `pnpm test`
+- [x] Expor `CostCaptureService` no container de Token Consumption
+- [x] Chamar `CostCaptureService.capture()` inline na rota `POST /api/agent/generate` (após stream, antes do evento `done`)
+- [x] Incluir `costBRL` no metadata do evento SSE `done` (`number | null`)
+- [x] Atualizar tipo `AdResponse` em `page.tsx` com `costBRL` opcional
+- [x] Exibir custo formatado (`R$ 0,0003`) no header do resultado, entre modelo e data
+- [x] Omitir custo na UI quando `costBRL` é `null`
+- [x] Cobrir com testes: cenário com custo, sem custo, e falha no serviço
+- [x] Validar `npx tsc --noEmit` + `pnpm test`
 
 ## Ordem de execução sugerida
 

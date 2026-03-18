@@ -64,4 +64,25 @@ describe("CostCaptureService", () => {
         expect(heliconeCostAdapter.getCostByRequestId).toHaveBeenCalledWith("hel-456");
         expect(exchangeRateAdapter.getUSDtoBRL).toHaveBeenCalledTimes(1);
     });
+
+    it("deve tentar novamente quando Helicone retorna custo 0 antes de materializar", async () => {
+        const retryService = new CostCaptureService(
+            heliconeCostAdapter,
+            exchangeRateAdapter,
+            3,
+            0
+        );
+
+        heliconeCostAdapter.getCostByRequestId
+            .mockResolvedValueOnce(0)
+            .mockResolvedValueOnce(0)
+            .mockResolvedValueOnce(0.0004971);
+        exchangeRateAdapter.getUSDtoBRL.mockResolvedValue(5.22);
+
+        const result = await retryService.capture("hel-latency-test");
+
+        expect(heliconeCostAdapter.getCostByRequestId).toHaveBeenCalledTimes(3);
+        expect(result.costUSD).toBe(0.0004971);
+        expect(result.costBRL).toBeGreaterThan(0);
+    });
 });

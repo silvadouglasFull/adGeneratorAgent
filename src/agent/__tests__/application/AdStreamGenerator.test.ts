@@ -43,7 +43,13 @@ describe("AdStreamGenerator", () => {
         }
 
         expect(emittedTokens).toEqual(["# Título", "\n\nDescrição"]);
-        expect(finalResult).toEqual({ ad: "# Título\n\nDescrição", usage: undefined, imageUrl: undefined, imageUsage: undefined });
+        expect(finalResult).toEqual({
+            ad: "# Título\n\nDescrição",
+            usage: undefined,
+            imageUrl: undefined,
+            imageUsage: undefined,
+            heliconeRequestId: undefined,
+        });
         expect(graph.stream).toHaveBeenCalledWith(
             { input: "Produto X", model: "gpt-4o-mini" },
             { streamMode: "messages" }
@@ -85,6 +91,7 @@ describe("AdStreamGenerator", () => {
             },
             imageUrl: undefined,
             imageUsage: undefined,
+            heliconeRequestId: undefined,
         });
     });
 

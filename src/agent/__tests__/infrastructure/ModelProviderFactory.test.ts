@@ -22,7 +22,10 @@ describe("ModelProviderFactory", () => {
     describe("create com gpt-4o-mini", () => {
         it("deve instanciar ChatOpenAI com baseURL Helicone quando apiKey presente", () => {
             const factory = new ModelProviderFactory(registry, "sk-helicone-test");
-            factory.create("gpt-4o-mini", "user-123");
+            factory.create("gpt-4o-mini", {
+                userId: "user-123",
+                heliconeRequestId: "hel-req-123",
+            });
 
             expect(ChatOpenAI).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -33,6 +36,7 @@ describe("ModelProviderFactory", () => {
                         defaultHeaders: expect.objectContaining({
                             "Helicone-Auth": "Bearer sk-helicone-test",
                             "Helicone-User-Id": "user-123",
+                            "Helicone-Request-Id": "hel-req-123",
                         }),
                     }),
                 })
@@ -41,7 +45,7 @@ describe("ModelProviderFactory", () => {
 
         it("deve instanciar ChatOpenAI sem proxy quando apiKey ausente", () => {
             const factory = new ModelProviderFactory(registry, undefined);
-            factory.create("gpt-4o-mini", "user-123");
+            factory.create("gpt-4o-mini", { userId: "user-123" });
 
             expect(ChatOpenAI).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -58,7 +62,10 @@ describe("ModelProviderFactory", () => {
     describe("create com gemini-2.0-flash", () => {
         it("deve instanciar ChatGoogleGenerativeAI com baseUrl Helicone quando apiKey presente", () => {
             const factory = new ModelProviderFactory(registry, "sk-helicone-test");
-            factory.create("gemini-2.0-flash", "user-456");
+            factory.create("gemini-2.0-flash", {
+                userId: "user-456",
+                heliconeRequestId: "hel-req-456",
+            });
 
             expect(ChatGoogleGenerativeAI).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -69,6 +76,7 @@ describe("ModelProviderFactory", () => {
                         "Helicone-Auth": "Bearer sk-helicone-test",
                         "Helicone-User-Id": "user-456",
                         "Helicone-Target-URL": "https://generativelanguage.googleapis.com",
+                        "Helicone-Request-Id": "hel-req-456",
                     }),
                 })
             );
@@ -76,7 +84,7 @@ describe("ModelProviderFactory", () => {
 
         it("deve instanciar ChatGoogleGenerativeAI sem proxy quando apiKey ausente", () => {
             const factory = new ModelProviderFactory(registry, undefined);
-            factory.create("gemini-2.0-flash", "user-456");
+            factory.create("gemini-2.0-flash", { userId: "user-456" });
 
             expect(ChatGoogleGenerativeAI).toHaveBeenCalledWith(
                 expect.objectContaining({

@@ -49,11 +49,13 @@ const streamGenerator = new AdStreamGenerator(
 export async function* streamGeneratedAd({
     input,
     model,
+    heliconeRequestId,
 }: {
     input: string;
     model?: SupportedModel;
+    heliconeRequestId?: string;
 }): AsyncGenerator<string, StreamResult, void> {
-    return yield* streamGenerator.stream({ input, model });
+    return yield* streamGenerator.stream({ input, model, heliconeRequestId });
 }
 
 export { ModelRegistry, SUPPORTED_MODELS, TEXT_MODELS };

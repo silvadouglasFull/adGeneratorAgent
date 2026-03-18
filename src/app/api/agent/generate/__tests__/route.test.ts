@@ -15,11 +15,19 @@ jest.mock("@/tokenConsumption/tokenConsumption", () => ({
         useCase: {
             execute: (...args: unknown[]) => mockUseCaseExecute(...args),
         },
+        costCaptureService: {
+            capture: jest.fn().mockResolvedValue({ costBRL: 0.4321 }),
+        },
     },
 }));
 
 // Simula o ambiente Next.js para o handler
+import { CostRecord } from "@/tokenConsumption/domain/model/CostRecord";
+import { tokenConsumptionContainer } from "@/tokenConsumption/tokenConsumption";
 import { POST } from "../route";
+
+const mockCostCapture = tokenConsumptionContainer.costCaptureService
+    .capture as unknown as jest.MockedFunction<typeof tokenConsumptionContainer.costCaptureService.capture>;
 
 describe("POST /api/agent/generate", () => {
     beforeEach(() => {
@@ -28,6 +36,14 @@ describe("POST /api/agent/generate", () => {
         mockEnsureConsumerStarted.mockReset();
         mockEnsureConsumerStarted.mockResolvedValue(undefined);
         mockUseCaseExecute.mockResolvedValue(undefined);
+        mockCostCapture.mockReset();
+        mockCostCapture.mockResolvedValue(
+            CostRecord.create({
+                costUSD: 0.1,
+                exchangeRateAtExecution: 4.321,
+                heliconeRequestId: "helicone-request-123",
+            })
+        );
     });
 
     it("retorna 400 quando body está vazio", async () => {
@@ -95,6 +111,7 @@ describe("POST /api/agent/generate", () => {
         expect(mockStreamGeneratedAd).toHaveBeenCalledWith({
             input: "Tênis casual masculino, cor azul, R$199",
             model: "gpt-4o-mini",
+            heliconeRequestId: expect.any(String),
         });
         expect(mockEnsureConsumerStarted).toHaveBeenCalledTimes(1);
         expect(mockUseCaseExecute).toHaveBeenCalledTimes(1);
@@ -154,6 +171,7 @@ describe("POST /api/agent/generate", () => {
         expect(mockStreamGeneratedAd).toHaveBeenCalledWith({
             input: "Produto X",
             model: "gemini-2.0-flash",
+            heliconeRequestId: expect.any(String),
         });
     });
 
@@ -245,5 +263,77 @@ describe("POST /api/agent/generate", () => {
         expect(body).not.toContain('"type":"image"');
         expect(body).not.toContain('"imageModel"');
         expect(mockUseCaseExecute).toHaveBeenCalledTimes(1);
+    });
+
+    it("inclui costBRL no evento done quando heliconeRequestId está presente", async () => {
+        mockStreamGeneratedAd.mockImplementation(async function* () {
+            yield "# Custo no Metadata";
+            return {
+                ad: "# Custo no Metadata",
+                usage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+                heliconeRequestId: "helicone-request-123",
+            };
+        });
+
+        const request = new Request("http://localhost/api/agent/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ input: "Produto com custo" }),
+        });
+
+        const response = await POST(request);
+        const body = await response.text();
+
+        expect(response.status).toBe(200);
+        expect(mockCostCapture).toHaveBeenCalledWith("helicone-request-123");
+        expect(body).toContain('"costBRL":0.4321');
+    });
+
+    it("inclui costBRL no evento done usando heliconeRequestId de correlação da rota", async () => {
+        mockStreamGeneratedAd.mockImplementation(async function* () {
+            yield "# Sem Helicone";
+            return {
+                ad: "# Sem Helicone",
+                usage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+            };
+        });
+
+        const request = new Request("http://localhost/api/agent/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ input: "Produto sem helicone id" }),
+        });
+
+        const response = await POST(request);
+        const body = await response.text();
+
+        expect(response.status).toBe(200);
+        expect(mockCostCapture).toHaveBeenCalledWith(expect.any(String));
+        expect(body).toContain('"costBRL":0.4321');
+    });
+
+    it("inclui costBRL null quando CostCaptureService falha", async () => {
+        mockCostCapture.mockRejectedValueOnce(new Error("helicone indisponível"));
+        mockStreamGeneratedAd.mockImplementation(async function* () {
+            yield "# Falha Captura";
+            return {
+                ad: "# Falha Captura",
+                usage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+                heliconeRequestId: "helicone-request-erro",
+            };
+        });
+
+        const request = new Request("http://localhost/api/agent/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ input: "Produto com falha de custo" }),
+        });
+
+        const response = await POST(request);
+        const body = await response.text();
+
+        expect(response.status).toBe(200);
+        expect(mockCostCapture).toHaveBeenCalledWith("helicone-request-erro");
+        expect(body).toContain('"costBRL":null');
     });
 });

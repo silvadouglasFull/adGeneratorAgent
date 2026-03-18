@@ -13,6 +13,8 @@
 
 - [ ] `tokenConsumptionContainer` em `src/tokenConsumption/tokenConsumption.ts` exporta `costCaptureService`
 - [ ] TypeScript compila sem erros
+- [x] `tokenConsumptionContainer` em `src/tokenConsumption/tokenConsumption.ts` exporta `costCaptureService`
+- [x] TypeScript compila sem erros
 
 **Detalhes:**
 
@@ -25,15 +27,16 @@
 **Acceptance Criteria:**
 
 - [ ] Em `src/app/api/agent/generate/route.ts`, após o stream finalizar:
+- [x] Em `src/app/api/agent/generate/route.ts`, após o stream finalizar:
   - Se `heliconeRequestId` disponível, chama `costCaptureService.capture(heliconeRequestId)`
   - Extrai `costBRL` do `CostRecord` retornado
   - Se `heliconeRequestId` ausente ou captura falhar, `costBRL = null`
-- [ ] `costBRL` incluído no payload do evento SSE `done`:
+- [x] `costBRL` incluído no payload do evento SSE `done`:
   ```json
   { "type": "done", "metadata": { ..., "costBRL": 0.000252 } }
   ```
-- [ ] Captura não bloqueia o fluxo — falha resulta em `costBRL: null`
-- [ ] TypeScript compila sem erros
+- [x] Captura não bloqueia o fluxo — falha resulta em `costBRL: null`
+- [x] TypeScript compila sem erros
 
 **Detalhes:**
 
@@ -63,7 +66,7 @@ if (generationResult?.heliconeRequestId) {
 
 **Acceptance Criteria:**
 
-- [ ] Interface `AdResponse` em `src/app/page.tsx` atualizada:
+- [x] Interface `AdResponse` em `src/app/page.tsx` atualizada:
   ```typescript
   metadata: {
     model?: string;
@@ -72,8 +75,8 @@ if (generationResult?.heliconeRequestId) {
     costBRL?: number | null;
   }
   ```
-- [ ] Parsing do evento `done` captura `metadata.costBRL`
-- [ ] TypeScript compila sem erros
+- [x] Parsing do evento `done` captura `metadata.costBRL`
+- [x] TypeScript compila sem erros
 
 ---
 
@@ -81,16 +84,16 @@ if (generationResult?.heliconeRequestId) {
 
 **Acceptance Criteria:**
 
-- [ ] Custo exibido no trecho do header do resultado, entre modelo e data:
+- [x] Custo exibido no trecho do header do resultado, entre modelo e data:
   ```tsx
   {
     result.metadata.costBRL != null &&
       ` · R$ ${result.metadata.costBRL.toFixed(4)}`;
   }
   ```
-- [ ] Formato: `R$ 0,0003` (4 casas decimais)
-- [ ] Custo omitido quando `costBRL` é `null` ou `undefined`
-- [ ] Layout não quebra com ou sem custo
+- [x] Formato: `R$ 0,0003` (4 casas decimais)
+- [x] Custo omitido quando `costBRL` é `null` ou `undefined`
+- [x] Layout não quebra com ou sem custo
 
 **Detalhes:**
 
@@ -113,12 +116,12 @@ if (generationResult?.heliconeRequestId) {
 
 **Acceptance Criteria:**
 
-- [ ] Teste existente em `src/app/api/agent/generate/__tests__/route.test.ts` atualizado ou novo teste adicionado:
+- [x] Teste existente em `src/app/api/agent/generate/__tests__/route.test.ts` atualizado ou novo teste adicionado:
   - Stream com `heliconeRequestId` → evento `done` contém `costBRL` numérico
   - Stream sem `heliconeRequestId` → evento `done` contém `costBRL: null`
-- [ ] Mock do `CostCaptureService.capture()` retorna `CostRecord` com `costBRL > 0`
-- [ ] Mock de falha no `CostCaptureService` → `costBRL: null` (sem erro no stream)
-- [ ] Testes existentes continuam passando
+- [x] Mock do `CostCaptureService.capture()` retorna `CostRecord` com `costBRL > 0`
+- [x] Mock de falha no `CostCaptureService` → `costBRL: null` (sem erro no stream)
+- [x] Testes existentes continuam passando
 
 **Arquivo**: `src/app/api/agent/generate/__tests__/route.test.ts`
 
@@ -128,8 +131,8 @@ if (generationResult?.heliconeRequestId) {
 
 **Acceptance Criteria:**
 
-- [ ] `npx tsc --noEmit` sem erros
-- [ ] `pnpm test` passa (todos os testes, nenhuma regressão)
+- [x] `npx tsc --noEmit` sem erros
+- [x] `pnpm test` passa (todos os testes, nenhuma regressão)
 
 ---
 

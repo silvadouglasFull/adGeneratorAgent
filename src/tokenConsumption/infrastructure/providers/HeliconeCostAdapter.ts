@@ -1,5 +1,6 @@
 import { IHeliconeCostAdapter } from "@/tokenConsumption/domain/service/IHeliconeCostAdapter";
-
+import dotenv from 'dotenv';
+dotenv.config()
 export class HeliconeCostAdapter implements IHeliconeCostAdapter {
     private static readonly BASE_URL = "https://api.helicone.ai/v1";
 

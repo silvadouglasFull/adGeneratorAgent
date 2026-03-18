@@ -85,7 +85,7 @@ describe("ModelInitializerService", () => {
 
             const result = await serviceWithFactory.initialize("gpt-4o-mini");
 
-            expect(mockFactory.create).toHaveBeenCalledWith("gpt-4o-mini");
+            expect(mockFactory.create).toHaveBeenCalledWith("gpt-4o-mini", undefined);
             expect(result).toBe(mockModel);
             expect(mockChatOpenAI).not.toHaveBeenCalled();
         });
