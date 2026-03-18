@@ -48,6 +48,10 @@
         "PATH": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin:/usr/local/bin:/usr/bin:/bin",
         "HELICONE_API_KEY": "${input:heliconeApiKey}"
       }
+    },
+    "clean-code": {
+      "command": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin/npx",
+      "args": ["-y", "@aidalinfo/mcp-clean-code"]
     }
   },
   "inputs": [
