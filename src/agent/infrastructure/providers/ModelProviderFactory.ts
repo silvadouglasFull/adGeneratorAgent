@@ -7,9 +7,9 @@ import { SupportedModel } from "../../domain/model/SupportedModel";
 import { IModelProviderFactory, ModelProviderOptions } from "../../domain/service/IModelProviderFactory";
 
 export class ModelProviderFactory implements IModelProviderFactory {
-    private static readonly HELICONE_OPENAI_BASE_URL = "https://oai.helicone.ai/v1";
-    private static readonly HELICONE_GEMINI_BASE_URL = "https://gateway.helicone.ai";
-    private static readonly GEMINI_TARGET_URL = "https://generativelanguage.googleapis.com";
+    private static readonly HELICONE_OPENAI_BASE_URL = process.env.HELICONE_OPENAI_BASE_URL;
+    private static readonly HELICONE_GEMINI_BASE_URL = process.env.HELICONE_GEMINI_BASE_URL;
+    private static readonly GEMINI_TARGET_URL = process.env.GEMINI_TARGET_URL;
 
     constructor(
         private readonly registry: ModelRegistry,
