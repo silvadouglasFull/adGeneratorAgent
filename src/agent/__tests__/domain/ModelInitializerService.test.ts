@@ -10,6 +10,7 @@ jest.mock("@langchain/google-genai", () => ({
 }));
 
 import { ModelRegistry } from "../../domain/model/ModelRegistry";
+import type { ILiteLLMProxyProvider } from "../../domain/service/ILiteLLMProxyProvider";
 import type { IModelProviderFactory } from "../../domain/service/IModelProviderFactory";
 import { ModelInitializerService } from "../../domain/service/ModelInitializerService";
 
