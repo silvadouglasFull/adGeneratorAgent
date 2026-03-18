@@ -7,9 +7,9 @@ import { SupportedModel } from "../../domain/model/SupportedModel";
 import { IModelProviderFactory, ModelProviderOptions } from "../../domain/service/IModelProviderFactory";
 
 export class ModelProviderFactory implements IModelProviderFactory {
-    private static readonly HELICONE_OPENAI_BASE_URL = process.env.HELICONE_OPENAI_BASE_URL;
-    private static readonly HELICONE_GEMINI_BASE_URL = process.env.HELICONE_GEMINI_BASE_URL;
-    private static readonly GEMINI_TARGET_URL = process.env.GEMINI_TARGET_URL;
+    private static readonly HELICONE_OPENAI_BASE_URL = process.env.HELICONE_OPENAI_BASE_URL as string;
+    private static readonly HELICONE_GEMINI_BASE_URL = process.env.HELICONE_GEMINI_BASE_URL as string;
+    private static readonly GEMINI_TARGET_URL = process.env.GEMINI_TARGET_URL as string;
 
     constructor(
         private readonly registry: ModelRegistry,
