@@ -3,41 +3,43 @@
 Spec de referência: `openspec/specs/litellm-model-fallback.md`
 Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
+Status: **Concluído em 18/03/2026**
+
 ---
 
 ## Fase 1 — Infraestrutura Docker
 
 ### T1 — Criar arquivo de configuração do LiteLLM
 
-- [ ] Criar diretório `litellm/` na raiz do projeto
-- [ ] Criar `litellm/config.yaml` com:
-  - [ ] `model_list` com `gpt-4o-mini` (provider `openai`) e `gemini-2.0-flash` (provider `gemini`)
-  - [ ] Cada modelo referencia API key via `os.environ/` (ex: `os.environ/OPENAI_API_KEY`, `os.environ/GENAI_API`)
-  - [ ] `litellm_settings.fallbacks` com fallback bidirecional:
+- [x] Criar diretório `litellm/` na raiz do projeto
+- [x] Criar `litellm/config.yaml` com:
+  - [x] `model_list` com `gpt-4o-mini` (provider `openai`) e `gemini-2.0-flash` (provider `gemini`)
+  - [x] Cada modelo referencia API key via `os.environ/` (ex: `os.environ/OPENAI_API_KEY`, `os.environ/GENAI_API`)
+  - [x] `litellm_settings.fallbacks` com fallback bidirecional:
     - `gpt-4o-mini` → `["gemini-2.0-flash"]`
     - `gemini-2.0-flash` → `["gpt-4o-mini"]`
-  - [ ] `litellm_settings.num_retries: 1`
-  - [ ] `litellm_settings.request_timeout: 30`
-  - [ ] `general_settings.master_key` via `os.environ/LITELLM_API_KEY`
+  - [x] `litellm_settings.num_retries: 1`
+  - [x] `litellm_settings.request_timeout: 30`
+  - [x] `general_settings.master_key` via `os.environ/LITELLM_API_KEY`
 - **Critério**: Arquivo YAML válido, referências de env vars corretas
 
 ### T2 — Adicionar serviço LiteLLM ao docker-compose.yml
 
-- [ ] Adicionar serviço `litellm` ao `docker-compose.yml`:
-  - [ ] Imagem: `ghcr.io/berriai/litellm:main-latest`
-  - [ ] Container name: `ad-generator-litellm`
-  - [ ] Porta: `${LITELLM_PORT:-4000}:4000`
-  - [ ] Volume: `./litellm/config.yaml:/app/config.yaml`
-  - [ ] Variáveis de ambiente: `OPENAI_API_KEY`, `GENAI_API`, `LITELLM_API_KEY`
-  - [ ] Command: `["--config", "/app/config.yaml", "--port", "4000"]`
-  - [ ] Healthcheck com `curl -f http://localhost:4000/health`
-  - [ ] Restart policy: `unless-stopped`
-- [ ] Validar que `docker compose up litellm` sobe sem erros
+- [x] Adicionar serviço `litellm` ao `docker-compose.yml`:
+  - [x] Imagem: `ghcr.io/berriai/litellm:main-latest`
+  - [x] Container name: `ad-generator-litellm`
+  - [x] Porta: `${LITELLM_PORT:-4000}:4000`
+  - [x] Volume: `./litellm/config.yaml:/app/config.yaml`
+  - [x] Variáveis de ambiente: `OPENAI_API_KEY`, `GENAI_API`, `LITELLM_API_KEY`
+  - [x] Command: `["--config", "/app/config.yaml", "--port", "4000"]`
+  - [x] Healthcheck autenticado no endpoint `/health`
+  - [x] Restart policy: `unless-stopped`
+- [x] Validar que `docker compose up litellm` sobe sem erros
 - **Critério**: Container inicia, healthcheck passa, `GET http://localhost:4000/health` retorna 200
 
 ### T3 — Atualizar variáveis de ambiente
 
-- [ ] Adicionar ao `.env.local.example`:
+- [x] Adicionar ao `.env.local.example`:
   - `LITELLM_PROXY_URL=http://localhost:4000`
   - `LITELLM_API_KEY=sk-litellm-master-key`
   - `LITELLM_PORT=4000`
@@ -49,8 +51,8 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
 ### T4 — Criar interface `ILiteLLMProxyProvider`
 
-- [ ] Criar `src/agent/domain/service/ILiteLLMProxyProvider.ts`
-- [ ] Definir interface:
+- [x] Criar `src/agent/domain/service/ILiteLLMProxyProvider.ts`
+- [x] Definir interface:
   ```typescript
   interface ILiteLLMProxyProvider {
     create(
@@ -60,35 +62,35 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
     isAvailable(): Promise<boolean>;
   }
   ```
-- [ ] A interface segue ISP (Interface Segregation) — apenas o necessário
+- [x] A interface segue ISP (Interface Segregation) — apenas o necessário
 - **Critério**: Interface compilável, sem dependência de infraestrutura
 
 ### T5 — Implementar `LiteLLMProxyProvider`
 
-- [ ] Criar `src/agent/infrastructure/providers/LiteLLMProxyProvider.ts`
-- [ ] Implementar `ILiteLLMProxyProvider`
-- [ ] Construtor recebe `proxyUrl: string` e `apiKey: string`
-- [ ] Método `create(model, options?)`:
-  - [ ] Retorna `ChatOpenAI` do `@langchain/openai` com:
-    - `model` = nome do modelo solicitado (LiteLLM roteia internamente)
-    - `configuration.baseURL` = `this.proxyUrl` (ex: `http://localhost:4000/v1`)
-    - `apiKey` = `this.apiKey` (master key do LiteLLM)
-    - `temperature: 0.7`, `maxRetries: 0`
-  - [ ] Se `options?.heliconeRequestId` presente, adicionar header `Helicone-Request-Id`
-- [ ] Método `isAvailable()`:
-  - [ ] Faz `fetch(${this.proxyUrl}/health)` com timeout de 2 segundos
-  - [ ] Retorna `true` se status 200, `false` caso contrário
-  - [ ] Captura qualquer erro de rede e retorna `false` (sem lançar exceção)
+- [x] Criar `src/agent/infrastructure/providers/LiteLLMProxyProvider.ts`
+- [x] Implementar `ILiteLLMProxyProvider`
+- [x] Construtor recebe `proxyUrl: string` e `apiKey: string`
+- [x] Método `create(model, options?)`:
+  - [x] Retorna `ChatOpenAI` do `@langchain/openai` com:
+    - [x] `model` = nome do modelo solicitado (LiteLLM roteia internamente)
+    - [x] `configuration.baseURL` = `this.proxyUrl` (ex: `http://localhost:4000/v1`)
+    - [x] `apiKey` = `this.apiKey` (master key do LiteLLM)
+    - [x] `temperature: 0.7`, `maxRetries: 0`
+  - [x] Se `options?.heliconeRequestId` presente, adicionar header `Helicone-Request-Id`
+- [x] Método `isAvailable()`:
+  - [x] Faz `fetch(${this.proxyUrl}/health)` com timeout de 2 segundos
+  - [x] Retorna `true` se status 200, `false` caso contrário
+  - [x] Captura qualquer erro de rede e retorna `false` (sem lançar exceção)
 - **Critério**: Classe instanciável, `create()` retorna `BaseChatModel`, `isAvailable()` funciona
 
 ### T6 — Testes unitários do `LiteLLMProxyProvider`
 
-- [ ] Criar `src/agent/__tests__/infrastructure/LiteLLMProxyProvider.test.ts`
-- [ ] Testar `create()`: retorna instância de `ChatOpenAI` com `baseURL` correto
-- [ ] Testar `create()`: passa modelo correto para o `ChatOpenAI`
-- [ ] Testar `isAvailable()`: retorna `true` quando health endpoint responde 200
-- [ ] Testar `isAvailable()`: retorna `false` quando health endpoint falha
-- [ ] Testar `isAvailable()`: retorna `false` quando fetch lança erro de rede
+- [x] Criar `src/agent/__tests__/infrastructure/LiteLLMProxyProvider.test.ts`
+- [x] Testar `create()`: retorna instância de `ChatOpenAI` com `baseURL` correto
+- [x] Testar `create()`: passa modelo correto para o `ChatOpenAI`
+- [x] Testar `isAvailable()`: retorna `true` quando health endpoint responde 200
+- [x] Testar `isAvailable()`: retorna `false` quando health endpoint falha
+- [x] Testar `isAvailable()`: retorna `false` quando fetch lança erro de rede
 - **Critério**: 5 testes passando, mock de `fetch` e `ChatOpenAI`
 
 ---
@@ -97,19 +99,19 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
 ### T7 — Refatorar `ModelInitializerService` para suportar LiteLLM Proxy
 
-- [ ] Em `src/agent/domain/service/ModelInitializerService.ts`:
-  - [ ] Adicionar parâmetro opcional `liteLLMProvider?: ILiteLLMProxyProvider` no construtor
-  - [ ] Alterar método `initialize()`:
+- [x] Em `src/agent/domain/service/ModelInitializerService.ts`:
+  - [x] Adicionar parâmetro opcional `liteLLMProvider?: ILiteLLMProxyProvider` no construtor
+  - [x] Alterar método `initialize()`:
     1. Se `modelName` é modelo de imagem (`gpt-image-1.5` ou provider `openai-image`) → chamada direta (sem proxy), comportamento atual
     2. Se `liteLLMProvider` existe e `await liteLLMProvider.isAvailable()` → usar `liteLLMProvider.create(modelName, options)`
     3. Senão → comportamento atual (modelProviderFactory ou chamada direta)
-  - [ ] A checagem de `isAvailable()` deve ser feita com cache curto ou no momento da chamada (sem cache para simplificar na v1)
+  - [x] A checagem de `isAvailable()` deve ser feita com cache curto ou no momento da chamada (sem cache para simplificar na v1)
 - **Critério**: `ModelInitializerService` funciona com e sem LiteLLM, sem regressão
 
 ### T8 — Atualizar composição no `adGeneratorAgent.ts`
 
-- [ ] Em `src/agent/adGeneratorAgent.ts`:
-  - [ ] Instanciar `LiteLLMProxyProvider` condicionalmente:
+- [x] Em `src/agent/adGeneratorAgent.ts`:
+  - [x] Instanciar `LiteLLMProxyProvider` condicionalmente:
     ```typescript
     const liteLLMProvider =
       process.env.LITELLM_PROXY_URL && process.env.LITELLM_API_KEY
@@ -119,7 +121,7 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
           )
         : undefined;
     ```
-  - [ ] Passar `liteLLMProvider` ao `ModelInitializerService`:
+  - [x] Passar `liteLLMProvider` ao `ModelInitializerService`:
     ```typescript
     const modelInitializerService = new ModelInitializerService(
       modelRegistry,
@@ -131,12 +133,12 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
 ### T9 — Testes unitários do `ModelInitializerService` refatorado
 
-- [ ] Atualizar/adicionar testes em `src/agent/__tests__/domain/ModelInitializerService.test.ts`:
-  - [ ] Testar: modelo de texto + LiteLLM disponível → usa `liteLLMProvider.create()`
-  - [ ] Testar: modelo de texto + LiteLLM indisponível → usa chamada direta (fallback)
-  - [ ] Testar: modelo de texto + LiteLLM não configurado (undefined) → usa chamada direta
-  - [ ] Testar: modelo de imagem (`gpt-image-1.5`) + LiteLLM disponível → **não** usa proxy, chamada direta
-  - [ ] Testar: testes existentes continuam passando (sem regressão)
+- [x] Atualizar/adicionar testes em `src/agent/__tests__/domain/ModelInitializerService.test.ts`:
+  - [x] Testar: modelo de texto + LiteLLM disponível → usa `liteLLMProvider.create()`
+  - [x] Testar: modelo de texto + LiteLLM indisponível → usa chamada direta (fallback)
+  - [x] Testar: modelo de texto + LiteLLM não configurado (undefined) → usa chamada direta
+  - [x] Testar: modelo de imagem (`gpt-image-1.5`) + LiteLLM disponível → **não** usa proxy, chamada direta
+  - [x] Testar: testes existentes continuam passando (sem regressão)
 - **Critério**: Todos os cenários cobertos, sem regressão nos testes existentes
 
 ---
@@ -145,10 +147,10 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
 ### T10 — Executar suite de testes completa
 
-- [ ] Rodar `pnpm test`
-- [ ] Todos os testes existentes devem continuar passando
-- [ ] Novos testes (T6, T9) devem passar
-- [ ] Nenhuma regressão em:
+- [x] Rodar `pnpm test`
+- [x] Todos os testes existentes devem continuar passando
+- [x] Novos testes (T6, T9) devem passar
+- [x] Nenhuma regressão em:
   - Testes do agente (`adGeneratorAgent.test.ts`)
   - Testes de domain (`__tests__/domain/`)
   - Testes de application (`__tests__/application/`)
@@ -157,24 +159,24 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
 ### T11 — Validar TypeScript
 
-- [ ] Executar `npx tsc --noEmit`
-- [ ] Resultado: 0 erros, 0 warnings
+- [x] Executar `npx tsc --noEmit`
+- [x] Resultado: 0 erros, 0 warnings
 - **Critério**: Compilação limpa
 
 ### T12 — Teste manual end-to-end com LiteLLM
 
-- [ ] Subir infra: `docker compose up -d`
-- [ ] Verificar que LiteLLM está saudável: `curl http://localhost:4000/health`
-- [ ] Fazer `POST /api/agent/generate` com `model: "gpt-4o-mini"` → anúncio gerado via LiteLLM
-- [ ] Verificar nos logs do LiteLLM que a chamada passou pelo proxy
-- [ ] (Opcional) Simular falha de cota no modelo primário e verificar fallback nos logs
+- [x] Subir infra: `docker compose up -d`
+- [x] Verificar que LiteLLM está saudável: `curl http://localhost:4000/health`
+- [x] Fazer `POST /api/agent/generate` com `model: "gpt-4o-mini"` → anúncio gerado via LiteLLM
+- [x] Verificar nos logs do LiteLLM que a chamada passou pelo proxy
+- [x] (Opcional) Simular falha de cota no modelo primário e verificar fallback nos logs
 - **Critério**: Anúncio gerado com sucesso via LiteLLM proxy
 
 ### T13 — Teste manual de degradação graciosa
 
-- [ ] Derrubar apenas o LiteLLM: `docker compose stop litellm`
-- [ ] Fazer `POST /api/agent/generate` com `model: "gpt-4o-mini"` → anúncio gerado via chamada direta
-- [ ] Verificar que não houve erro visível para o usuário
+- [x] Derrubar apenas o LiteLLM: `docker compose stop litellm`
+- [x] Fazer `POST /api/agent/generate` com `model: "gpt-4o-mini"` → anúncio gerado via chamada direta
+- [x] Verificar que não houve erro visível para o usuário
 - **Critério**: Agente funciona normalmente sem o LiteLLM
 
 ---
@@ -183,9 +185,9 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
 ### T14 — Atualizar documentação
 
-- [ ] Marcar critérios de aceitação em `openspec/specs/litellm-model-fallback.md` como `[x]`
-- [ ] Marcar todas as tasks T1-T14 neste arquivo como `[x]`
-- [ ] Adicionar seção "Status de Implementação" com data na spec
+- [x] Marcar critérios de aceitação em `openspec/specs/litellm-model-fallback.md` como `[x]`
+- [x] Marcar todas as tasks T1-T14 neste arquivo como `[x]`
+- [x] Adicionar seção "Status de Implementação" com data na spec
 - **Critério**: Documentação 100% atualizada
 
 ---

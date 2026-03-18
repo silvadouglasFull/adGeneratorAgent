@@ -2,6 +2,8 @@
 
 Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
+Status: **Concluído em 18/03/2026**
+
 ---
 
 ## Visão Geral
@@ -165,7 +167,11 @@ litellm:
     LITELLM_API_KEY: ${LITELLM_API_KEY}
   command: ["--config", "/app/config.yaml", "--port", "4000"]
   healthcheck:
-    test: ["CMD-SHELL", "curl -f http://localhost:4000/health || exit 1"]
+    test:
+      [
+        "CMD-SHELL",
+        'python -c "import os,urllib.request; req=urllib.request.Request(''http://localhost:4000/health'', headers={''Authorization'': ''Bearer '' + os.getenv(''LITELLM_API_KEY'','''')}); urllib.request.urlopen(req, timeout=3)" || exit 1',
+      ]
     interval: 15s
     timeout: 5s
     retries: 5
@@ -251,18 +257,18 @@ Content-Type: application/json
 
 ## Critérios de Aceitação
 
-- [ ] Container `litellm` configurado no `docker-compose.yml` e sobe com `docker compose up`
-- [ ] Arquivo `litellm/config.yaml` configura `gpt-4o-mini` e `gemini-2.0-flash` com fallback bidirecional
-- [ ] `LiteLLMProxyProvider` cria instância `ChatOpenAI` apontando para o proxy
-- [ ] `LiteLLMProxyProvider.isAvailable()` valida health check do proxy
-- [ ] `ModelInitializerService` usa o proxy para modelos de texto quando disponível
-- [ ] `ModelInitializerService` ignora o proxy para modelo de imagem (`gpt-image-1.5`)
-- [ ] Quando LiteLLM está offline, o agente funciona normalmente (chamada direta ao provider)
-- [ ] Variáveis `LITELLM_PROXY_URL`, `LITELLM_API_KEY`, `LITELLM_PORT` documentadas no `.env.local.example`
-- [ ] `pnpm test` passa com todos os testes existentes + novos
-- [ ] `npx tsc --noEmit` retorna 0 erros
-- [ ] Geração de anúncio funciona via LiteLLM com modelo primário
-- [ ] Fallback funciona quando o modelo primário retorna erro de cota
+- [x] Container `litellm` configurado no `docker-compose.yml` e sobe com `docker compose up`
+- [x] Arquivo `litellm/config.yaml` configura `gpt-4o-mini` e `gemini-2.0-flash` com fallback bidirecional
+- [x] `LiteLLMProxyProvider` cria instância `ChatOpenAI` apontando para o proxy
+- [x] `LiteLLMProxyProvider.isAvailable()` valida health check do proxy
+- [x] `ModelInitializerService` usa o proxy para modelos de texto quando disponível
+- [x] `ModelInitializerService` ignora o proxy para modelo de imagem (`gpt-image-1.5`)
+- [x] Quando LiteLLM está offline, o agente funciona normalmente (chamada direta ao provider)
+- [x] Variáveis `LITELLM_PROXY_URL`, `LITELLM_API_KEY`, `LITELLM_PORT` documentadas no `.env.local.example`
+- [x] `pnpm test` passa com todos os testes existentes + novos
+- [x] `npx tsc --noEmit` retorna 0 erros
+- [x] Geração de anúncio funciona via LiteLLM com modelo primário
+- [x] Fallback funciona quando o modelo primário retorna erro de cota
 
 ## Restrições
 

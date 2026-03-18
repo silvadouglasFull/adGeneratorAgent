@@ -40,6 +40,9 @@ export class LiteLLMProxyProvider implements ILiteLLMProxyProvider {
             );
 
             const response = await fetch(`${this.proxyUrl}/health`, {
+                headers: {
+                    Authorization: `Bearer ${this.apiKey}`,
+                },
                 signal: controller.signal,
             });
 
