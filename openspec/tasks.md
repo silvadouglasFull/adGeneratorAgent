@@ -726,3 +726,28 @@ Status: **Concluído em 18/03/2026**
 ```text
 Seguir T1 → T12 em openspec/token-consumption-dashboard-tasks.md
 ```
+
+---
+
+# Feature: LiteLLM Proxy com Fallback Automático de Modelos
+
+Spec de referência: `openspec/specs/litellm-model-fallback.md`
+Tasks detalhadas: `openspec/litellm-model-fallback-tasks.md`
+
+Status: **Não iniciado**
+
+## Escopo Resumido
+
+- [ ] Configurar container Docker LiteLLM como proxy OpenAI-compatível com fallback entre modelos
+- [ ] Criar `litellm/config.yaml` com `gpt-4o-mini` e `gemini-2.0-flash` e fallback bidirecional
+- [ ] Criar `LiteLLMProxyProvider` na camada de infraestrutura (usa `ChatOpenAI` com `baseURL` do proxy)
+- [ ] Refatorar `ModelInitializerService` para rotear modelos de texto pelo LiteLLM quando disponível
+- [ ] Manter degradação graciosa: agente funciona sem LiteLLM (chamada direta ao provider)
+- [ ] Não alterar fluxo de geração de imagem (`gpt-image-1.5` continua direto pela OpenAI)
+- [ ] Cobrir com testes e validar `pnpm test` + `npx tsc --noEmit`
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1 → T14 em openspec/litellm-model-fallback-tasks.md
+```
