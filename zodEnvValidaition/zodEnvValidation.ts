@@ -17,6 +17,19 @@ const envSchema = z.object({
 
 export class ZodEnvValidation {
     public static isValid(): boolean {
-        return envSchema.safeParse(process.env).success
+        return envSchema.safeParse({
+            POSTGRES_DB: process.env.POSTGRES_DB,
+            POSTGRES_USER: process.env.POSTGRES_USER,
+            POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
+            DATABASE_URL: process.env.DATABASE_URL,
+            REDIS_USERNAME: process.env.REDIS_USERNAME,
+            REDIS_PASSWORD: process.env.REDIS_PASSWORD,
+            REDIS_PORT: process.env.REDIS_PORT,
+            HELICONE_API_KEY: process.env.HELICONE_API_KEY,
+            LITELLM_API_KEY: process.env.LITELLM_API_KEY,
+            HELICONE_OPENAI_BASE_URL: process.env.HELICONE_OPENAI_BASE_URL,
+            HELICONE_GEMINI_BASE_URL: process.env.HELICONE_GEMINI_BASE_URL,
+            GEMINI_TARGET_URL: process.env.GEMINI_TARGET_URL,
+        }).success
     }
 }

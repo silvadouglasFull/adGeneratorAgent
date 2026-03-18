@@ -2,7 +2,6 @@ import {
     ensureTokenConsumptionConsumerStarted,
     tokenConsumptionContainer,
 } from "@/tokenConsumption/tokenConsumption";
-import { ZodEnvValidation } from "../zodEnvValidaition/zodEnvValidation";
 
 export async function register() {
     if (process.env.NEXT_RUNTIME === "nodejs") {
@@ -20,8 +19,5 @@ export async function register() {
 
         process.on("SIGTERM", shutdown);
         process.on("SIGINT", shutdown);
-    }
-    if (!ZodEnvValidation.isValid()) {
-        throw new Error('Env file is invalid')
     }
 }
