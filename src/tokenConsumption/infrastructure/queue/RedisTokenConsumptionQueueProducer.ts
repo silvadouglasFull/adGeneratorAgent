@@ -13,6 +13,8 @@ type QueuePayload = {
         timestamp: string;
         status: "success" | "failed";
         errorMessage?: string;
+        heliconeRequestId?: string;
+        userId?: string;
     };
     retryCount: number;
 };
@@ -32,6 +34,8 @@ export class RedisTokenConsumptionQueueProducer implements ITokenConsumptionQueu
                 timestamp: event.timestamp.toISOString(),
                 status: event.status,
                 ...(event.errorMessage ? { errorMessage: event.errorMessage } : {}),
+                ...(event.heliconeRequestId ? { heliconeRequestId: event.heliconeRequestId } : {}),
+                ...(event.userId ? { userId: event.userId } : {}),
             },
             retryCount: 0,
         };

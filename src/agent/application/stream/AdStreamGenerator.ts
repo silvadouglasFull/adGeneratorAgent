@@ -18,6 +18,7 @@ export type StreamResult = {
     usage?: TokenUsage;
     imageUrl?: string;
     imageUsage?: { inputTokens: number; outputTokens: number };
+    heliconeRequestId?: string;
 };
 
 function toNumber(value: unknown): number | undefined {
@@ -88,17 +89,30 @@ export class AdStreamGenerator {
     async *stream({
         input,
         model,
+        heliconeRequestId,
     }: {
         input: string;
         model?: SupportedModel;
+        heliconeRequestId?: string;
     }): AsyncGenerator<string, StreamResult, void> {
+        const streamInput: {
+            input: string;
+            model?: SupportedModel;
+            heliconeRequestId?: string;
+        } = { input, model };
+
+        if (heliconeRequestId) {
+            streamInput.heliconeRequestId = heliconeRequestId;
+        }
+
         const stream = (await this.graph.stream(
-            { input, model },
+            streamInput,
             { streamMode: "messages" } as RunnableConfig
         )) as AsyncIterable<[unknown, { langgraph_node?: string }]>;
 
         let fullAd = "";
         let usage: Partial<TokenUsage> = {};
+        const resolvedHeliconeRequestId: string | undefined = heliconeRequestId;
 
         for await (const [messageChunk, metadata] of stream) {
             if (metadata?.langgraph_node !== "generateAd") {
@@ -154,6 +168,7 @@ export class AdStreamGenerator {
             usage: finalUsage,
             imageUrl: imageResult?.imageUrl,
             imageUsage: imageResult?.usage,
+            heliconeRequestId: resolvedHeliconeRequestId,
         };
     }
 }

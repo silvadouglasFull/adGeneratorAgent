@@ -1,5 +1,6 @@
 import { SUPPORTED_MODELS, SupportedModel, isSupportedModel } from "@/agent/domain/model/SupportedModel";
 import { TokenConsumptionRepositoryException } from "@/tokenConsumption/domain/exception/TokenConsumptionRepositoryException";
+import { CostRecord } from "@/tokenConsumption/domain/model/CostRecord";
 import { TokenAggregation } from "@/tokenConsumption/domain/model/TokenAggregation";
 import {
     TokenConsumptionEvent,
@@ -25,7 +26,7 @@ type TokenConsumptionRow = {
 export class DrizzleTokenConsumptionRepository implements ITokenConsumptionRepository {
     constructor(private readonly db: DatabaseLike = defaultDb) { }
 
-    async save(event: TokenConsumptionEvent): Promise<void> {
+    async save(event: TokenConsumptionEvent, costRecord?: CostRecord): Promise<void> {
         try {
             await this.db
                 .insert(tokenConsumptionsTable)
@@ -37,6 +38,11 @@ export class DrizzleTokenConsumptionRepository implements ITokenConsumptionRepos
                     timestamp: event.timestamp,
                     status: event.status,
                     errorMessage: event.errorMessage ?? null,
+                    heliconeRequestId: costRecord?.heliconeRequestId ?? event.heliconeRequestId ?? null,
+                    costUsd: String(costRecord?.costUSD ?? 0),
+                    costBrl: String(costRecord?.costBRL ?? 0),
+                    exchangeRateAtExecution: String(costRecord?.exchangeRateAtExecution ?? 0),
+                    userId: event.userId ?? null,
                 })
                 .onConflictDoNothing({ target: tokenConsumptionsTable.requestId });
         } catch (error) {

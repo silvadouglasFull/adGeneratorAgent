@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { END, START, StateGraph } from "@langchain/langgraph";
 import { AdGenerationRequest } from "../../domain/model/AdGenerationRequest";
 import { AdGenerationService } from "../../domain/service/AdGenerationService";
@@ -30,7 +31,8 @@ export class AdGeneratorGraphBuilder {
             const request = AdGenerationRequest.create(
                 state.input,
                 state.instructions,
-                state.model
+                state.model,
+                state.heliconeRequestId
             );
             const ad = await adGenerationService.generate(request);
             return { ad };

@@ -1,5 +1,7 @@
+import { CostCaptureService } from "@/tokenConsumption/application/service/CostCaptureService";
 import { ITokenConsumptionQueueConsumer } from "@/tokenConsumption/application/service/ITokenConsumptionQueueConsumer";
 import { QueueConsumerException } from "@/tokenConsumption/domain/exception/QueueConsumerException";
+import { CostRecord } from "@/tokenConsumption/domain/model/CostRecord";
 import { TokenConsumptionEvent } from "@/tokenConsumption/domain/model/TokenConsumptionEvent";
 import { ITokenConsumptionRepository } from "@/tokenConsumption/domain/service/ITokenConsumptionRepository";
 import Redis from "ioredis";
@@ -14,6 +16,8 @@ type QueuePayload = {
         timestamp: string;
         status: "success" | "failed";
         errorMessage?: string;
+        heliconeRequestId?: string;
+        userId?: string;
     };
     retryCount?: number;
 };
@@ -29,7 +33,8 @@ export class RedisTokenConsumptionQueueConsumer implements ITokenConsumptionQueu
         private readonly redis: Redis = getRedisClient(),
         private readonly repository: ITokenConsumptionRepository,
         private readonly maxRetries = 3,
-        private readonly baseDelayMs = 1000
+        private readonly baseDelayMs = 1000,
+        private readonly costCaptureService?: CostCaptureService
     ) { }
 
     async start(): Promise<void> {
@@ -50,8 +55,8 @@ export class RedisTokenConsumptionQueueConsumer implements ITokenConsumptionQueu
         }
     }
 
-    async process(event: TokenConsumptionEvent): Promise<void> {
-        await this.repository.save(event);
+    async process(event: TokenConsumptionEvent, costRecord?: CostRecord): Promise<void> {
+        await this.repository.save(event, costRecord);
     }
 
     async handleRawPayload(rawPayload: string): Promise<void> {
@@ -75,9 +80,16 @@ export class RedisTokenConsumptionQueueConsumer implements ITokenConsumptionQueu
                 timestamp: new Date(payload.event.timestamp),
                 status: payload.event.status,
                 errorMessage: payload.event.errorMessage,
+                heliconeRequestId: payload.event.heliconeRequestId,
+                userId: payload.event.userId,
             });
 
-            await this.process(event);
+            let costRecord: CostRecord | undefined;
+            if (event.heliconeRequestId && this.costCaptureService) {
+                costRecord = await this.costCaptureService.capture(event.heliconeRequestId);
+            }
+
+            await this.process(event, costRecord);
         } catch (error) {
             await this.retryOrDlq(payload, retryCount, error);
         }

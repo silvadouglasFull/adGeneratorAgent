@@ -11,6 +11,7 @@ interface AdResponse {
     model?: string;
     generatedAt?: string;
     imageModel?: string;
+    costBRL?: number | null;
   };
 }
 
@@ -99,7 +100,12 @@ export default function Home() {
                 content?: string;
                 error?: string;
                 imageUrl?: string;
-                metadata?: { model?: string; generatedAt?: string; imageModel?: string };
+                metadata?: {
+                  model?: string;
+                  generatedAt?: string;
+                  imageModel?: string;
+                  costBRL?: number | null;
+                };
               };
 
               if (payload.type === "token" && payload.content) {
@@ -261,6 +267,11 @@ export default function Home() {
                 <span className="text-xs text-gray-400">
                   {result.metadata.model}
                   {result.metadata.imageModel && ` + ${result.metadata.imageModel}`}
+                  {result.metadata.costBRL != null &&
+                    ` · R$ ${result.metadata.costBRL.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 4,
+                      maximumFractionDigits: 4,
+                    })}`}
                   {" · "}
                   {new Date(result.metadata.generatedAt).toLocaleString("pt-BR")}
                 </span>

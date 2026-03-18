@@ -11,6 +11,8 @@ type CreateTokenConsumptionEventParams = {
     timestamp?: Date;
     status?: TokenConsumptionStatus;
     errorMessage?: string;
+    heliconeRequestId?: string;
+    userId?: string;
 };
 
 const UUID_REGEX =
@@ -25,6 +27,8 @@ export class TokenConsumptionEvent {
     readonly timestamp: Date;
     readonly status: TokenConsumptionStatus;
     readonly errorMessage?: string;
+    readonly heliconeRequestId?: string;
+    readonly userId?: string;
 
     private constructor(
         requestId: string,
@@ -33,7 +37,9 @@ export class TokenConsumptionEvent {
         outputTokens: number,
         timestamp: Date,
         status: TokenConsumptionStatus,
-        errorMessage?: string
+        errorMessage?: string,
+        heliconeRequestId?: string,
+        userId?: string
     ) {
         this.requestId = requestId;
         this.modelUsed = modelUsed;
@@ -43,6 +49,8 @@ export class TokenConsumptionEvent {
         this.timestamp = timestamp;
         this.status = status;
         this.errorMessage = errorMessage;
+        this.heliconeRequestId = heliconeRequestId;
+        this.userId = userId;
     }
 
     static create(params: CreateTokenConsumptionEventParams): TokenConsumptionEvent {
@@ -54,6 +62,8 @@ export class TokenConsumptionEvent {
             timestamp = new Date(),
             status = "success",
             errorMessage,
+            heliconeRequestId,
+            userId,
         } = params;
 
         if (!UUID_REGEX.test(requestId)) {
@@ -93,7 +103,9 @@ export class TokenConsumptionEvent {
             outputTokens,
             timestamp,
             status,
-            errorMessage
+            errorMessage,
+            heliconeRequestId,
+            userId
         );
     }
 

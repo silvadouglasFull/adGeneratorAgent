@@ -64,9 +64,12 @@ export async function POST(request: Request) {
             try {
                 await ensureTokenConsumptionConsumerStarted();
 
+                const heliconeRequestId = crypto.randomUUID();
+
                 const adStream = streamGeneratedAd({
                     input: input.trim(),
                     model,
+                    heliconeRequestId,
                 });
 
                 let fullOutput = "";
@@ -87,6 +90,19 @@ export async function POST(request: Request) {
                 }
 
                 const generationResult = streamStep.value;
+                const captureRequestId = generationResult?.heliconeRequestId ?? heliconeRequestId;
+                let costBRL: number | null = null;
+
+                if (captureRequestId) {
+                    try {
+                        const costRecord = await tokenConsumptionContainer.costCaptureService.capture(
+                            captureRequestId
+                        );
+                        costBRL = costRecord.costBRL > 0 ? costRecord.costBRL : null;
+                    } catch {
+                        costBRL = null;
+                    }
+                }
 
                 if (generationResult?.imageUrl) {
                     controller.enqueue(
@@ -106,6 +122,7 @@ export async function POST(request: Request) {
                             metadata: {
                                 model,
                                 generatedAt,
+                                costBRL,
                                 usage: generationResult?.usage ?? null,
                                 ...(generationResult?.imageUrl
                                     ? {
@@ -131,6 +148,7 @@ export async function POST(request: Request) {
                     inputTokens,
                     outputTokens,
                     timestamp: new Date(),
+                    heliconeRequestId: captureRequestId,
                 });
 
                 tokenConsumptionContainer.useCase.execute(tokenEvent).catch((error) => {

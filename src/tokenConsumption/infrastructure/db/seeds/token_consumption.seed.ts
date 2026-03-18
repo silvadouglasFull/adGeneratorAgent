@@ -1,7 +1,7 @@
-import { db } from '../client';
-import { tokenConsumptionsTable } from '../schema';
 import { sql } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
+import { db } from '../client';
+import { tokenConsumptionsTable } from '../schema';
 
 /**
  * Seed function to populate initial test data
@@ -46,6 +46,15 @@ export async function seed(): Promise<void> {
         timestamp,
         status: 'success' as const,
         errorMessage: null,
+        costUsd: isOpenAI
+          ? (Math.random() * 0.009 + 0.0001).toFixed(8)
+          : (Math.random() * 0.005 + 0.0001).toFixed(8),
+        costBrl: isOpenAI
+          ? (Math.random() * 0.05 + 0.0005).toFixed(8)
+          : (Math.random() * 0.03 + 0.0005).toFixed(8),
+        exchangeRateAtExecution: (Math.random() * 0.5 + 5.5).toFixed(6),
+        heliconeRequestId: Math.random() > 0.3 ? uuidv4() : null,
+        userId: null,
       };
     });
 

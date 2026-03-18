@@ -24,6 +24,7 @@
       }
     },
     "docs-langchain": {
+      "type": "http",
       "url": "https://docs.langchain.com/mcp"
     },
     "next-devtools": {
@@ -36,6 +37,17 @@
     "openaiDeveloperDocs": {
       "type": "http",
       "url": "https://developers.openai.com/mcp"
+    },
+    "docs-helicone.ai": {
+      "url": "https://docs.helicone.ai"
+    },
+    "helicone": {
+      "command": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin/npx",
+      "args": ["@helicone/mcp@latest"],
+      "env": {
+        "PATH": "/home/douglas/.config/nvm/versions/node/v24.7.0/bin:/usr/local/bin:/usr/bin:/bin",
+        "HELICONE_API_KEY": "${input:heliconeApiKey}"
+      }
     }
   },
   "inputs": [
@@ -49,6 +61,12 @@
       "id": "langchainApiKey",
       "type": "promptString",
       "description": "LangChain API Key (LangSmith)",
+      "password": true
+    },
+    {
+      "id": "heliconeApiKey",
+      "type": "promptString",
+      "description": "Helicone API Key",
       "password": true
     }
   ]

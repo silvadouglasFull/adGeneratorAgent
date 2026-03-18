@@ -16,7 +16,12 @@ import { adGeneratorPrompt } from "./prompt";
 
 const modelRegistry = ModelRegistry.default();
 const instructionService = new InstructionService();
-const modelInitializerService = new ModelInitializerService(modelRegistry);
+
+import { ModelProviderFactory } from "./infrastructure/providers/ModelProviderFactory";
+const modelProviderFactory = process.env.HELICONE_API_KEY
+    ? new ModelProviderFactory(modelRegistry, process.env.HELICONE_API_KEY)
+    : undefined;
+const modelInitializerService = new ModelInitializerService(modelRegistry, modelProviderFactory);
 const adGenerationService = new AdGenerationService(modelInitializerService, adGeneratorPrompt as any);
 const validationService = new OutputValidationService();
 const imageIntentDetector = new ImageIntentDetector();
@@ -44,11 +49,13 @@ const streamGenerator = new AdStreamGenerator(
 export async function* streamGeneratedAd({
     input,
     model,
+    heliconeRequestId,
 }: {
     input: string;
     model?: SupportedModel;
+    heliconeRequestId?: string;
 }): AsyncGenerator<string, StreamResult, void> {
-    return yield* streamGenerator.stream({ input, model });
+    return yield* streamGenerator.stream({ input, model, heliconeRequestId });
 }
 
 export { ModelRegistry, SUPPORTED_MODELS, TEXT_MODELS };

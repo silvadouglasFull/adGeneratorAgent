@@ -621,3 +621,83 @@ Tasks detalhadas: `openspec/image-generation-tool-tasks.md`
 ```text
 Seguir T1 → T13 em openspec/image-generation-tool-tasks.md
 ```
+
+---
+
+# Feature: Registro Imutável de Custos via Helicone (Multi-Modelo)
+
+Spec de referência: `openspec/specs/helicone-immutable-cost-tracking.md`
+Tasks detalhadas: `openspec/helicone-immutable-cost-tracking-tasks.md`
+
+Status: **Concluído em 17/03/2026**
+
+## Escopo Resumido
+
+- [x] Configuração do gateway Helicone (`HELICONE_API_KEY`, `ModelProviderFactory` com proxy OpenAI + Gemini)
+- [x] Migração do schema Drizzle (campos `helicone_request_id`, `cost_usd`, `cost_brl`, `exchange_rate_at_execution`, `user_id`)
+- [x] Domain: value object `CostRecord` (imutável), exceção `CostRecordValidationException`, interfaces de porta
+- [x] Infrastructure: `HeliconeCostAdapter` (API Helicone), `ExchangeRateAdapter` (AwesomeAPI USD→BRL)
+- [x] Application: `CostCaptureService` orquestra captura de custo com DI
+- [x] Integração: `TokenConsumptionEvent` + queue consumer capturam custo antes de persistir
+- [x] Captura do `helicone-id` no `AdStreamGenerator` via `response_metadata`
+- [x] Endpoint `GET /api/costs/summary` com `userId` opcional (retorna sumário global se ausente)
+- [x] `CostSummaryRepository` com `SUM()`, `COUNT()`, `GROUP BY model_used`
+- [x] Testes: 7 suites (domain, application, infrastructure, integração, route) — todos passando
+- [x] Validação: `npx tsc --noEmit` 0 erros, `pnpm test` 32 suites / 155 testes
+- [x] Integração: `ModelProviderFactory` injetado no `ModelInitializerService` (proxy Helicone ativo quando `HELICONE_API_KEY` presente)
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1.1 → T9.2 em openspec/helicone-immutable-cost-tracking-tasks.md
+```
+
+---
+
+# Feature: Exibição do Custo de Geração no Resultado do Anúncio
+
+Spec de referência: `openspec/specs/ad-cost-display.md`
+Tasks detalhadas: `openspec/ad-cost-display-tasks.md`
+
+Status: **Concluído em 18/03/2026**
+
+## Escopo Resumido
+
+- [x] Expor `CostCaptureService` no container de Token Consumption
+- [x] Chamar `CostCaptureService.capture()` inline na rota `POST /api/agent/generate` (após stream, antes do evento `done`)
+- [x] Incluir `costBRL` no metadata do evento SSE `done` (`number | null`)
+- [x] Atualizar tipo `AdResponse` em `page.tsx` com `costBRL` opcional
+- [x] Exibir custo formatado (`R$ 0,0003`) no header do resultado, entre modelo e data
+- [x] Omitir custo na UI quando `costBRL` é `null`
+- [x] Cobrir com testes: cenário com custo, sem custo, e falha no serviço
+- [x] Validar `npx tsc --noEmit` + `pnpm test`
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1.1 → T3.2 em openspec/ad-cost-display-tasks.md
+```
+
+---
+
+# Feature: Backfill de Custos de Token via Helicone
+
+Spec de referência: `openspec/specs/token-cost-backfill.md`
+Tasks detalhadas: `openspec/token-cost-backfill-tasks.md`
+
+Status: **Concluído em 18/03/2026**
+
+## Escopo Resumido
+
+- [x] Criar endpoint `POST /api/costs/backfill`
+- [x] Buscar registros com `helicone_request_id` não nulo e `cost_usd = 0`
+- [x] Reprocessar custo via `CostCaptureService` e atualizar persistência
+- [x] Retornar sumário operacional (`scanned`, `updated`, `skipped`, `failed`)
+- [x] Cobrir com testes de rota e serviço
+- [x] Validar `pnpm test` + `npx tsc --noEmit`
+
+## Ordem de execução sugerida
+
+```text
+Seguir T1.1 → T3.3 em openspec/token-cost-backfill-tasks.md
+```
