@@ -2,6 +2,8 @@
 
 import { AdImagePreview } from "@/components/AdImagePreview";
 import { ModelDropdown, type ModelOption } from "@/components/ModelDropdown";
+import { Spinner } from "@/components/spinner";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface AdResponse {
@@ -161,6 +163,14 @@ export default function Home() {
           <p className="mt-3 text-lg text-gray-500">
             Descreva seu produto ou serviço e receba um anúncio profissional gerado por IA.
           </p>
+          <div className="mt-4">
+            <Link
+              href="/dashboard"
+              className="text-sm font-medium text-indigo-700 hover:text-indigo-500 transition-colors"
+            >
+              Ver Dashboard de Consumo →
+            </Link>
+          </div>
         </div>
 
         {/* Form Card */}
@@ -209,26 +219,12 @@ export default function Home() {
             >
               {loading ? (
                 <>
-                  <svg
-                    className="animate-spin h-4 w-4 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
+                  <Spinner
+                    color="text-white"
+                    height={4}
+                    width={4}
                     viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v8H4z"
-                    />
-                  </svg>
+                  />
                   Gerando anúncio...
                 </>
               ) : (
