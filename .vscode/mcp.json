@@ -24,6 +24,7 @@
       }
     },
     "docs-langchain": {
+      "type": "http",
       "url": "https://docs.langchain.com/mcp"
     },
     "next-devtools": {
