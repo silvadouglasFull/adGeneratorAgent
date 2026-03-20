@@ -1,11 +1,10 @@
+import { sessionInformation } from "@/auth/infrastructure/auth/sessionInformation";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { UserAvatarWithTooltip } from "@/components/user/UserAvatarWithTooltip";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { assets, contentDescription, flavorName, getCSSVariablesFromTheme } from "@/flavor/flavor";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/context/ThemeContext";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { UserAvatarWithTooltip } from "@/components/user/UserAvatarWithTooltip";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/auth/infrastructure/auth/authOptions";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,8 +21,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession(authOptions);
-  const userName = session?.user?.name ?? "Usuário";
+
 
   return (
     <html lang="en">
@@ -51,7 +49,7 @@ export default async function RootLayout({
       >
         <ThemeProvider>
           <div className="flex items-center justify-end gap-2 px-4 py-2">
-            <UserAvatarWithTooltip userName={userName} />
+            <UserAvatarWithTooltip userName={sessionInformation.userName} />
             <ThemeToggle />
           </div>
           {children}
