@@ -83,7 +83,17 @@ export function buildAuthOptions(): NextAuthOptions {
 
                 return true;
             },
-            async jwt({ token, user }) {
+            async jwt({ token, user, account }) {
+                // Google OAuth: user.id é o sub numérico do Google, não o UUID do banco
+                if (user?.id && account?.provider === "google") {
+                    const dbUser = await authContainer.userRepository.findByEmail(user.email!);
+                    if (dbUser) {
+                        token.userId = dbUser.id;
+                    }
+                    return token;
+                }
+
+                // Credenciais: user.id já é o UUID do banco
                 if (user?.id) {
                     token.userId = user.id;
                     return token;
