@@ -169,6 +169,13 @@ export default function HomePageClient() {
             >
               Ver Dashboard de Consumo →
             </Link>
+            <span className="mx-2 text-gray-300">|</span>
+            <Link
+              href="/app/prompts"
+              className="text-sm font-medium text-indigo-700 hover:text-indigo-500 transition-colors"
+            >
+              Meus Prompts →
+            </Link>
           </div>
         </div>
 

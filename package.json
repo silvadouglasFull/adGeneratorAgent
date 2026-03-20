@@ -17,6 +17,8 @@
     "@langchain/google-genai": "^2.1.25",
     "@langchain/langgraph": "^1.2.2",
     "@langchain/openai": "^1.2.13",
+    "@uiw/react-markdown-preview": "^5.1.5",
+    "@uiw/react-md-editor": "^4.0.11",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
     "ioredis": "^5.10.0",

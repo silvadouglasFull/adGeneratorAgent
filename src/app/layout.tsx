@@ -3,6 +3,8 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserAvatarWithTooltip } from "@/components/user/UserAvatarWithTooltip";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { assets, contentDescription, flavorName, getCSSVariablesFromTheme } from "@/flavor/flavor";
+import "@uiw/react-markdown-preview/markdown.css";
+import "@uiw/react-md-editor/markdown-editor.css";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 

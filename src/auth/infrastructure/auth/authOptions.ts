@@ -76,6 +76,30 @@ export function buildAuthOptions(): NextAuthOptions {
 
                 return true;
             },
+            async jwt({ token, user }) {
+                if (user?.id) {
+                    token.userId = user.id;
+                    return token;
+                }
+
+                if (token.userId || !token.email) {
+                    return token;
+                }
+
+                const existingUser = await authContainer.userRepository.findByEmail(token.email);
+                if (existingUser) {
+                    token.userId = existingUser.id;
+                }
+
+                return token;
+            },
+            async session({ session, token }) {
+                if (session.user && typeof token.userId === "string") {
+                    session.user.id = token.userId;
+                }
+
+                return session;
+            },
         },
     };
 }

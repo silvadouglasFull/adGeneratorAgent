@@ -158,7 +158,7 @@ export class AdStreamGenerator {
 
         let imageResult: ImageGenerationResult | undefined;
 
-        if (this.imageIntentDetector?.detect(input) && this.imagePromptService && this.imageGenerationService) {
+        if (this.imageIntentDetector?.requiresImage(input) && this.imagePromptService && this.imageGenerationService) {
             const imagePrompt = await this.imagePromptService.generate(input, model);
             imageResult = await this.imageGenerationService.generate(imagePrompt);
         }
