@@ -19,6 +19,11 @@ export const tokenConsumptionStatusEnum = pgEnum('token_consumption_status', [
     'failed',
 ]);
 
+export const userRegistrationOriginEnum = pgEnum('user_registration_origin', [
+    'google',
+    'default',
+]);
+
 /**
  * Token Consumption tracking table
  *
@@ -87,3 +92,29 @@ export const tokenConsumptionsTable = pgTable(
  */
 export type TokenConsumption = typeof tokenConsumptionsTable.$inferSelect;
 export type NewTokenConsumption = typeof tokenConsumptionsTable.$inferInsert;
+
+export const usersTable = pgTable(
+    'users',
+    {
+        id: uuid('id').primaryKey().defaultRandom().notNull(),
+        email: varchar('email', { length: 255 }).notNull(),
+        password: text('password'),
+        name: varchar('name', { length: 255 }).notNull(),
+        registrationOrigin: userRegistrationOriginEnum('registration_origin')
+            .notNull()
+            .default('default'),
+        createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
+            .notNull()
+            .defaultNow(),
+        updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+            .notNull()
+            .defaultNow()
+            .$onUpdate(() => new Date()),
+    },
+    (table) => ({
+        emailIdx: uniqueIndex('idx_users_email').on(table.email),
+    })
+);
+
+export type User = typeof usersTable.$inferSelect;
+export type NewUser = typeof usersTable.$inferInsert;
