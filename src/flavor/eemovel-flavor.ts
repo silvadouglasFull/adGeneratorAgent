@@ -1,7 +1,6 @@
 export const flavorName = 'Lead Plus'
 export const basePathAssets = '/eemovel-flavor/assets'
 export const siteWwebmanifest = `${basePathAssets}/site.webmanifest.json`
-export const contentDescription = 'Lead Plus Gerador de Anúncio'
 export const assets = {
     favicon_io: [
         { name: 'android-chrome-192x192.png', path: `${basePathAssets}/favicon_io/android-chrome-192x192.png` },
@@ -15,17 +14,6 @@ export const assets = {
     logos: [
         { name: 'logo.jpeg', path: `${basePathAssets}`, },
     ]
-}
-export type ThemeType = 'light' | 'dark'
-
-interface ColorPalette {
-    primary: string
-    secondary: string
-    accent: string
-    text: string
-    textLight: string
-    border: string
-    background: string
 }
 
 export const colorPalettes = {
@@ -48,34 +36,3 @@ export const colorPalettes = {
         background: '#fff5e9',
     },
 } as const
-
-/** Returns true if darkColors palette is defined, enabling theme toggle */
-export function isThemeToggleAvailable(): boolean {
-    return !!colorPalettes.darkColors
-}
-
-/** Returns the color palette for the given theme */
-export function getCurrentThemePalette(theme: ThemeType): ColorPalette {
-    if (theme === 'dark' && colorPalettes.darkColors) {
-        return colorPalettes.darkColors
-    }
-    return colorPalettes.lightColors
-}
-
-function toKebabCase(key: string): string {
-    return key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
-}
-
-/** Generates CSS Variables string from the given theme palette */
-export function getCSSVariablesFromTheme(theme: ThemeType): string {
-    const palette = getCurrentThemePalette(theme)
-    const cssVars = Object.entries(palette)
-        .map(([key, value]) => `--color-${toKebabCase(key)}: ${value};`)
-        .join(' ')
-    return `:root { ${cssVars} }`
-}
-
-/** @deprecated Use getCSSVariablesFromTheme('light') instead */
-export function getCSSVariablesFromPalette(): string {
-    return getCSSVariablesFromTheme('light')
-}
