@@ -51,7 +51,7 @@ export default async function RootLayout({
       >
         <ThemeProvider>
           <div className="flex items-center justify-end gap-2 px-4 py-2">
-            {sessionInformation.userName && (
+            {sessionInformation.user && (
               <UserAvatarWithTooltip userName={sessionInformation.userName} />
             )}
             <ThemeToggle />
