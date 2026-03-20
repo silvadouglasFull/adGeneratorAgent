@@ -27,3 +27,5 @@
 - Não inventar requisitos não descritos
 - Não alterar comportamento sem atualizar spec
 - Não gerar código novo sem considerar uso de classes quando viável (conforme spec de padrões)
+- Não criar arquivos explicando o que foi implementado
+- Não crie resumos muitos longos após executar cada solicitação.

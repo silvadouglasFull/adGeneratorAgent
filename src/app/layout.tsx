@@ -1,6 +1,8 @@
+import { assets, contentDescription, flavorName, getCSSVariablesFromTheme } from "@/flavor/flavor";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { assets } from "@/flavor/ds-web-flavor";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,8 +22,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Zapt AI AD GENERATOR</title>
-        <meta name="description" content="Ad generation with Zapt AI" />
+        <title>{flavorName}</title>
+        <meta name="description" content={contentDescription} />
+        {/* Default light theme injected server-side; ThemeProvider updates on client */}
+        <style id="theme-vars" dangerouslySetInnerHTML={{ __html: getCSSVariablesFromTheme('light') }} />
         {assets.favicon_io.map((icon, index) => {
           if (icon.name.includes('apple-touch-icon')) {
             return <link key={index} rel="apple-touch-icon" href={icon.path} />;
@@ -39,7 +43,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider>
+          <div className="flex justify-end px-4 py-2">
+            <ThemeToggle />
+          </div>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
