@@ -1,3 +1,5 @@
+export const flavorName = 'Zapt AI AD GENERATOR'
+export const contentDescription = 'Ad generation with Zapt AI'
 export const basePathAssets = '/ds-web-flavor/assets'
 export const siteWwebmanifest = `${basePathAssets}/site.webmanifest.json`
 export const assets = {

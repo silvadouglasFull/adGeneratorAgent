@@ -1,4 +1,4 @@
-import { assets, getCSSVariablesFromPalette } from "@/flavor/flavor";
+import { assets, contentDescription, flavorName, getCSSVariablesFromPalette } from "@/flavor/flavor";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -20,9 +20,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Zapt AI AD GENERATOR</title>
-        <meta name="description" content="Ad generation with Zapt AI" />
-        {/* Inject CSS Variables from color palette */}
+        <title>{flavorName}</title>
+        <meta name="description" content={contentDescription} />
         <style dangerouslySetInnerHTML={{ __html: getCSSVariablesFromPalette() }} />
         {assets.favicon_io.map((icon, index) => {
           if (icon.name.includes('apple-touch-icon')) {
