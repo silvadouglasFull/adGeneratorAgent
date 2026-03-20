@@ -1,6 +1,6 @@
 # Tasks: Sistema de Tema Dark/Light Dinâmico
 
-**Status**: Não iniciado  
+**Status**: ✅ Concluído  
 **Spec**: [dark-light-theme-toggle.md](specs/dark-light-theme-toggle.md)  
 **Critério de aceitação**: Todos os checkboxes abaixo devem passar
 

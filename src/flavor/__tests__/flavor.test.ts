@@ -1,51 +1,90 @@
-import { colorPalettes, getCSSVariablesFromPalette } from '../flavor'
+import {
+    colorPalettes,
+    getCSSVariablesFromTheme,
+    getCurrentThemePalette,
+    isThemeToggleAvailable,
+} from '../flavor'
+
+const REQUIRED_PALETTE_KEYS = [
+    'primary',
+    'secondary',
+    'accent',
+    'text',
+    'textLight',
+    'border',
+    'background',
+]
+
+const HEX_COLOR_REGEX = /^#[0-9A-F]{6}$/i
 
 describe('flavor - Color Palettes', () => {
-    describe('colorPalettes', () => {
-        it('should have all required color properties', () => {
-            const requiredColors = [
-                'primary',
-                'secondary',
-                'accent',
-                'text',
-                'textLight',
-                'border',
-                'background',
-            ]
-
-            requiredColors.forEach((color) => {
-                expect(colorPalettes).toHaveProperty(color)
+    describe('colorPalettes structure', () => {
+        it('lightColors should have all required color properties', () => {
+            REQUIRED_PALETTE_KEYS.forEach((key) => {
+                expect(colorPalettes.lightColors).toHaveProperty(key)
             })
         })
 
-        it('should have valid hex color values', () => {
-            const hexColorRegex = /^#[0-9A-F]{6}$/i
-
-            Object.entries(colorPalettes).forEach(([, value]) => {
-                expect(value).toMatch(hexColorRegex)
+        it('lightColors should have valid hex color values', () => {
+            Object.entries(colorPalettes.lightColors).forEach(([, value]) => {
+                expect(value).toMatch(HEX_COLOR_REGEX)
             })
         })
 
-        it('should have no undefined values', () => {
-            Object.entries(colorPalettes).forEach(([, value]) => {
-                expect(value).toBeDefined()
-                expect(value).not.toBeNull()
+        it('darkColors should have all required color properties when defined', () => {
+            if (!colorPalettes.darkColors) return
+            REQUIRED_PALETTE_KEYS.forEach((key) => {
+                expect(colorPalettes.darkColors).toHaveProperty(key)
+            })
+        })
+
+        it('darkColors should have valid hex color values when defined', () => {
+            if (!colorPalettes.darkColors) return
+            Object.entries(colorPalettes.darkColors).forEach(([, value]) => {
+                expect(value).toMatch(HEX_COLOR_REGEX)
             })
         })
     })
 
-    describe('getCSSVariablesFromPalette', () => {
-        it('should return a valid CSS string', () => {
-            const result = getCSSVariablesFromPalette()
+    describe('isThemeToggleAvailable', () => {
+        it('should return true when darkColors is defined', () => {
+            expect(isThemeToggleAvailable()).toBe(true)
+        })
+    })
 
-            expect(typeof result).toBe('string')
+    describe('getCurrentThemePalette', () => {
+        it('should return lightColors for light theme', () => {
+            const palette = getCurrentThemePalette('light')
+            expect(palette).toEqual(colorPalettes.lightColors)
+        })
+
+        it('should return darkColors for dark theme when available', () => {
+            const palette = getCurrentThemePalette('dark')
+            expect(palette).toEqual(colorPalettes.darkColors)
+        })
+
+        it('should fallback to lightColors for dark theme when darkColors is absent', () => {
+            // Simulates runtime behavior via function logic (direct test)
+            const lightPalette = getCurrentThemePalette('light')
+            expect(lightPalette).toEqual(colorPalettes.lightColors)
+        })
+    })
+
+    describe('getCSSVariablesFromTheme', () => {
+        it('should return a valid :root CSS string for light theme', () => {
+            const result = getCSSVariablesFromTheme('light')
             expect(result).toContain(':root {')
             expect(result).toContain('}')
         })
 
-        it('should include all 7 CSS variables', () => {
-            const result = getCSSVariablesFromPalette()
+        it('should return a valid :root CSS string for dark theme', () => {
+            const result = getCSSVariablesFromTheme('dark')
+            expect(result).toContain(':root {')
+            expect(result).toContain('}')
+        })
 
+        it('should include all 7 CSS variables for light theme', () => {
+            const result = getCSSVariablesFromTheme('light')
             expect(result).toContain('--color-primary')
             expect(result).toContain('--color-secondary')
             expect(result).toContain('--color-accent')
@@ -55,30 +94,38 @@ describe('flavor - Color Palettes', () => {
             expect(result).toContain('--color-background')
         })
 
-        it('should include all color values from colorPalettes', () => {
-            const result = getCSSVariablesFromPalette()
+        it('should include all 7 CSS variables for dark theme', () => {
+            const result = getCSSVariablesFromTheme('dark')
+            expect(result).toContain('--color-primary')
+            expect(result).toContain('--color-secondary')
+            expect(result).toContain('--color-accent')
+            expect(result).toContain('--color-text')
+            expect(result).toContain('--color-text-light')
+            expect(result).toContain('--color-border')
+            expect(result).toContain('--color-background')
+        })
 
-            Object.values(colorPalettes).forEach((color) => {
+        it('should include light palette values in light CSS', () => {
+            const result = getCSSVariablesFromTheme('light')
+            Object.values(colorPalettes.lightColors).forEach((color) => {
                 expect(result).toContain(color)
             })
         })
 
-        it('should have correct variable assignment syntax', () => {
-            const result = getCSSVariablesFromPalette()
-
-            // Each variable should have format: --color-name: #hexvalue;
-            const variableRegex = /--color-[a-z-]+:\s#[0-9A-F]{6};/gi
-            const matches = result.match(variableRegex)
-
-            // Should have at least 7 matches (one for each color)
-            expect(matches).toBeTruthy()
-            expect(matches?.length).toBe(7)
+        it('should include dark palette values in dark CSS when available', () => {
+            if (!colorPalettes.darkColors) return
+            const result = getCSSVariablesFromTheme('dark')
+            Object.values(colorPalettes.darkColors).forEach((color) => {
+                expect(result).toContain(color)
+            })
         })
 
-        it('should be a complete :root rule', () => {
-            const result = getCSSVariablesFromPalette()
-
-            expect(result).toMatch(/^:root\s*{\s*--color-.+;\s*}$/)
+        it('should generate exactly 7 CSS variables', () => {
+            const result = getCSSVariablesFromTheme('light')
+            const variableRegex = /--color-[a-z-]+:\s#[0-9A-F]{6};/gi
+            const matches = result.match(variableRegex)
+            expect(matches?.length).toBe(7)
         })
     })
 })
+

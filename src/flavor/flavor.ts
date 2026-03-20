@@ -17,6 +17,18 @@ export const assets = {
     ]
 }
 
+export type ThemeType = 'light' | 'dark'
+
+interface ColorPalette {
+    primary: string
+    secondary: string
+    accent: string
+    text: string
+    textLight: string
+    border: string
+    background: string
+}
+
 export const colorPalettes = {
     darkColors: {
         primary: '#111313',
@@ -28,7 +40,6 @@ export const colorPalettes = {
         background: '#111313'
     },
     lightColors: {
-
         primary: '#0ba5d5',
         secondary: '#1d1d1c',
         accent: '#33cbe5',
@@ -39,14 +50,33 @@ export const colorPalettes = {
     },
 } as const
 
-export function getCSSVariablesFromPalette(): string {
-    const entries = Object.entries(colorPalettes)
-    const cssVars = entries
-        .map(([key, value]) => {
-            const kebabKey = key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
-            return `--color-${kebabKey}: ${value};`
-        })
-        .join(' ')
+/** Returns true if darkColors palette is defined, enabling theme toggle */
+export function isThemeToggleAvailable(): boolean {
+    return !!colorPalettes.darkColors
+}
 
+/** Returns the color palette for the given theme */
+export function getCurrentThemePalette(theme: ThemeType): ColorPalette {
+    if (theme === 'dark' && colorPalettes.darkColors) {
+        return colorPalettes.darkColors
+    }
+    return colorPalettes.lightColors
+}
+
+function toKebabCase(key: string): string {
+    return key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+}
+
+/** Generates CSS Variables string from the given theme palette */
+export function getCSSVariablesFromTheme(theme: ThemeType): string {
+    const palette = getCurrentThemePalette(theme)
+    const cssVars = Object.entries(palette)
+        .map(([key, value]) => `--color-${toKebabCase(key)}: ${value};`)
+        .join(' ')
     return `:root { ${cssVars} }`
+}
+
+/** @deprecated Use getCSSVariablesFromTheme('light') instead */
+export function getCSSVariablesFromPalette(): string {
+    return getCSSVariablesFromTheme('light')
 }
