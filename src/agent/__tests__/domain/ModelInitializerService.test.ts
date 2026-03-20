@@ -10,6 +10,7 @@ jest.mock("@langchain/google-genai", () => ({
 }));
 
 import { ModelRegistry } from "../../domain/model/ModelRegistry";
+import type { ILiteLLMProxyProvider } from "../../domain/service/ILiteLLMProxyProvider";
 import type { IModelProviderFactory } from "../../domain/service/IModelProviderFactory";
 import { ModelInitializerService } from "../../domain/service/ModelInitializerService";
 
@@ -96,6 +97,76 @@ describe("ModelInitializerService", () => {
             await serviceWithoutFactory.initialize("gpt-4o-mini");
 
             expect(mockChatOpenAI).toHaveBeenCalled();
+        });
+    });
+
+    describe("com LiteLLMProxyProvider injetado", () => {
+        let mockLiteLLMProvider: jest.Mocked<ILiteLLMProxyProvider>;
+
+        beforeEach(() => {
+            mockLiteLLMProvider = {
+                create: jest.fn().mockReturnValue({ _type: "litellm-model" }),
+                isAvailable: jest.fn(),
+            };
+        });
+
+        it("deve usar LiteLLM para modelo de texto quando disponível", async () => {
+            mockLiteLLMProvider.isAvailable.mockResolvedValue(true);
+            const serviceWithLiteLLM = new ModelInitializerService(registry, undefined, mockLiteLLMProvider);
+
+            const result = await serviceWithLiteLLM.initialize("gpt-4o-mini");
+
+            expect(mockLiteLLMProvider.isAvailable).toHaveBeenCalled();
+            expect(mockLiteLLMProvider.create).toHaveBeenCalledWith("gpt-4o-mini", undefined);
+            expect(result).toEqual({ _type: "litellm-model" });
+            expect(mockChatOpenAI).not.toHaveBeenCalled();
+        });
+
+        it("deve usar chamada direta quando LiteLLM está indisponível", async () => {
+            mockLiteLLMProvider.isAvailable.mockResolvedValue(false);
+            const serviceWithLiteLLM = new ModelInitializerService(registry, undefined, mockLiteLLMProvider);
+
+            await serviceWithLiteLLM.initialize("gpt-4o-mini");
+
+            expect(mockLiteLLMProvider.isAvailable).toHaveBeenCalled();
+            expect(mockLiteLLMProvider.create).not.toHaveBeenCalled();
+            expect(mockChatOpenAI).toHaveBeenCalled();
+        });
+
+        it("deve usar chamada direta quando LiteLLM não está configurado", async () => {
+            const serviceWithoutLiteLLM = new ModelInitializerService(registry);
+
+            await serviceWithoutLiteLLM.initialize("gemini-2.0-flash");
+
+            expect(mockChatGoogleGenerativeAI).toHaveBeenCalled();
+        });
+
+        it("deve NÃO usar LiteLLM para modelo de imagem mesmo quando disponível", async () => {
+            mockLiteLLMProvider.isAvailable.mockResolvedValue(true);
+            const mockFactory: IModelProviderFactory = {
+                create: jest.fn().mockReturnValue({ _type: "direct-model" }),
+            };
+            const serviceWithBoth = new ModelInitializerService(registry, mockFactory, mockLiteLLMProvider);
+
+            await serviceWithBoth.initialize("gpt-image-1.5");
+
+            expect(mockLiteLLMProvider.isAvailable).not.toHaveBeenCalled();
+            expect(mockLiteLLMProvider.create).not.toHaveBeenCalled();
+            expect(mockFactory.create).toHaveBeenCalledWith("gpt-image-1.5", undefined);
+        });
+
+        it("deve priorizar LiteLLM sobre ModelProviderFactory para texto", async () => {
+            mockLiteLLMProvider.isAvailable.mockResolvedValue(true);
+            const mockFactory: IModelProviderFactory = {
+                create: jest.fn().mockReturnValue({ _type: "factory-model" }),
+            };
+            const serviceWithBoth = new ModelInitializerService(registry, mockFactory, mockLiteLLMProvider);
+
+            const result = await serviceWithBoth.initialize("gpt-4o-mini");
+
+            expect(mockLiteLLMProvider.create).toHaveBeenCalledWith("gpt-4o-mini", undefined);
+            expect(mockFactory.create).not.toHaveBeenCalled();
+            expect(result).toEqual({ _type: "litellm-model" });
         });
     });
 });
