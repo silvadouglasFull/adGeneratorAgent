@@ -40,6 +40,13 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 - [ ] Definir callbacks/sessão necessários para o domínio atual
 - **Critério**: providers de credenciais e Google ativos no NextAuth
 
+### T3.1 — Proteger acesso da aplicação para usuários autenticados
+
+- [ ] Implementar proteção global de páginas/rotas da aplicação (exceto auth e rotas públicas)
+- [ ] Redirecionar usuário sem sessão para a rota de autenticação
+- [ ] Garantir que usuário autenticado acesse normalmente as páginas protegidas
+- **Critério**: aplicação só é acessível após login
+
 ---
 
 ## Fase 2 — Cadastro e Login por Email/Senha
@@ -107,6 +114,8 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 - [ ] Testar fluxo de login Google com mocks adequados
 - [ ] Testar criação Google com `senha` nula e `origemCadastro = google`
 - [ ] Testar falha quando envs obrigatórios não estão definidos
+- [ ] Testar bloqueio de acesso a rota/página protegida sem sessão
+- [ ] Testar redirecionamento para login quando usuário não autenticado
 - **Critério**: cobertura dos fluxos principais e de erro
 
 ### T10 — Validação final da feature
@@ -115,6 +124,7 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 - [ ] Executar `npx tsc --noEmit`
 - [ ] Validar manualmente cadastro/login com email/senha
 - [ ] Validar manualmente login com Google
+- [ ] Validar manualmente tentativa de acesso sem login às páginas protegidas
 - **Critério**: feature pronta sem regressões
 
 ---
@@ -122,7 +132,7 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 ## Ordem de Execução Sugerida
 
 ```text
-T0 → T1 → T2 → T3 → T4 → T5 → T6 → T7 → T8 → T9 → T10
+T0 → T1 → T2 → T3 → T3.1 → T4 → T5 → T6 → T7 → T8 → T9 → T10
 ```
 
 ## Estimativa de Complexidade
@@ -133,6 +143,7 @@ T0 → T1 → T2 → T3 → T4 → T5 → T6 → T7 → T8 → T9 → T10
 | T1   | Baixa        |
 | T2   | Baixa        |
 | T3   | Média        |
+| T3.1 | Média        |
 | T4   | Média        |
 | T5   | Média        |
 | T6   | Média        |

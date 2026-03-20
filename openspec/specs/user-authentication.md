@@ -29,6 +29,7 @@ Pontos aplicados desta referência:
 - Permitir criação de conta e autenticação com credenciais (email/senha);
 - Permitir autenticação com Google via botão de OAuth;
 - Centralizar o fluxo de autenticação no NextAuth;
+- Restringir acesso à aplicação para usuários autenticados;
 - Persistir dados de credenciais e perfil mínimo no banco de dados;
 - Ler credenciais sensíveis exclusivamente do `.env`.
 
@@ -39,6 +40,7 @@ Pontos aplicados desta referência:
 - Configuração do NextAuth em rota catch-all de autenticação;
 - Provider de credenciais para email/senha;
 - Provider Google para login/cadastro social;
+- Proteção de acesso às páginas/rotas da aplicação para exigir sessão ativa;
 - Persistência de usuários em tabela dedicada no banco de dados;
 - Botões de UI para cadastro/login com Google;
 - Formulários para cadastro/login com email/senha;
@@ -109,6 +111,12 @@ Pontos aplicados desta referência:
 - Sessão deve ser criada e validada pelo NextAuth;
 - Endpoints protegidos devem negar acesso sem sessão válida;
 - Erros de autenticação não devem vazar dados sensíveis.
+
+### RF8 — Acesso obrigatório após login
+
+- A aplicação deve exigir autenticação antes de permitir acesso às páginas protegidas;
+- Usuário não autenticado deve ser redirecionado para a tela de login/cadastro;
+- Apenas a rota de autenticação (e rotas públicas explicitamente definidas) pode ser acessada sem sessão.
 
 ## Requisitos Não Funcionais
 
@@ -185,6 +193,8 @@ NEXT_AUTH_SECRETE=
 - [ ] Existe botão de autenticação com Google nas telas de auth
 - [ ] Usuário consegue autenticar com Google com as credenciais vindas do `.env`
 - [ ] Cadastro/login social cria e reutiliza usuário corretamente
+- [ ] Usuário não autenticado não consegue acessar páginas protegidas da aplicação
+- [ ] Usuário não autenticado é redirecionado para a rota de autenticação
 - [ ] A aplicação falha de forma explícita quando faltar `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRETE` ou `NEXT_AUTH_SECRETE`
 - [ ] Senha é persistida com hash seguro
 - [ ] Existe tabela de usuários com `id` UUID automático
@@ -208,4 +218,5 @@ NEXT_AUTH_SECRETE=
 3. Fluxo de autenticação por Google funcional;
 4. Persistência de usuário no banco com contrato da tabela atendido;
 5. Variáveis de ambiente obrigatórias validadas;
-6. Testes e type-check verdes.
+6. Acesso às páginas protegidas exige login ativo;
+7. Testes e type-check verdes.
