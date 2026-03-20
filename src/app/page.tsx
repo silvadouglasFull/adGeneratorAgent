@@ -211,11 +211,37 @@ export default function Home() {
                 error={modelsError}
               />
             </div>
-
+            {/**
+ * className="w-full flex items-center 
+ * justify-center gap-2 rounded-xl 
+ * bg-indigo-600 px-6 py-3.5 
+ * text-sm font-semibold 
+ * text-white shadow-sm 
+ * transition-colors hover:bg-indigo-500 
+ * focus-visible:outline 
+ * focus-visible:outline-2 
+ * focus-visible:outline-offset-2 
+ * focus-visible:outline-indigo-600 
+ * disabled:opacity-50 
+ * disabled:cursor-not-allowed"
+ */}
             <button
               type="submit"
               disabled={loading || input.trim() === ""}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="
+              btn w-full 
+              flex items-center 
+              justify-center 
+              px-6 
+              rounded-xl 
+              text-sm
+              focus-visible:outline 
+              font-semibold
+              focus-visible:outline-offset-2
+              text-white shadow-sm
+              disabled:opacity-50 
+              disabled:cursor-not-allowed
+              "
             >
               {loading ? (
                 <>
