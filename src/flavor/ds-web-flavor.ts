@@ -18,12 +18,22 @@ export const assets = {
 }
 
 export const colorPalettes = {
-    primary: '#0ba5d5',
-    secondary: '#1d1d1c',
-    accent: '#33cbe5',
-    text: '#1d1d1c',
-    textLight: '#484848',
-    border: '#a2a2a2',
-    background: '#eef9f8',
+    darkColors: {
+        primary: '#111313',
+        secondary: '#1f1f1e',
+        accent: '#69d9ec',
+        text: '#5e5e5b',
+        textLight: '#c7c7c7',
+        border: '#121212',
+        background: '#111313'
+    },
+    lightColors: {
+        primary: '#0ba5d5',
+        secondary: '#1d1d1c',
+        accent: '#33cbe5',
+        text: '#1d1d1c',
+        textLight: '#484848',
+        border: '#a2a2a2',
+        background: '#eef9f8',
+    },
 } as const
-
