@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { UserAvatarWithTooltip } from "@/components/user/UserAvatarWithTooltip";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth/infrastructure/auth/authOptions";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,11 +17,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+  const userName = session?.user?.name ?? "Usuário";
+
   return (
     <html lang="en">
       <head>
@@ -44,7 +50,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          <div className="flex justify-end px-4 py-2">
+          <div className="flex items-center justify-end gap-2 px-4 py-2">
+            <UserAvatarWithTooltip userName={userName} />
             <ThemeToggle />
           </div>
           {children}
