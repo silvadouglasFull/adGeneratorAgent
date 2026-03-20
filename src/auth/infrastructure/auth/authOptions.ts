@@ -14,7 +14,7 @@ export function buildAuthOptions(): NextAuthOptions {
             strategy: "jwt",
         },
         pages: {
-            signIn: "/auth",
+            signIn: "/auth/login",
         },
         providers: [
             CredentialsProvider({
