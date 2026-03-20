@@ -114,9 +114,10 @@ Pontos aplicados desta referência:
 
 ### RF8 — Acesso obrigatório após login
 
-- A aplicação deve exigir autenticação antes de permitir acesso às páginas protegidas;
-- Usuário não autenticado deve ser redirecionado para a tela de login/cadastro;
-- Apenas a rota de autenticação (e rotas públicas explicitamente definidas) pode ser acessada sem sessão.
+- A aplicação deve exigir autenticação antes de permitir acesso a qualquer página da aplicação, exceto a página de autenticação;
+- Usuário não autenticado deve ser redirecionado para a tela de login/cadastro em `/auth`;
+- A página `/auth` deve permanecer acessível sem sessão ativa;
+- Rotas de autenticação em `/api/auth/*` devem permanecer públicas para funcionamento do NextAuth e cadastro.
 
 ## Requisitos Não Funcionais
 
@@ -185,25 +186,26 @@ NEXT_AUTH_SECRETE=
 
 ## Critérios de Aceitação
 
-- [ ] Existe `app/api/auth/[...nextauth]/route.ts` com `NextAuth` inicializado no padrão App Router
-- [ ] O handler exporta `GET` e `POST`
-- [ ] Usuário consegue cadastrar com email/senha
-- [ ] Payload de cadastro por email/senha é validado com Zod
-- [ ] Usuário consegue logar com email/senha
-- [ ] Existe botão de autenticação com Google nas telas de auth
+- [x] Existe `app/api/auth/[...nextauth]/route.ts` com `NextAuth` inicializado no padrão App Router
+- [x] O handler exporta `GET` e `POST`
+- [x] Usuário consegue cadastrar com email/senha
+- [x] Payload de cadastro por email/senha é validado com Zod
+- [x] Usuário consegue logar com email/senha
+- [x] Existe botão de autenticação com Google nas telas de auth
 - [ ] Usuário consegue autenticar com Google com as credenciais vindas do `.env`
-- [ ] Cadastro/login social cria e reutiliza usuário corretamente
-- [ ] Usuário não autenticado não consegue acessar páginas protegidas da aplicação
-- [ ] Usuário não autenticado é redirecionado para a rota de autenticação
-- [ ] A aplicação falha de forma explícita quando faltar `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRETE` ou `NEXT_AUTH_SECRETE`
-- [ ] Senha é persistida com hash seguro
-- [ ] Existe tabela de usuários com `id` UUID automático
-- [ ] A tabela armazena `email`, `senha`, `nome` e `origemCadastro` (enum `google` | `default`)
-- [ ] `senha` é opcional para usuários Google e obrigatória para usuários de credenciais
-- [ ] Erros de validação Zod retornam resposta amigável e consistente
-- [ ] Testes automatizados cobrindo fluxos principais passam
-- [ ] `pnpm test` passa
-- [ ] `npx tsc --noEmit` passa sem erros
+- [x] Cadastro/login social cria e reutiliza usuário corretamente
+- [x] Usuário não autenticado não consegue acessar qualquer página protegida da aplicação
+- [x] Usuário não autenticado é redirecionado para `/auth`
+- [x] A página `/auth` é acessível sem autenticação
+- [x] A aplicação falha de forma explícita quando faltar `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRETE` ou `NEXT_AUTH_SECRETE`
+- [x] Senha é persistida com hash seguro
+- [x] Existe tabela de usuários com `id` UUID automático
+- [x] A tabela armazena `email`, `senha`, `nome` e `origemCadastro` (enum `google` | `default`)
+- [x] `senha` é opcional para usuários Google e obrigatória para usuários de credenciais
+- [x] Erros de validação Zod retornam resposta amigável e consistente
+- [x] Testes automatizados cobrindo fluxos principais passam
+- [x] `pnpm test` passa
+- [x] `npx tsc --noEmit` passa sem erros
 
 ## Restrições
 
@@ -218,5 +220,5 @@ NEXT_AUTH_SECRETE=
 3. Fluxo de autenticação por Google funcional;
 4. Persistência de usuário no banco com contrato da tabela atendido;
 5. Variáveis de ambiente obrigatórias validadas;
-6. Acesso às páginas protegidas exige login ativo;
+6. Acesso a qualquer página da aplicação exige login ativo (exceto `/auth`);
 7. Testes e type-check verdes.

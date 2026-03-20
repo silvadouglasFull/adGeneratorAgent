@@ -2,27 +2,19 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const NEXT_AUTH_PUBLIC_API_PATHS = [
-    "/api/auth/signin",
-    "/api/auth/signout",
-    "/api/auth/callback",
-    "/api/auth/session",
-    "/api/auth/csrf",
-    "/api/auth/providers",
-    "/api/auth/error",
-    "/api/auth/verify-request",
-];
+const PUBLIC_PATHS = ["/auth"];
+const PUBLIC_API_PREFIXES = ["/api/auth"];
 
 function hasFileExtension(pathname: string): boolean {
     return /\.[a-zA-Z0-9]+$/.test(pathname);
 }
 
 export function isPublicPath(pathname: string): boolean {
-    if (
-        NEXT_AUTH_PUBLIC_API_PATHS.some(
-            (path) => pathname === path || pathname.startsWith(`${path}/`)
-        )
-    ) {
+    if (PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
+        return true;
+    }
+
+    if (PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
         return true;
     }
 
@@ -61,7 +53,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
     }
 
-    const loginUrl = new URL("/api/auth/signin", request.url);
+    const loginUrl = new URL("/auth", request.url);
     loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
 
     return NextResponse.redirect(loginUrl);
