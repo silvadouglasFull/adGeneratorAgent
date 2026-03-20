@@ -1,3 +1,4 @@
+import { DefaultPromptSeeder } from "@/prompts/domain/service/DefaultPromptSeeder";
 import { PromptFetchService } from "@/prompts/domain/service/PromptFetchService";
 import { UserPromptPostgresRepository } from "@/prompts/infrastructure/postgres/UserPromptPostgresRepository";
 import { PromptRedisSync } from "@/prompts/infrastructure/redis/PromptRedisSync";
@@ -11,10 +12,12 @@ const promptFetchService = new PromptFetchService(
     userPromptRepository,
     promptRedisSync
 );
+const defaultPromptSeeder = new DefaultPromptSeeder(userPromptRepository);
 
 export const promptsContainer = {
     redisClient,
     promptRedisSync,
     userPromptRepository,
     promptFetchService,
+    defaultPromptSeeder,
 };

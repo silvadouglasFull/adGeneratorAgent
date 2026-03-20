@@ -1,6 +1,7 @@
 import { registerWithCredentialsSchema } from "@/auth/application/validation/registerWithCredentialsSchema";
 import { authContainer } from "@/auth/authContainer";
 import { UserAlreadyExistsException } from "@/auth/domain/exception/UserAlreadyExistsException";
+import { promptsContainer } from "@/prompts/promptsContainer";
 
 export async function POST(request: Request) {
     let body: unknown;
@@ -28,6 +29,12 @@ export async function POST(request: Request) {
 
     try {
         const user = await authContainer.registerUserWithCredentialsUseCase.execute(parsed.data);
+
+        promptsContainer.defaultPromptSeeder
+            .seedForUser(user.id)
+            .catch((err) =>
+                console.error("[DefaultPromptSeeder] Erro ao semear prompts para usuário", user.id, err)
+            );
 
         return Response.json(
             {

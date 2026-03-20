@@ -1,3 +1,4 @@
+// import { runMigrations } from "@/tokenConsumption/infrastructure/db/migrate";
 import {
     ensureTokenConsumptionConsumerStarted,
     tokenConsumptionContainer,
@@ -11,6 +12,7 @@ export async function register() {
             );
         }
 
+        // await runMigrations();
         await ensureTokenConsumptionConsumerStarted();
 
         const shutdown = async () => {

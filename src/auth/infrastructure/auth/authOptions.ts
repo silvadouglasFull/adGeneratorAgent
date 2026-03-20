@@ -1,6 +1,7 @@
 import { authContainer } from "@/auth/authContainer";
 import { InvalidCredentialsException } from "@/auth/domain/exception/InvalidCredentialsException";
 import { getAuthEnv } from "@/auth/infrastructure/env/authEnv";
+import { promptsContainer } from "@/prompts/promptsContainer";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -69,10 +70,16 @@ export function buildAuthOptions(): NextAuthOptions {
                     return false;
                 }
 
-                await authContainer.userRepository.upsertGoogleUser({
+                const user = await authContainer.userRepository.upsertGoogleUser({
                     email,
                     name,
                 });
+
+                promptsContainer.defaultPromptSeeder
+                    .seedForUser(user.id)
+                    .catch((err) =>
+                        console.error("[DefaultPromptSeeder] Erro ao semear prompts Google", user.id, err)
+                    );
 
                 return true;
             },
