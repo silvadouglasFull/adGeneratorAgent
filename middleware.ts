@@ -2,20 +2,27 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/auth"];
-const PUBLIC_API_PREFIXES = ["/api/auth"];
-const PROTECTED_API_PREFIXES = ["/api/agent", "/api/costs"];
+const NEXT_AUTH_PUBLIC_API_PATHS = [
+    "/api/auth/signin",
+    "/api/auth/signout",
+    "/api/auth/callback",
+    "/api/auth/session",
+    "/api/auth/csrf",
+    "/api/auth/providers",
+    "/api/auth/error",
+    "/api/auth/verify-request",
+];
 
 function hasFileExtension(pathname: string): boolean {
     return /\.[a-zA-Z0-9]+$/.test(pathname);
 }
 
 export function isPublicPath(pathname: string): boolean {
-    if (PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
-        return true;
-    }
-
-    if (PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+    if (
+        NEXT_AUTH_PUBLIC_API_PATHS.some(
+            (path) => pathname === path || pathname.startsWith(`${path}/`)
+        )
+    ) {
         return true;
     }
 
@@ -34,10 +41,6 @@ export function isPublicPath(pathname: string): boolean {
     return false;
 }
 
-function isProtectedApiPath(pathname: string): boolean {
-    return PROTECTED_API_PREFIXES.some((prefix) => pathname.startsWith(prefix));
-}
-
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
@@ -54,11 +57,11 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    if (isProtectedApiPath(pathname)) {
+    if (pathname.startsWith("/api/")) {
         return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
     }
 
-    const loginUrl = new URL("/auth", request.url);
+    const loginUrl = new URL("/api/auth/signin", request.url);
     loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
 
     return NextResponse.redirect(loginUrl);
