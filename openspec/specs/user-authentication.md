@@ -68,6 +68,7 @@ Pontos aplicados desta referência:
 ### RF2 — Cadastro com Email/Senha
 
 - Permitir criação de usuário com email e senha válidos;
+- Validar payload de cadastro com biblioteca Zod antes de processar a criação;
 - Persistir senha de forma segura (hash, nunca texto plano);
 - Persistir `origemCadastro` como `default`;
 - Impedir cadastro duplicado para o mesmo email;
@@ -114,6 +115,7 @@ Pontos aplicados desta referência:
 - Implementação em TypeScript, sem `any` não justificado;
 - Código organizado conforme DDD/SOLID/Clean Code;
 - Separação de domínio, aplicação e infraestrutura quando aplicável;
+- Validação de entrada de cadastro por credenciais com Zod e erros claros de validação;
 - Testes claros e diretos cobrindo os critérios de aceitação;
 - Não introduzir regressões nas rotas existentes.
 
@@ -178,6 +180,7 @@ NEXT_AUTH_SECRETE=
 - [ ] Existe `app/api/auth/[...nextauth]/route.ts` com `NextAuth` inicializado no padrão App Router
 - [ ] O handler exporta `GET` e `POST`
 - [ ] Usuário consegue cadastrar com email/senha
+- [ ] Payload de cadastro por email/senha é validado com Zod
 - [ ] Usuário consegue logar com email/senha
 - [ ] Existe botão de autenticação com Google nas telas de auth
 - [ ] Usuário consegue autenticar com Google com as credenciais vindas do `.env`
@@ -187,6 +190,7 @@ NEXT_AUTH_SECRETE=
 - [ ] Existe tabela de usuários com `id` UUID automático
 - [ ] A tabela armazena `email`, `senha`, `nome` e `origemCadastro` (enum `google` | `default`)
 - [ ] `senha` é opcional para usuários Google e obrigatória para usuários de credenciais
+- [ ] Erros de validação Zod retornam resposta amigável e consistente
 - [ ] Testes automatizados cobrindo fluxos principais passam
 - [ ] `pnpm test` passa
 - [ ] `npx tsc --noEmit` passa sem erros

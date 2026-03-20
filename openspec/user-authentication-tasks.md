@@ -47,6 +47,8 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 ### T4 — Implementar caso de uso de cadastro
 
 - [ ] Criar serviço/caso de uso para registro de usuário por email/senha
+- [ ] Criar schema Zod para payload de cadastro (email, senha, nome)
+- [ ] Aplicar validação Zod antes de chamar o caso de uso de cadastro
 - [ ] Validar formato de email e política mínima de senha
 - [ ] Garantir unicidade de email
 - [ ] Persistir senha com hash seguro
@@ -99,6 +101,7 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 - [ ] Testar rota de auth com inicialização correta (`GET`/`POST`)
 - [ ] Testar schema/migration da tabela de usuários
 - [ ] Testar cadastro com email/senha (sucesso, duplicidade, inválido)
+- [ ] Testar erro de validação Zod para payload inválido no cadastro por credenciais
 - [ ] Testar login com email/senha (sucesso/falha)
 - [ ] Testar bloqueio de login por credenciais para usuário com origem `google`
 - [ ] Testar fluxo de login Google com mocks adequados
