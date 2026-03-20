@@ -29,7 +29,7 @@ export function UserAvatarWithTooltip({ userName }: UserAvatarWithTooltipProps) 
                     type="button"
                     onClick={() => setOpen((prev) => !prev)}
                     aria-label={`Avatar de ${safeUserName}`}
-                    className="relative w-5 h-5 overflow-hidden bg-gray-100 rounded-full border border-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    className="relative w-8 h-8 overflow-hidden bg-gray-100 rounded-full border border-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-300"
                 >
                     <svg
                         className="absolute inset-0 m-auto w-4 h-4 text-gray-400"

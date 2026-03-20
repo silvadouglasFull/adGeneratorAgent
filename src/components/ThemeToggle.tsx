@@ -1,7 +1,7 @@
 'use client'
 
-import React from 'react'
 import { useTheme } from '@/hooks/useTheme'
+import React from 'react'
 
 /**
  * Isolated button component for toggling between dark and light themes.
