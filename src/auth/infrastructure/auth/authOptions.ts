@@ -84,6 +84,8 @@ export function buildAuthOptions(): NextAuthOptions {
                 return true;
             },
             async jwt({ token, user, account }) {
+                const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
                 // Google OAuth: user.id é o sub numérico do Google, não o UUID do banco
                 if (user?.id && account?.provider === "google") {
                     const dbUser = await authContainer.userRepository.findByEmail(user.email!);
@@ -99,7 +101,13 @@ export function buildAuthOptions(): NextAuthOptions {
                     return token;
                 }
 
-                if (token.userId || !token.email) {
+                // token.userId já é UUID válido — não precisa re-consultar
+                if (token.userId && UUID_REGEX.test(token.userId as string)) {
+                    return token;
+                }
+
+                // token.userId ausente ou inválido (ex: ID numérico do Google de sessão antiga)
+                if (!token.email) {
                     return token;
                 }
 
