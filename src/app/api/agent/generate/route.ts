@@ -1,9 +1,11 @@
 import { streamGeneratedAd, TEXT_MODELS, type SupportedModel } from "@/agent/adGeneratorAgent";
+import { authOptions } from "@/auth/infrastructure/auth/authOptions";
 import { TokenConsumptionEvent } from "@/tokenConsumption/domain/model/TokenConsumptionEvent";
 import {
     ensureTokenConsumptionConsumerStarted,
     tokenConsumptionContainer,
 } from "@/tokenConsumption/tokenConsumption";
+import { getServerSession } from "next-auth";
 
 function estimateTokenCount(text: string): number {
     const normalized = text.trim();
@@ -17,6 +19,13 @@ function estimateTokenCount(text: string): number {
 }
 
 export async function POST(request: Request) {
+    const session = await getServerSession(authOptions);
+    const sessionUserId = session?.user?.id;
+
+    if (!sessionUserId) {
+        return Response.json({ error: "Não autenticado." }, { status: 401 });
+    }
+
     let body: Record<string, unknown>;
 
     try {
@@ -69,6 +78,7 @@ export async function POST(request: Request) {
                 const adStream = streamGeneratedAd({
                     input: input.trim(),
                     model,
+                    sessionUserId,
                     heliconeRequestId,
                 });
 

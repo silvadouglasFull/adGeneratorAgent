@@ -47,7 +47,7 @@ export class AdGeneratorGraphBuilder {
             if (!imageIntentDetector) {
                 return { shouldGenerateImage: false };
             }
-            const shouldGenerateImage = imageIntentDetector.detect(state.input);
+            const shouldGenerateImage = imageIntentDetector.requiresImage(state.input);
             return { shouldGenerateImage };
         });
 

@@ -1,4 +1,6 @@
+import { sql } from 'drizzle-orm';
 import {
+    boolean,
     index,
     integer,
     numeric,
@@ -22,6 +24,11 @@ export const tokenConsumptionStatusEnum = pgEnum('token_consumption_status', [
 export const userRegistrationOriginEnum = pgEnum('user_registration_origin', [
     'google',
     'default',
+]);
+
+export const promptTypeEnum = pgEnum('prompt_type', [
+    'text_generation',
+    'image_generation',
 ]);
 
 /**
@@ -118,3 +125,39 @@ export const usersTable = pgTable(
 
 export type User = typeof usersTable.$inferSelect;
 export type NewUser = typeof usersTable.$inferInsert;
+
+export const userPromptsTable = pgTable(
+    'user_prompts',
+    {
+        id: uuid('id').primaryKey().defaultRandom().notNull(),
+        userId: uuid('user_id')
+            .notNull()
+            .references(() => usersTable.id),
+        type: promptTypeEnum('type').notNull(),
+        content: text('content').notNull(),
+        isActive: boolean('is_active').notNull().default(false),
+        createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
+            .notNull()
+            .defaultNow(),
+        updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+            .notNull()
+            .defaultNow()
+            .$onUpdate(() => new Date()),
+    },
+    (table) => ({
+        activeUniqueByUserType: uniqueIndex('idx_user_prompts_active_unique')
+            .on(table.userId, table.type)
+            .where(sql`${table.isActive} = true`),
+        userIdIdx: index('idx_user_prompts_user_id').on(table.userId),
+        typeIdx: index('idx_user_prompts_type').on(table.type),
+        isActiveIdx: index('idx_user_prompts_active').on(table.isActive),
+        userTypeActiveIdx: index('idx_user_prompts_user_type_active').on(
+            table.userId,
+            table.type,
+            table.isActive
+        ),
+    })
+);
+
+export type UserPrompt = typeof userPromptsTable.$inferSelect;
+export type NewUserPrompt = typeof userPromptsTable.$inferInsert;

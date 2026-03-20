@@ -2,6 +2,7 @@
 const mockStreamGeneratedAd = jest.fn();
 const mockUseCaseExecute = jest.fn();
 const mockEnsureConsumerStarted = jest.fn();
+const mockGetServerSession = jest.fn();
 
 jest.mock("@/agent/adGeneratorAgent", () => ({
     TEXT_MODELS: ["gpt-4o-mini", "gemini-2.0-flash"],
@@ -21,6 +22,14 @@ jest.mock("@/tokenConsumption/tokenConsumption", () => ({
     },
 }));
 
+jest.mock("next-auth", () => ({
+    getServerSession: (...args: unknown[]) => mockGetServerSession(...args),
+}));
+
+jest.mock("@/auth/infrastructure/auth/authOptions", () => ({
+    authOptions: {},
+}));
+
 // Simula o ambiente Next.js para o handler
 import { CostRecord } from "@/tokenConsumption/domain/model/CostRecord";
 import { tokenConsumptionContainer } from "@/tokenConsumption/tokenConsumption";
@@ -34,8 +43,15 @@ describe("POST /api/agent/generate", () => {
         mockStreamGeneratedAd.mockReset();
         mockUseCaseExecute.mockReset();
         mockEnsureConsumerStarted.mockReset();
+        mockGetServerSession.mockReset();
         mockEnsureConsumerStarted.mockResolvedValue(undefined);
         mockUseCaseExecute.mockResolvedValue(undefined);
+        mockGetServerSession.mockResolvedValue({
+            user: {
+                id: "user-id",
+                email: "user@example.com",
+            },
+        });
         mockCostCapture.mockReset();
         mockCostCapture.mockResolvedValue(
             CostRecord.create({
@@ -111,6 +127,7 @@ describe("POST /api/agent/generate", () => {
         expect(mockStreamGeneratedAd).toHaveBeenCalledWith({
             input: "Tênis casual masculino, cor azul, R$199",
             model: "gpt-4o-mini",
+            sessionUserId: "user-id",
             heliconeRequestId: expect.any(String),
         });
         expect(mockEnsureConsumerStarted).toHaveBeenCalledTimes(1);
@@ -171,6 +188,7 @@ describe("POST /api/agent/generate", () => {
         expect(mockStreamGeneratedAd).toHaveBeenCalledWith({
             input: "Produto X",
             model: "gemini-2.0-flash",
+            sessionUserId: "user-id",
             heliconeRequestId: expect.any(String),
         });
     });
