@@ -42,21 +42,38 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 
 ---
 
-## Fase 3 — Testes e Validação
+## Fase 3 — Logout via Dropdown
 
-### T5 — Cobertura de testes da feature
+### T5 — Implementar dropdown de logout ao clicar no avatar
+
+- [ ] Converter componente para Client Component (`"use client"`)
+- [ ] Adicionar estado `open` para controlar visibilidade do dropdown
+- [ ] Exibir dropdown ao clicar no avatar
+- [ ] Dropdown deve conter: nome do usuário (decorativo) e botão "Sair"
+- [ ] Botão "Sair" deve chamar `signOut({ callbackUrl: '/auth/login' })` de `next-auth/react`
+- [ ] Fechar dropdown ao clicar fora (listener de `mousedown` com `useRef`)
+- **Critério**: usuário consegue fazer logout clicando no avatar e depois em "Sair"
+
+---
+
+## Fase 4 — Testes e Validação
+
+### T6 — Cobertura de testes da feature
 
 - [ ] Testar renderização do avatar
 - [ ] Testar renderização do tooltip com nome da sessão
 - [ ] Testar fallback `Usuário` quando nome não existe
-- [ ] Testar presença do avatar no layout ao lado do `ThemeToggle`
-- **Critério**: fluxo principal e fallback cobertos por testes claros
+- [ ] Testar abertura do dropdown ao clicar no avatar
+- [ ] Testar chamada de `signOut` ao clicar em "Sair"
+- **Critério**: fluxo principal, logout e fallback cobertos por testes claros
 
-### T6 — Validação final
+### T7 — Validação final
 
 - [ ] Executar `pnpm test`
 - [ ] Executar `npx tsc --noEmit`
 - [ ] Validar manualmente hover do tooltip no avatar
+- [ ] Validar manualmente abertura/fechamento do dropdown
+- [ ] Validar manualmente logout via botão "Sair"
 - **Critério**: feature pronta sem regressão visual e sem erros de compilação
 
 ---
@@ -64,7 +81,7 @@ Spec base obrigatória: `openspec/specs/ai-code-generation-standards.md`
 ## Ordem de Execução Sugerida
 
 ```text
-T1 → T2 → T3 → T4 → T5 → T6
+T1 → T2 → T3 → T4 → T5 → T6 → T7
 ```
 
 ## Estimativa de Complexidade
@@ -75,5 +92,6 @@ T1 → T2 → T3 → T4 → T5 → T6
 | T2   | Baixa        |
 | T3   | Baixa        |
 | T4   | Baixa        |
-| T5   | Média        |
-| T6   | Baixa        |
+| T5   | Baixa        |
+| T6   | Média        |
+| T7   | Baixa        |
